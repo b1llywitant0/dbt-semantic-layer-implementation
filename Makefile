@@ -40,3 +40,10 @@ postgres-ingest-csv:
 	@echo '==========================================================='
 
 postgres: postgres-create postgres-create-warehouse postgres-create-table postgres-ingest-csv
+
+airflow:
+	@echo '__________________________________________________________'
+	@echo 'Creating Airflow Instance ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-airflow.yml --env-file .env up -d
+	@echo '==========================================================='
