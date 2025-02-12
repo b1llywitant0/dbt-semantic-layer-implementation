@@ -2,6 +2,9 @@ include .env
 
 docker-build:
 	@docker network inspect ${NETWORK_NAME} >/dev/null 2>&1 || docker network create ${NETWORK_NAME}
+	@echo '__________________________________________________________'
+	@docker build -t finpro/airflow -f ./docker/Dockerfile.airflow .
+	@echo '==========================================================='
 
 postgres-create:
 	@docker compose -f ./docker/docker-compose-postgres.yml --env-file .env up -d

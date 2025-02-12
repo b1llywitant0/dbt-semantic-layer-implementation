@@ -1,0 +1,30 @@
+# https://airflow.apache.org/docs/docker-stack/build.html
+
+FROM apache/airflow:2.8.2-python3.9
+USER root
+
+# Install OpenJDK-11
+RUN apt update && \
+    apt-get install -y openjdk-17-jdk && \
+    apt-get install -y ant && \
+    apt-get install -y procps && \
+    apt-get clean;
+
+# Set JAVA_HOME
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+RUN export JAVA_HOME
+
+USER airflow
+
+RUN pip install \
+    apache-airflow-providers-postgres \
+    lxml \
+    pyspark==3.3.2 \
+    apache-airflow-providers-apache-spark \
+    requests==2.31 \
+    pandas==1.2.4 \
+    apache-airflow-providers-slack==8.4.0 \
+    great-expectations==0.16.13 \
+    sqlalchemy-bigquery==1.6.1
+
+COPY --chown=airflow:root ./dags /opt/airflow/dags
