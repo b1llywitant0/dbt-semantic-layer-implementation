@@ -29,6 +29,8 @@ RUN python3 -m venv /opt/airflow/dbt-venv && \
 ENV VIRTUAL_ENV="/opt/airflow/dbt-venv"
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+ENV DBT_PROFILES_DIR=/opt/airflow/dbt/config
+
 # Install additional Python dependencies for Airflow
 RUN pip install --no-cache-dir \
     apache-airflow-providers-postgres \
