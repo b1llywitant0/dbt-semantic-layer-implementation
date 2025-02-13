@@ -15,6 +15,7 @@ services:
       - POSTGRES_DW_DB=${POSTGRES_DW_DB}
       - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME}
       - POSTGRES_PORT=${POSTGRES_PORT}
+      - TZ=Asia/Jakarta
     volumes:
       - ../dags:/opt/airflow/dags
       - ../logs:/opt/airflow/logs
@@ -38,6 +39,7 @@ services:
       - POSTGRES_DW_DB=${POSTGRES_DW_DB}
       - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME}
       - POSTGRES_PORT=${POSTGRES_PORT}
+      - TZ=Asia/Jakarta
     volumes:
       - ../dags:/opt/airflow/dags
       - ../logs:/opt/airflow/logs

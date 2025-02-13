@@ -6,14 +6,14 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     'start_date': datetime(2025, 2, 13),
-    # 'retries': 1,
-    # 'retry_delay': timedelta(minutes=5),
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
 }
 
 dag = DAG (
     'testing_dag', 
     default_args=default_args, 
-    schedule_interval=None
+    schedule_interval=timedelta(minutes=5),
 )
 
 dbt_test = BashOperator(
@@ -28,4 +28,4 @@ dbt_run = BashOperator(
     dag=dag
 )
 
-dbt_run
+dbt_run >> dbt_test
