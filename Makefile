@@ -47,3 +47,9 @@ airflow:
 	@echo '__________________________________________________________'
 	@docker compose -f ./docker/docker-compose-airflow.yml --env-file .env up -d
 	@echo '==========================================================='
+
+airflow-bash:
+	@docker exec -it finpro-airflow-webserver bash
+
+postgres-bash:
+	@docker exec -it finpro-postgres bash
