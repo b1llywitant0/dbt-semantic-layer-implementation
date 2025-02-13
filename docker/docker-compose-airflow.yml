@@ -17,6 +17,7 @@ services:
     volumes:
       - ../dags:/opt/airflow/dags
       - ../logs:/opt/airflow/logs
+      - ../dbt_data:/opt/airflow/dbt
 
   webserver:
     image: finpro/airflow
