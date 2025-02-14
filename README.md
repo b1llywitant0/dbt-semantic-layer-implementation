@@ -8,6 +8,8 @@ All you need to do is [installing Docker](https://docs.docker.com/engine/install
 
 ## Getting Started
 
+Create .env file and copy the .env.example content inside it.
+
 To setup this project, as simple as running the commands in your terminal.
 ```
 make docker-build
