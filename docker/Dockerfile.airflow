@@ -1,0 +1,47 @@
+# https://airflow.apache.org/docs/docker-stack/build.html
+# Use Apache Airflow base image
+FROM apache/airflow:2.8.2-python3.9
+
+# Install system dependencies (Java for Spark, Python venv)
+USER root
+RUN apt update && apt-get install -y \
+    openjdk-17-jdk \
+    ant \
+    procps \
+    python3-venv \
+    python3-pip && \
+    apt-get clean
+
+# Set JAVA_HOME for Spark
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+RUN export JAVA_HOME
+
+# Create virtual environment for dbt as 'airflow' user
+USER airflow
+ENV PIP_USER=no
+RUN python3 -m venv /opt/airflow/dbt-venv && \
+    /opt/airflow/dbt-venv/bin/pip install --upgrade pip && \
+    /opt/airflow/dbt-venv/bin/pip install --no-cache-dir \
+        dbt-core \
+        dbt-postgres
+
+# Ensure Airflow picks up the virtual environment
+ENV VIRTUAL_ENV="/opt/airflow/dbt-venv"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+ENV DBT_PROFILES_DIR=/opt/airflow/dbt/config
+
+# Install additional Python dependencies for Airflow
+RUN pip install --no-cache-dir \
+    apache-airflow-providers-postgres \
+    lxml \
+    pyspark==3.3.2 \
+    apache-airflow-providers-apache-spark \
+    requests==2.31 \
+    pandas==1.2.4 \
+    apache-airflow-providers-slack==8.4.0 \
+    great-expectations==0.16.13 \
+    sqlalchemy-bigquery==1.6.1
+
+# Copy DAGs into the Airflow directory
+COPY --chown=airflow:root ./dags /opt/airflow/dags

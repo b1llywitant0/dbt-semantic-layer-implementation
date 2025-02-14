@@ -1,0 +1,54 @@
+version: '3.7'
+services:
+  scheduler:
+    image: finpro/airflow
+    container_name: ${AIRFLOW_SCHEDULER_CONTAINER_NAME}
+    hostname: ${AIRFLOW_SCHEDULER_CONTAINER_NAME}
+    command: scheduler
+    restart: always
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER_NAME}/${POSTGRES_DB}
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DW_DB=${POSTGRES_DW_DB}
+      - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - ../logs:/opt/airflow/logs
+      - ../dbt_data:/opt/airflow/dbt
+      - ../scripts:/scripts
+
+  webserver:
+    image: finpro/airflow
+    container_name: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
+    hostname: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
+    entrypoint: /scripts/entrypoint.sh
+    restart: always
+    depends_on:
+      - scheduler
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER_NAME}/${POSTGRES_DB}
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DW_DB=${POSTGRES_DW_DB}
+      - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../dags:/opt/airflow/dags
+      - ../logs:/opt/airflow/logs
+      - ../dbt_data:/opt/airflow/dbt
+      - ../scripts:/scripts
+    ports:
+      - ${AIRFLOW_WEBSERVER_PORT}:8080
+
+networks:
+  default:
+    name: finpro-network
+    external: true

@@ -1,0 +1,24 @@
+services:
+  finpro-postgres:
+    image: postgres
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    restart: unless-stopped
+    hostname: ${POSTGRES_CONTAINER_NAME}
+    networks:
+      - finpro-network
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - TZ=Asia/Jakarta
+    volumes:
+      - ../sql:/sql
+      - ../data:/data
+    ports:
+      - ${POSTGRES_PORT}:5432
+        
+networks:
+  finpro-network:
+    driver: bridge
+    external: true
