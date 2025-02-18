@@ -7,5 +7,5 @@ airflow connections add 'postgres_main' \
 --conn-password $POSTGRES_PASSWORD \
 --conn-host $POSTGRES_CONTAINER_NAME \
 --conn-port $POSTGRES_PORT \
---conn-schema $AIRFLOW_DB
+--conn-schema $POSTGRES_AIRFLOW_DB
 airflow webserver

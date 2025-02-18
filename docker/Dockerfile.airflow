@@ -44,4 +44,4 @@ RUN pip install --no-cache-dir \
     sqlalchemy-bigquery==1.6.1
 
 # Copy DAGs into the Airflow directory
-COPY --chown=airflow:root ./dags /opt/airflow/dags
+COPY --chown=airflow:root ./airflow/dags /opt/airflow/dags

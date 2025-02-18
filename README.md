@@ -23,3 +23,5 @@ make airflow-bash
 cd dbt
 dbt run
 ```
+
+Important: entrypoint.sh should be in LF, not CRLF, or the Airflow won't run
