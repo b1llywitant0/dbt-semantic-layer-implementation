@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: finpro-clickhouse
+    entrypoint: ["/bin/bash", "-c", "/var/lib/clickhouse/user_scripts/init.sh"]
+    networks:
+      - finpro-network
+    restart: always
+    ports:
+      - "8123:8123"  # HTTP Interface
+      - "9001:9000"  # Native TCP Interface
+    volumes:
+      - ../clickhouse:/var/lib/clickhouse
+      - ../clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ../clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CLICKHOUSE_DB=${CLICKHOUSE_DW_DB}
+    ulimits:
+      nofile:
+          soft: 262144
+          hard: 262144
+
+  tabix:
+    image: spoonest/clickhouse-tabix-web-client:latest
+    container_name: finpro-tabix
+    networks:
+      - finpro-network
+    restart: always
+    ports:
+      - "8080:80"  # Tabix Web UI
+    depends_on:
+      - clickhouse
+
+networks:
+  finpro-network:
+    driver: bridge
+    external: true

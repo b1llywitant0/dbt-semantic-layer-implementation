@@ -1,4 +1,4 @@
-.PHONY: airflow
+.PHONY: airflow clickhouse
 include .env
 
 docker-build: 
@@ -48,6 +48,13 @@ airflow:
 	@echo 'Creating Airflow Instance ...'
 	@echo '__________________________________________________________'
 	@docker compose -f ./docker/docker-compose-airflow.yml --env-file .env up -d
+	@echo '==========================================================='
+
+clickhouse:
+	@echo '__________________________________________________________'
+	@echo 'Creating ClickHouse Instance ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-clickhouse.yml --env-file .env up -d
 	@echo '==========================================================='
 
 airflow-bash:
