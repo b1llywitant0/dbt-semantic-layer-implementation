@@ -1,0 +1,37 @@
+<!-- This file was generated automatically.
+     Do not edit it: it is likely to be discarded and generated again before it's read next time.
+     Files used to generate this file:
+       /etc/clickhouse-server/config.xml
+       /etc/clickhouse-server/config.d/docker_related_config.xml      -->
+
+<yandex>
+    <logger>
+        <level>trace</level>
+        <log>/var/lib/clickhouse/logs/clickhouse-server.log</log>
+        <errorlog>/var/lib/clickhouse/logs/clickhouse-server.err.log</errorlog>
+    </logger>
+    <listen_host>::</listen_host>
+    <!-- <listen_host>::</listen_host> -->
+    <http_port>8123</http_port>
+    <tcp_port>9000</tcp_port>
+    <path>/var/lib/clickhouse/</path>
+    <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+    <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
+    <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>
+    <user_directories>
+        <users_xml>
+            <path>/etc/clickhouse-server/users.xml</path>
+        </users_xml>
+    </user_directories>
+
+     <!-- Listen wildcard address to allow accepting connections from other containers and host network. -->
+    
+    <listen_host>0.0.0.0</listen_host>
+    <listen_try>1</listen_try>
+
+    <!--
+    <logger>
+        <console>1</console>
+    </logger>
+    -->
+</yandex>

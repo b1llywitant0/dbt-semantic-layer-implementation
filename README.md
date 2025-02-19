@@ -25,3 +25,4 @@ dbt run
 ```
 
 Important: entrypoint.sh should be in LF, not CRLF, or the Airflow won't run
+git config --global core.autocrlf false
