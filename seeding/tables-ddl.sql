@@ -43,8 +43,8 @@ CREATE TABLE sellers (
   seller_zip_code_prefix INT NOT NULL,
   seller_city VARCHAR NOT NULL,
   seller_state VARCHAR NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  updated_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
   deleted_at TIMESTAMP DEFAULT NULL
 ); 
 
@@ -264,4 +264,3 @@ CREATE TRIGGER closed_deals_set_time
 BEFORE INSERT ON temp_closed_deals
 FOR EACH ROW
 EXECUTE FUNCTION closed_deals_set_time();
-

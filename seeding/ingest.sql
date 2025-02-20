@@ -104,3 +104,10 @@ INSERT INTO closed_deals (
 SELECT c.* FROM temp_closed_deals c
 INNER JOIN sellers s ON c.seller_id = s.seller_id;
 DROP TABLE temp_closed_deals;
+
+UPDATE sellers -- Executed last because it needed data from closed_deals
+SET 
+  created_at = closed_deals.created_at,
+  updated_at = closed_deals.updated_at
+FROM closed_deals
+WHERE sellers.seller_id = closed_deals.seller_id;
