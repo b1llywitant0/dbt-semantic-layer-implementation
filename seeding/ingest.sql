@@ -58,17 +58,6 @@ COPY order_payments (
 ) 
 FROM '/seeding/data/olist_order_payments_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
-COPY order_reviews (
-    review_id,
-    order_id,
-    review_score,
-    review_comment_title,
-    review_comment_message,
-    review_creation_date,
-    review_answer_timestamp
-) 
-FROM '/seeding/data/olist_order_reviews_dataset.csv' DELIMITER AS ',' CSV HEADER;
-
 COPY order_items (
     order_id,
     order_item_id,
@@ -79,6 +68,17 @@ COPY order_items (
     freight_value
 ) 
 FROM '/seeding/data/olist_order_items_dataset.csv' DELIMITER AS ',' CSV HEADER;
+
+COPY order_reviews (
+    review_id,
+    order_id,
+    review_score,
+    review_comment_title,
+    review_comment_message,
+    review_creation_date,
+    review_answer_timestamp
+) 
+FROM '/seeding/data/olist_order_reviews_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY qualified_leads (
     mql_id,

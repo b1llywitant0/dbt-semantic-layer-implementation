@@ -93,8 +93,8 @@ CREATE TABLE order_payments (
   payment_type VARCHAR NOT NULL,
   payment_installments DECIMAL NOT NULL,
   payment_value DECIMAL NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(), -- Will be based on order_purchase_timestamp based on order_id
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMP NOT NULL, -- Will be based on order_purchase_timestamp based on order_id
+  updated_at TIMESTAMP NOT NULL,
   deleted_at TIMESTAMP DEFAULT NULL
 );
 
@@ -106,10 +106,38 @@ CREATE TABLE order_items (
   shipping_limit_date TIMESTAMP NOT NULL,
   price DECIMAL NOT NULL,
   freight_value DECIMAL NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(), -- Will be based on order_purchase_timestamp based on order_id
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  created_at TIMESTAMP NOT NULL, -- Will be based on order_purchase_timestamp based on order_id
+  updated_at TIMESTAMP NOT NULL,
   deleted_at TIMESTAMP DEFAULT NULL
 );
+
+CREATE OR REPLACE FUNCTION order_payments_items_set_time()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.created_at IS NULL THEN
+  NEW.created_at := COALESCE(
+    (SELECT created_at FROM orders WHERE orders.order_id = NEW.order_id),
+    NOW()
+  );
+  END IF;
+
+  IF NEW.updated_at IS NULL THEN
+  NEW.updated_at := NEW.created_at;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER order_payments_set_time
+BEFORE INSERT ON order_payments
+FOR EACH ROW
+EXECUTE FUNCTION order_payments_items_set_time();
+
+CREATE TRIGGER order_items_set_time
+BEFORE INSERT ON order_items
+FOR EACH ROW
+EXECUTE FUNCTION order_payments_items_set_time();
 
 CREATE TABLE order_reviews (
   review_id VARCHAR NOT NULL,
