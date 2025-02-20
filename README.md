@@ -15,6 +15,7 @@ To setup this project, as simple as running the commands in your terminal.
 make docker-build
 make postgres
 make airflow
+make clickhouse
 ```
 
 To run the dbt project which mounted in docker volume, you can run:

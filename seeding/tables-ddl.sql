@@ -11,9 +11,9 @@ CREATE TABLE products (
   product_length_cm INT,
   product_height_cm INT,
   product_width_cm INT,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  updated_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE geolocations (
@@ -22,9 +22,9 @@ CREATE TABLE geolocations (
   geolocation_lng DECIMAL NOT NULL,
   geolocation_city VARCHAR NOT NULL,
   geolocation_state VARCHAR NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  updated_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE customers (
@@ -33,9 +33,9 @@ CREATE TABLE customers (
   customer_zip_code_prefix INT NOT NULL,
   customer_city VARCHAR NOT NULL,
   customer_state VARCHAR NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  updated_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE sellers (
@@ -43,9 +43,9 @@ CREATE TABLE sellers (
   seller_zip_code_prefix INT NOT NULL,
   seller_city VARCHAR NOT NULL,
   seller_state VARCHAR NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMP DEFAULT NULL
 ); 
 
 CREATE TABLE orders (
@@ -57,10 +57,35 @@ CREATE TABLE orders (
   order_delivered_carrier_date TIMESTAMP,
   order_delivered_customer_date TIMESTAMP,
   order_estimated_delivery_date TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP, -- Will be based on order_purchase_timestamp
+  updated_at TIMESTAMP, -- Will be based on the latest date in row
+  deleted_at TIMESTAMP DEFAULT NULL
 );
+
+CREATE OR REPLACE FUNCTION orders_set_time()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.created_at IS NULL THEN
+  NEW.created_at := NEW.order_purchase_timestamp;
+  END IF;
+
+  IF NEW.updated_at IS NULL THEN
+  NEW.updated_at := GREATEST(
+    NEW.order_purchase_timestamp,
+    NEW.order_approved_at,
+    NEW.order_delivered_carrier_date,
+    NEW.order_delivered_customer_date
+  );
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER orders_set_time
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION orders_set_time();
 
 CREATE TABLE order_payments (
   order_id VARCHAR NOT NULL REFERENCES orders(order_id),
@@ -68,22 +93,9 @@ CREATE TABLE order_payments (
   payment_type VARCHAR NOT NULL,
   payment_installments DECIMAL NOT NULL,
   payment_value DECIMAL NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
-);
-
-CREATE TABLE order_reviews (
-  review_id VARCHAR NOT NULL,
-  order_id VARCHAR NOT NULL REFERENCES orders(order_id),
-  review_score SMALLINT NOT NULL,
-  review_comment_title VARCHAR,
-  review_comment_message VARCHAR,
-  review_creation_date TIMESTAMP NOT NULL,
-  review_answer_timestamp TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(), -- Will be based on order_purchase_timestamp based on order_id
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE order_items (
@@ -94,10 +106,43 @@ CREATE TABLE order_items (
   shipping_limit_date TIMESTAMP NOT NULL,
   price DECIMAL NOT NULL,
   freight_value DECIMAL NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(), -- Will be based on order_purchase_timestamp based on order_id
+  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  deleted_at TIMESTAMP DEFAULT NULL
 );
+
+CREATE TABLE order_reviews (
+  review_id VARCHAR NOT NULL,
+  order_id VARCHAR NOT NULL REFERENCES orders(order_id),
+  review_score SMALLINT NOT NULL,
+  review_comment_title VARCHAR,
+  review_comment_message VARCHAR,
+  review_creation_date TIMESTAMP NOT NULL,
+  review_answer_timestamp TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL, -- Will be based on review_creation_date
+  updated_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+CREATE OR REPLACE FUNCTION order_reviews_set_time()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.created_at IS NULL THEN
+  NEW.created_at := NEW.review_creation_date;
+  END IF;
+
+  IF NEW.updated_at IS NULL THEN
+  NEW.updated_at := NEW.review_creation_date;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER order_reviews_set_time
+BEFORE INSERT ON order_reviews
+FOR EACH ROW
+EXECUTE FUNCTION order_reviews_set_time();
 
 -- Marketing Funnel by Olist
 -- https://www.kaggle.com/datasets/olistbr/marketing-funnel-olist?select=olist_closed_deals_dataset.csv
@@ -106,10 +151,30 @@ CREATE TABLE qualified_leads (
   first_contact_date DATE NOT NULL,
   landing_page_id VARCHAR NOT NULL,
   origin VARCHAR,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL, -- Will be based on first_contact_date
+  updated_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP DEFAULT NULL
 );
+
+CREATE OR REPLACE FUNCTION qualified_leads_set_time()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.created_at IS NULL THEN
+  NEW.created_at := NEW.first_contact_date;
+  END IF;
+
+  IF NEW.updated_at IS NULL THEN
+  NEW.updated_at := NEW.first_contact_date;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER qualified_leads_set_time
+BEFORE INSERT ON qualified_leads
+FOR EACH ROW
+EXECUTE FUNCTION qualified_leads_set_time();
 
 CREATE TABLE closed_deals (
   mql_id VARCHAR REFERENCES qualified_leads(mql_id),
@@ -126,9 +191,9 @@ CREATE TABLE closed_deals (
   business_type VARCHAR,
   declared_product_catalog_size DECIMAL,
   declared_monthly_revenue DECIMAL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL, -- Will be based on won_date
+  updated_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 -- Inconsistency between seller id in closed deals and seller
@@ -147,13 +212,28 @@ CREATE TABLE temp_closed_deals (
   business_type VARCHAR,
   declared_product_catalog_size DECIMAL,
   declared_monthly_revenue DECIMAL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  deleted_at TIMESTAMP
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
--- DROP TABLE information
--- Please use CASCADE to remove the table and its dependencies
--- For example:
--- DROP TABLE orders CASCADE;
--- DROP TABLE qualified_leads CASCADE;
+CREATE OR REPLACE FUNCTION closed_deals_set_time()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.created_at IS NULL THEN
+  NEW.created_at := NEW.won_date;
+  END IF;
+
+  IF NEW.updated_at IS NULL THEN
+  NEW.updated_at := NEW.won_date;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER closed_deals_set_time
+BEFORE INSERT ON temp_closed_deals
+FOR EACH ROW
+EXECUTE FUNCTION closed_deals_set_time();
+
