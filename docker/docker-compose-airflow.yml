@@ -26,7 +26,7 @@ services:
     image: finpro/airflow
     container_name: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
     hostname: ${AIRFLOW_WEBSERVER_CONTAINER_NAME}
-    entrypoint: /opt/airflow/scripts/entrypoint.sh
+    entrypoINT: /opt/airflow/scripts/entrypoINT.sh
     restart: always
     depends_on:
       - scheduler

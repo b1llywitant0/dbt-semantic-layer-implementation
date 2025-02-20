@@ -2,121 +2,154 @@
 -- Brazilian E-commerce Public Dataset by Olist
 -- https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce?select=olist_customers_dataset.csv
 CREATE TABLE products (
-  product_id varchar PRIMARY KEY,
-  product_category_name varchar,
-  product_name_lenght int,
-  product_description_lenght int,
-  product_photo_qty int,
-  product_weight_g int,
-  product_length_cm int,
-  product_height_cm int,
-  product_width_cm int
+  product_id VARCHAR PRIMARY KEY,
+  product_category_name VARCHAR,
+  product_name_lenght INT,
+  product_description_lenght INT,
+  product_photo_qty INT,
+  product_weight_g INT,
+  product_length_cm INT,
+  product_height_cm INT,
+  product_width_cm INT,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE geolocations (
-  geolocation_zip_code_prefix int,
-  geolocation_lat float NOT NULL,
-  geolocation_lng float NOT NULL,
-  geolocation_city varchar NOT NULL,
-  geolocation_state varchar NOT NULL
+  geolocation_zip_code_prefix INT,
+  geolocation_lat DECIMAL NOT NULL,
+  geolocation_lng DECIMAL NOT NULL,
+  geolocation_city VARCHAR NOT NULL,
+  geolocation_state VARCHAR NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE customers (
-  customer_id varchar PRIMARY KEY,
-  customer_unique_id varchar NOT NULL,
-  customer_zip_code_prefix int NOT NULL,
-  customer_city varchar NOT NULL,
-  customer_state varchar NOT NULL
+  customer_id VARCHAR PRIMARY KEY,
+  customer_unique_id VARCHAR NOT NULL,
+  customer_zip_code_prefix INT NOT NULL,
+  customer_city VARCHAR NOT NULL,
+  customer_state VARCHAR NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE sellers (
-  seller_id varchar PRIMARY KEY,
-  seller_zip_code_prefix integer NOT NULL,
-  seller_city varchar NOT NULL,
-  seller_state varchar NOT NULL
+  seller_id VARCHAR PRIMARY KEY,
+  seller_zip_code_prefix INT NOT NULL,
+  seller_city VARCHAR NOT NULL,
+  seller_state VARCHAR NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 ); 
 
 CREATE TABLE orders (
-  order_id varchar PRIMARY KEY,
-  customer_id varchar NOT NULL REFERENCES customers(customer_id),
-  order_status varchar NOT NULL,
-  order_purchase_timestamp timestamp NOT NULL,
-  order_approved_at timestamp,
-  order_delivered_carrier_date timestamp,
-  order_delivered_customer_date timestamp,
-  order_estimated_delivery_date timestamp
+  order_id VARCHAR PRIMARY KEY,
+  customer_id VARCHAR NOT NULL REFERENCES customers(customer_id),
+  order_status VARCHAR NOT NULL,
+  order_purchase_timestamp TIMESTAMP NOT NULL,
+  order_approved_at TIMESTAMP,
+  order_delivered_carrier_date TIMESTAMP,
+  order_delivered_customer_date TIMESTAMP,
+  order_estimated_delivery_date TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE order_payments (
-  order_id varchar NOT NULL REFERENCES orders(order_id),
-  payment_sequential int NOT NULL,
-  payment_type varchar NOT NULL,
-  payment_installments int NOT NULL,
-  payment_value float NOT NULL
+  order_id VARCHAR NOT NULL REFERENCES orders(order_id),
+  payment_sequential INT NOT NULL,
+  payment_type VARCHAR NOT NULL,
+  payment_installments DECIMAL NOT NULL,
+  payment_value DECIMAL NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE order_reviews (
-  review_id varchar NOT NULL,
-  order_id varchar NOT NULL REFERENCES orders(order_id),
-  review_score int NOT NULL,
-  review_comment_title varchar,
-  review_comment_message varchar,
-  review_creation_date timestamp NOT NULL,
-  review_answer_timestamp timestamp NOT NULL
+  review_id VARCHAR NOT NULL,
+  order_id VARCHAR NOT NULL REFERENCES orders(order_id),
+  review_score SMALLINT NOT NULL,
+  review_comment_title VARCHAR,
+  review_comment_message VARCHAR,
+  review_creation_date TIMESTAMP NOT NULL,
+  review_answer_timestamp TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE order_items (
-  order_id varchar NOT NULL REFERENCES orders(order_id),
-  order_item_id int NOT NULL,
-  product_id varchar NOT NULL REFERENCES products(product_id),
-  seller_id varchar NOT NULL REFERENCES sellers(seller_id),
-  shipping_limit_date timestamp NOT NULL,
-  price float NOT NULL,
-  freight_value float NOT NULL
+  order_id VARCHAR NOT NULL REFERENCES orders(order_id),
+  order_item_id INT NOT NULL,
+  product_id VARCHAR NOT NULL REFERENCES products(product_id),
+  seller_id VARCHAR NOT NULL REFERENCES sellers(seller_id),
+  shipping_limit_date TIMESTAMP NOT NULL,
+  price DECIMAL NOT NULL,
+  freight_value DECIMAL NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 -- Marketing Funnel by Olist
 -- https://www.kaggle.com/datasets/olistbr/marketing-funnel-olist?select=olist_closed_deals_dataset.csv
 CREATE TABLE qualified_leads (
-  mql_id varchar PRIMARY KEY,
-  first_contact_date date NOT NULL,
-  landing_page_id varchar NOT NULL,
-  origin varchar
+  mql_id VARCHAR PRIMARY KEY,
+  first_contact_date DATE NOT NULL,
+  landing_page_id VARCHAR NOT NULL,
+  origin VARCHAR,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 CREATE TABLE closed_deals (
-  mql_id varchar REFERENCES qualified_leads(mql_id),
-  seller_id varchar UNIQUE NOT NULL REFERENCES sellers(seller_id),
-  sdr_id varchar NOT NULL,
-  sr_id varchar NOT NULL,
-  won_date timestamp NOT NULL,
-  business_segment varchar,
-  lead_type varchar,
-  lead_behaviour_profile varchar,
-  has_company bool,
-  has_gtin bool,
-  average_stock varchar,
-  business_type varchar,
-  declared_product_catalog_size float,
-  declared_monthly_revenue float
+  mql_id VARCHAR REFERENCES qualified_leads(mql_id),
+  seller_id VARCHAR UNIQUE NOT NULL REFERENCES sellers(seller_id),
+  sdr_id VARCHAR NOT NULL,
+  sr_id VARCHAR NOT NULL,
+  won_date TIMESTAMP NOT NULL,
+  business_segment VARCHAR,
+  lead_type VARCHAR,
+  lead_behaviour_profile VARCHAR,
+  has_company BOOLEAN,
+  has_gtin BOOLEAN,
+  average_stock VARCHAR,
+  business_type VARCHAR,
+  declared_product_catalog_size DECIMAL,
+  declared_monthly_revenue DECIMAL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 -- Inconsistency between seller id in closed deals and seller
 CREATE TABLE temp_closed_deals (
-  mql_id varchar,
-  seller_id varchar UNIQUE NOT NULL,
-  sdr_id varchar NOT NULL,
-  sr_id varchar NOT NULL,
-  won_date timestamp NOT NULL,
-  business_segment varchar,
-  lead_type varchar,
-  lead_behaviour_profile varchar,
-  has_company bool,
-  has_gtin bool,
-  average_stock varchar,
-  business_type varchar,
-  declared_product_catalog_size float,
-  declared_monthly_revenue float
+  mql_id VARCHAR,
+  seller_id VARCHAR UNIQUE NOT NULL,
+  sdr_id VARCHAR NOT NULL,
+  sr_id VARCHAR NOT NULL,
+  won_date TIMESTAMP NOT NULL,
+  business_segment VARCHAR,
+  lead_type VARCHAR,
+  lead_behaviour_profile VARCHAR,
+  has_company BOOLEAN,
+  has_gtin BOOLEAN,
+  average_stock VARCHAR,
+  business_type VARCHAR,
+  declared_product_catalog_size DECIMAL,
+  declared_monthly_revenue DECIMAL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  deleted_at TIMESTAMP
 );
 
 -- DROP TABLE information
