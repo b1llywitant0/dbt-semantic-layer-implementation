@@ -17,7 +17,7 @@ services:
     ports:
       - ${POSTGRES_PORT}:5432
         
-networks:
+networks: 
   finpro-network:
     driver: bridge
     external: true
