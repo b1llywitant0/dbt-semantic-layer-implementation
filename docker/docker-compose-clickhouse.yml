@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  clickhouse:
+  clickhouse-server:
     image: clickhouse/clickhouse-server:latest
-    container_name: finpro-clickhouse
+    container_name: finpro-clickhouse-server
     entrypoint: ["/bin/bash", "-c", "/var/lib/clickhouse/user_scripts/init.sh"]
     networks:
       - finpro-network
