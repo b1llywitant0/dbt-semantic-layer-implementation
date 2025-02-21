@@ -1,3 +1,3 @@
 #!/bin/bash
 chown -R 101:101 /var/lib/clickhouse
-exec /entrypoINT.sh
+exec /entrypoint.sh

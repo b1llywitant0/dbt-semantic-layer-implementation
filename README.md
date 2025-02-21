@@ -25,7 +25,7 @@ cd dbt
 dbt run
 ```
 
-Important: entrypoINT.sh should be in LF, not CRLF, or the Airflow won't run. Please run:
+Important: entrypoint.sh should be in LF, not CRLF, or the Airflow won't run. Please run:
 ```
 git config --global core.autocrlf false
 ```

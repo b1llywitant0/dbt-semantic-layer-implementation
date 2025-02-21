@@ -13,7 +13,7 @@ default_args = {
 dag = DAG (
     'testing_dag', 
     default_args=default_args, 
-    schedule_INTerval=None
+    schedule_interval=None
 )
 
 dbt_test = BashOperator(

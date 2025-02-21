@@ -4,13 +4,13 @@ services:
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: finpro-clickhouse
-    entrypoINT: ["/bin/bash", "-c", "/var/lib/clickhouse/user_scripts/init.sh"]
+    entrypoint: ["/bin/bash", "-c", "/var/lib/clickhouse/user_scripts/init.sh"]
     networks:
       - finpro-network
     restart: always
     ports:
-      - "8123:8123"  # HTTP INTerface
-      - "9001:9000"  # Native TCP INTerface
+      - "8123:8123"  # HTTP interface
+      - "9001:9000"  # Native TCP interface
     volumes:
       - ../clickhouse:/var/lib/clickhouse
       - ../clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
