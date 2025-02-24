@@ -57,6 +57,13 @@ clickhouse:
 	@docker compose -f ./docker/docker-compose-clickhouse.yml --env-file .env up -d
 	@echo '==========================================================='
 
+cdc:
+	@echo '__________________________________________________________'
+	@echo 'Creating Kafka+Debezium Instance ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-cdc.yml --env-file .env up -d
+	@echo '==========================================================='	
+
 airflow-bash:
 	@docker exec -it ${AIRFLOW_WEBSERVER_CONTAINER_NAME} bash
 

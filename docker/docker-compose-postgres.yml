@@ -1,6 +1,6 @@
 services:
   finpro-postgres:
-    image: postgres
+    image: debezium/postgres:16-alpine
     container_name: ${POSTGRES_CONTAINER_NAME}
     restart: unless-stopped
     hostname: ${POSTGRES_CONTAINER_NAME}
@@ -13,16 +13,16 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - TZ=${TIMEZONE}
     volumes:
-      - ../postgres/config/postgres.config:/var/lib/postgresql/data/postgresql.conf
+      # - ../postgres/config/postgres.config:/var/lib/postgresql/data/postgresql.conf
       - ../postgres/data:/seeding/data
       - ../postgres/ecommerce-ddl.sql:/seeding/ecommerce-ddl.sql
       - ../postgres/ingest.sql:/seeding/ingest.sql
       - ../postgres/tables-ddl.sql:/seeding/tables-ddl.sql
-      - ../postgres/script/init-permissions.sh:/docker-entrypoint-initdb.d/init-permissions.sh
+      # - ../postgres/script/init-permissions.sh:/docker-entrypoint-initdb.d/init-permissions.sh
     ports:
       - ${POSTGRES_PORT}:5432
-    command: ["postgres", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf"]
-    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/init-permissions.sh"]
+    # command: ["postgres", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf"]
+    # entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/init-permissions.sh"]
 
   adminer:
     image: adminer:4.8.1

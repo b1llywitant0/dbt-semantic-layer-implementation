@@ -35,7 +35,6 @@ services:
     hostname: ${DEBEZIUM_CONTAINER_NAME}
     container_name: ${DEBEZIUM_CONTAINER_NAME}
     depends_on:
-      - finpro-postgres
       - zookeeper
       - kafka
     ports:
@@ -87,7 +86,7 @@ services:
               "name": "postgres-cdc",
               "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
               "database.hostname": "finpro-postgres",
-              "database.port": "5433",
+              "database.port": "5432",
               "database.user": "postgres",
               "database.password": "root",
               "topic.prefix": "cdc",
