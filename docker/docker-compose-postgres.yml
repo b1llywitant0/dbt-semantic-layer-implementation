@@ -13,9 +13,15 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - TZ=Asia/Jakarta
     volumes:
-      - ../seeding:/seeding
+      - ../postgres/config/postgres.config:/var/lib/postgres/data/postgresql.conf
+      - ../postgres/data:/seeding/data
+      - ../postgres/ecommerce-ddl.sql:/seeding/ecommerce-ddl.sql
+      - ../postgres/ingest.sql:/seeding/ingest.sql
+      - ../postgres/tables-ddl.sql:/seeding/tables-ddl.sql
+      - ../postgres/script/init-permissions.sh:/docker-entrypoint-initdb.d/init-permissions.sh
     ports:
       - ${POSTGRES_PORT}:5432
+    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/init-permissions.sh"]
         
 networks: 
   finpro-network:
