@@ -1,4 +1,4 @@
-CREATE TABLE products_changed
+CREATE TABLE cdc_products
 (
     `before.product_id` Nullable(String),
     `before.product_category_name` Nullable(String),
