@@ -13,7 +13,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
       - TZ=Asia/Jakarta
     volumes:
-      - ../postgres/config/postgres.config:/var/lib/postgres/data/postgresql.conf
+      - ../postgres/config/postgres.config:/var/lib/postgresql/data/postgresql.conf
       - ../postgres/data:/seeding/data
       - ../postgres/ecommerce-ddl.sql:/seeding/ecommerce-ddl.sql
       - ../postgres/ingest.sql:/seeding/ingest.sql
@@ -21,6 +21,7 @@ services:
       - ../postgres/script/init-permissions.sh:/docker-entrypoint-initdb.d/init-permissions.sh
     ports:
       - ${POSTGRES_PORT}:5432
+    command: ["postgres", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf"]
     entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/init-permissions.sh"]
         
 networks: 
