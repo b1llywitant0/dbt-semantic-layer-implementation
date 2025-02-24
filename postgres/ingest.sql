@@ -9,7 +9,7 @@ COPY products (
     product_height_cm,
     product_width_cm
 )
-FROM '/postgres/data/olist_products_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_products_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY geolocations (
     geolocation_zip_code_prefix,
@@ -18,7 +18,7 @@ COPY geolocations (
     geolocation_city,
     geolocation_state
 )
-FROM '/postgres/data/olist_geolocation_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_geolocation_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY customers (
     customer_id,
@@ -27,7 +27,7 @@ COPY customers (
     customer_city,
     customer_state
 ) 
-FROM '/postgres/data/olist_customers_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_customers_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY sellers (
     seller_id,
@@ -35,7 +35,7 @@ COPY sellers (
     seller_city,
     seller_state
 )
-FROM '/postgres/data/olist_sellers_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_sellers_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY orders (
     order_id,
@@ -47,7 +47,7 @@ COPY orders (
     order_delivered_customer_date,
     order_estimated_delivery_date
 ) 
-FROM '/postgres/data/olist_orders_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_orders_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_payments (
     order_id,
@@ -56,7 +56,7 @@ COPY order_payments (
     payment_installments,
     payment_value
 ) 
-FROM '/postgres/data/olist_order_payments_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_order_payments_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_items (
     order_id,
@@ -67,7 +67,7 @@ COPY order_items (
     price,
     freight_value
 ) 
-FROM '/postgres/data/olist_order_items_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_order_items_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_reviews (
     review_id,
@@ -78,7 +78,7 @@ COPY order_reviews (
     review_creation_date,
     review_answer_timestamp
 ) 
-FROM '/postgres/data/olist_order_reviews_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_order_reviews_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY qualified_leads (
     mql_id,
@@ -86,7 +86,7 @@ COPY qualified_leads (
     landing_page_id,
     origin
 )
-FROM '/postgres/data/olist_marketing_qualified_leads_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_marketing_qualified_leads_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 -- Inconsistency between seller id in closed deals and seller
 COPY temp_closed_deals (
@@ -94,7 +94,7 @@ COPY temp_closed_deals (
     lead_behaviour_profile, has_company, has_gtin, average_stock, business_type, 
     declared_product_catalog_size, declared_monthly_revenue
 )
-FROM '/postgres/data/olist_closed_deals_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_closed_deals_dataset.csv' DELIMITER AS ',' CSV HEADER;
 
 INSERT intO closed_deals (
     mql_id, seller_id, sdr_id, sr_id, won_date, business_segment, lead_type, 

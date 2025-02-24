@@ -23,7 +23,21 @@ services:
       - ${POSTGRES_PORT}:5432
     command: ["postgres", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf"]
     entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/init-permissions.sh"]
-        
+
+  adminer:
+    image: adminer:4.8.1
+    container_name: finpro-adminer
+    hostname: adminer
+    restart: always
+    ports:
+      - 7775:8080
+    networks:
+      - finpro-network
+    environment:
+      ADMINER_DEFAULT_DB_DRIVER: pgsql
+      ADMINER_DEFAULT_DB_HOST: ${POSTGRES_CONTAINER_NAME}
+      ADMINER_DEFAULT_DB_NAME: ${POSTGRES_OLTP_DB}
+
 networks: 
   finpro-network:
     driver: bridge
