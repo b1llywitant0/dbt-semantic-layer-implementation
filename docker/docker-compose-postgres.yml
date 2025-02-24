@@ -11,7 +11,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_DB=${POSTGRES_AIRFLOW_DB}
       - PGDATA=/var/lib/postgresql/data/pgdata
-      - TZ=Asia/Jakarta
+      - TZ=${TIMEZONE}
     volumes:
       - ../postgres/config/postgres.config:/var/lib/postgresql/data/postgresql.conf
       - ../postgres/data:/seeding/data
@@ -26,11 +26,11 @@ services:
 
   adminer:
     image: adminer:4.8.1
-    container_name: finpro-adminer
-    hostname: adminer
+    container_name: ${ADMINER_CONTAINER_NAME}
+    hostname: ${ADMINER_CONTAINER_NAME}
     restart: always
     ports:
-      - 7775:8080
+      - ${ADMINER_PORT}:8080
     networks:
       - finpro-network
     environment:

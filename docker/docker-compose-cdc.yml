@@ -1,8 +1,8 @@
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.1
-    hostname: zookeeper
-    container_name: finpro-zookeeper
+    hostname: ${ZOOKEEPER_CONTAINER_NAME}
+    container_name: ${ZOOKEEPER_CONTAINER_NAME}
     ports:
       - "2181:2181"
     environment:
@@ -13,8 +13,8 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.6.1
-    hostname: kafka
-    container_name: finpro-kafka
+    hostname: ${KAFKA_CONTAINER_NAME}
+    container_name: ${KAFKA_CONTAINER_NAME}
     depends_on:
       - zookeeper
     ports:
@@ -24,7 +24,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_CONTAINER_NAME}:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
@@ -32,8 +32,8 @@ services:
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect:7.6.1
-    hostname: kafka-connect
-    container_name: kafka-connect
+    hostname: ${DEBEZIUM_CONTAINER_NAME}
+    container_name: ${DEBEZIUM_CONTAINER_NAME}
     depends_on:
       - finpro-postgres
       - zookeeper
@@ -42,7 +42,7 @@ services:
       - "8083:8083"
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'kafka:29092'
-      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
+      CONNECT_REST_ADVERTISED_HOST_NAME: ${DEBEZIUM_CONTAINER_NAME}
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "kafka-connect-group1"
       CONNECT_CONFIG_STORAGE_TOPIC: "_kafka_connect_group1-configs"
@@ -86,7 +86,7 @@ services:
             -d '{
               "name": "postgres-cdc",
               "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
-              "database.hostname": "postgres",
+              "database.hostname": "finpro-postgres",
               "database.port": "5433",
               "database.user": "postgres",
               "database.password": "root",
@@ -106,16 +106,7 @@ services:
               "plugin.name": "pgoutput",
               "publication.name": "dbz_publication",
               "publication.autocreate.mode": "filtered",
-              "table.include.list": "public.products,\
-                                     public.geolocations,\
-                                     public.customers,\
-                                     public.sellers,\
-                                     public.orders,\
-                                     public.order_payments,\
-                                     public.order_items,\
-                                     public.order_reviews,\
-                                     public.qualified_leads,\
-                                     public.closed_deals",
+              "table.include.list": "public.products,public.geolocations,public.customers,public.sellers,public.orders,public.order_payments,public.order_items,public.order_reviews,public.qualified_leads,public.closed_deals",
               "slot.name": "debezium"
           }'
 
@@ -127,7 +118,7 @@ services:
           "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
           "topics": "cdc_products,cdc_geolocations,cdc_customers,cdc_sellers,cdc_orders,cdc_order_payments,cdc_order_items,cdc_order_reviews,cdc_qualified_leads,cdc_closed_deals",
           "ssl": "false",
-          "security.protocol": "SASL_PLAINTEXT",
+          "security.protocol": "PLAINTEXT",
           "behavior.on.null.values": "ignore",
           "behavior.on.error": "ignore",
           "hostname": "finpro-clickhouse-server",
@@ -139,7 +130,7 @@ services:
           "value.converter": "org.apache.kafka.connect.json.JsonConverter",
           "exactlyOnce": "false",
           "user": "default",
-          "username": "default",
+          "username": "clickhouse",
           "schemas.enable": "false"
         }'
         sleep infinity
@@ -149,7 +140,7 @@ services:
     restart: on-failure
     container_name: finpro-kowl
     ports:
-      - "8088:8088"
+      - "8088:8080"
     depends_on:
       - kafka
     environment:

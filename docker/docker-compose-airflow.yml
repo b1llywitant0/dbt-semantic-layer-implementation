@@ -15,7 +15,7 @@ services:
       - POSTGRES_OLTP_DB=${POSTGRES_OLTP_DB}
       - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      - TZ=Asia/Jakarta
+      - TZ=${TIMEZONE}
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
@@ -39,7 +39,7 @@ services:
       - POSTGRES_OLTP_DB=${POSTGRES_OLTP_DB}
       - POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME}
       - POSTGRES_PORT=${POSTGRES_PORT}
-      - TZ=Asia/Jakarta
+      - TZ=${TIMEZONE}
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
