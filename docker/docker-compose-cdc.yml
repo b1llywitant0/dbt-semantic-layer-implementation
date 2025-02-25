@@ -1,0 +1,153 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    hostname: ${ZOOKEEPER_CONTAINER_NAME}
+    container_name: ${ZOOKEEPER_CONTAINER_NAME}
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - finpro-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    hostname: ${KAFKA_CONTAINER_NAME}
+    container_name: ${KAFKA_CONTAINER_NAME}
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_CONTAINER_NAME}:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - finpro-network
+
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:7.6.1
+    hostname: ${DEBEZIUM_CONTAINER_NAME}
+    container_name: ${DEBEZIUM_CONTAINER_NAME}
+    depends_on:
+      - zookeeper
+      - kafka
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'kafka:29092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: ${DEBEZIUM_CONTAINER_NAME}
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: "kafka-connect-group1"
+      CONNECT_CONFIG_STORAGE_TOPIC: "_kafka_connect_group1-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "_kafka_connect_group1-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "_kafka_connect_group1-status"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+    networks:
+      - finpro-network
+    command:
+      - bash
+      - -c
+      - |
+        echo "Installing connector plugins"
+        confluent-hub install --no-prompt debezium/debezium-connector-postgresql:2.5.3
+        confluent-hub install --no-prompt clickhouse/clickhouse-kafka-connect:v1.0.16
+
+        #
+        echo "Launching Kafka Connect worker"
+        /etc/confluent/docker/run &
+        #
+        echo "Waiting for Kafka Connect to start listening on localhost:8083 ⏳"
+        while : ; do
+            curl_status=$$(curl -s -o /dev/null -w %{http_code} http://localhost:8083/connectors)
+            echo -e $$(date) " Kafka Connect listener HTTP state: " $$curl_status " (waiting for 200)"
+            if [ $$curl_status -eq 200 ] ; then
+            break
+            fi
+            sleep 5
+        done
+        echo -e "\n--\n+> Creating Kafka Connect source"
+        curl -i -X PUT -H "Accept:application/json" \
+            -H  "Content-Type:application/json" \
+            http://localhost:8083/connectors/postgres-cdc/config \
+            -d '{
+              "name": "postgres-cdc",
+              "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+              "database.hostname": "finpro-postgres",
+              "database.port": "5432",
+              "database.user": "postgres",
+              "database.password": "root",
+              "topic.prefix": "cdc",
+              "database.dbname": "ecommerce_db",
+              "transforms": "flatten,routeTopic",
+              "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$$Value",
+              "transforms.flatten.delimiter": ".",
+              "transforms.routeTopic.type": "org.apache.kafka.connect.transforms.RegexRouter",
+              "transforms.routeTopic.regex": "cdc.public.(.*)",
+              "transforms.routeTopic.replacement": "cdc_$1",
+              "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+              "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+              "key.converter.schemas.enable": "false",
+              "value.converter.schemas.enable": "false",
+              "decimal.format": "BASE64",
+              "plugin.name": "pgoutput",
+              "publication.name": "dbz_publication",
+              "publication.autocreate.mode": "filtered",
+              "table.include.list": "public.products,public.geolocations,public.customers,public.sellers,public.orders,public.order_payments,public.order_items,public.order_reviews,public.qualified_leads,public.closed_deals",
+              "slot.name": "debezium"
+          }'
+
+        curl -X PUT \
+          http://localhost:8083/connectors/clickhouse-sinker/config \
+          -H 'Content-Type: application/json' \
+          -H 'Accept: application/json' \
+          -d '{
+          "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
+          "topics": "cdc_products,cdc_geolocations,cdc_customers,cdc_sellers,cdc_orders,cdc_order_payments,cdc_order_items,cdc_order_reviews,cdc_qualified_leads,cdc_closed_deals",
+          "ssl": "false",
+          "security.protocol": "PLAINTEXT",
+          "behavior.on.null.values": "ignore",
+          "hostname": "finpro-clickhouse-server",
+          "username": "clickhouse",
+          "password": "root",
+          "database": "ecommerce_dw",
+          "port": "8123",
+          "value.converter.schemas.enable": "false",
+          "batch.json.as.array": "true",
+          "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+          "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+          "exactlyOnce": "false",
+          "schemas.enable": "false"
+        }'
+        sleep infinity
+
+  kowl:
+    image: quay.io/cloudhut/kowl:v1.3.1
+    restart: on-failure
+    container_name: finpro-kowl
+    ports:
+      - "8088:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKERS: "kafka:29092"
+    networks:
+      - finpro-network
+
+networks:
+  finpro-network:
+    driver: bridge
+    external: true
+
