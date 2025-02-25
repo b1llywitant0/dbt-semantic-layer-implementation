@@ -34,7 +34,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_products (
-    `product_id` Nullable(String),
+    `product_id` String,
     `product_category_name` Nullable(String),
     `product_name_lenght` Nullable(UInt32),
     `product_description_lenght` Nullable(UInt32),
@@ -97,7 +97,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_geolocations (
-    `geolocation_zip_code_prefix` Nullable(UInt64),
+    `geolocation_zip_code_prefix` UInt64,
     `geolocation_lat` Nullable(Float64),
     `geolocation_lng` Nullable(Float64),
     `geolocation_city` Nullable(String),
@@ -152,7 +152,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_customers (
-    `customer_id` Nullable(String),
+    `customer_id` String,
     `customer_unique_id` Nullable(String),
     `customer_zip_code_prefix` Nullable(UInt64),
     `customer_city` Nullable(String),
@@ -205,7 +205,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_sellers (
-    `seller_id` Nullable(String),
+    `seller_id` String,
     `seller_zip_code_prefix` Nullable(UInt64),
     `seller_city` Nullable(String),
     `seller_state` Nullable(String),
@@ -264,7 +264,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_orders (
-    `order_id` Nullable(String),
+    `order_id` String,
     `customer_id` Nullable(String),
     `order_status` Nullable(String),
     `order_purchase_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
@@ -325,7 +325,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_order_payments (
-    `order_id` Nullable(String),
+    `order_id` String,
     `payment_sequential` Nullable(UInt8),
     `payment_type` Nullable(String),
     `payment_installments` Nullable(Float64),
@@ -384,8 +384,8 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_order_items (
-    `order_id` Nullable(String),
-    `order_item_id` Nullable(UInt32),
+    `order_id` String,
+    `order_item_id` UInt32,
     `product_id` Nullable(String),
     `seller_id` Nullable(String),
     `shipping_limit_date` Nullable(DateTime64(0,'Asia/Jakarta')),
@@ -447,7 +447,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_order_reviews (
-    `review_id` Nullable(String),
+    `review_id` String,
     `order_id` Nullable(String),
     `review_score` Nullable(UInt8),
     `review_comment_title` Nullable(String),
@@ -504,7 +504,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_qualified_leads (
-    `mql_id` Nullable(String),
+    `mql_id` String,
     `first_contact_date` Nullable(DateTime64(0,'Asia/Jakarta')),
     `landing_page_id` Nullable(String),
     `origin` Nullable(String),
@@ -575,7 +575,7 @@ ENGINE = MergeTree()
 ORDER BY tuple();
 
 CREATE MATERIALIZED VIEW ecommerce_dw.mv_closed_deals (
-    mql_id Nullable(String),
+    mql_id String,
     seller_id Nullable(String),
     sdr_id Nullable(String),
     sr_id Nullable(String),

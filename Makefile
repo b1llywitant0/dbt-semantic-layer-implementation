@@ -55,7 +55,6 @@ clickhouse:
 	@echo 'Creating ClickHouse Instance ...'
 	@echo '__________________________________________________________'
 	@docker compose -f ./docker/docker-compose-clickhouse.yml --env-file .env up -d
-	@echo '__________________________________________________________'
 	@echo '==========================================================='
 
 cdc:
