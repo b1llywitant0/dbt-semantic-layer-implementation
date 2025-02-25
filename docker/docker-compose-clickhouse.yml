@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse/clickhouse-server:23.3.13
     container_name: ${CLICKHOUSE_CONTAINER_NAME}
     networks:
       - finpro-network
@@ -11,13 +11,14 @@ services:
       - ${CLICKHOUSE_HTTP_PORT}:8123  # HTTP interface
       - ${CLICKHOUSE_TCP_PORT}:9000  # Native TCP interface
     volumes:
-      - ../clickhouse:/var/lib/clickhouse
+      # - ../clickhouse/data:/var/lib/clickhouse
+      - ../clickhouse/user_scripts:/var/lib/clickhouse/user_scripts
       - ../clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
       - ../clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
     environment:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
-      - CLICKHOUSE_DB=${CLICKHOUSE_DW_DB}
+      - CLICKHOUSE_DB=${CLICKHOUSE_DW_DB} 
     ulimits:
       nofile:
           soft: 262144
