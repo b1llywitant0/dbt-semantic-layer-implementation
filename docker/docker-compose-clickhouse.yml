@@ -13,6 +13,7 @@ services:
     volumes:
       # - ../clickhouse/data:/var/lib/clickhouse
       - ../clickhouse/user_scripts:/var/lib/clickhouse/user_scripts
+      - ../clickhouse/user_scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ../clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
       - ../clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
     environment:
