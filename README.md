@@ -11,7 +11,7 @@ The tech stack includes:
 - [Kowl](https://github.com/theurichde/kowl) for Kafka UI,
 - [Airflow](https://airflow.apache.org/) + [dbt](https://www.getdbt.com/) to transform data inside OLAP database.
 
-All of the components used is containerized in [Docker](https://www.docker.com/) for ease of setup.
+All of the components used are containerized in [Docker](https://www.docker.com/) for ease of setup.
 
 ## Prerequisites
 
