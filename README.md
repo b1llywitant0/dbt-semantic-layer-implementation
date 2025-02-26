@@ -54,7 +54,7 @@ make cdc
 ```
 make airflow
 ```
-> <strong>Note:</strong> dbt is installed inside Airflow. To run the dbt project:
+<strong>Note:</strong> dbt is installed inside Airflow. To run the dbt project:
 ```
 make airflow-bash
 ```
