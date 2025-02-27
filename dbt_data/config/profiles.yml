@@ -3,8 +3,8 @@ dbt_data:
   outputs:
     dev:
       type: clickhouse
-      host: finpro-clickhouse-server
+      host: "{{ env_var('CLICKHOUSE_CONTAINER_NAME') }}"
       user: "{{ env_var('CLICKHOUSE_USER') }}"
-      pass: "{{ env_var('CLICKHOUSE_PASSWORD') }}"
+      password: "{{ env_var('CLICKHOUSE_PASSWORD') }}"
       port: 8123
       schema: "{{ env_var('CLICKHOUSE_DW_DB') }}"
