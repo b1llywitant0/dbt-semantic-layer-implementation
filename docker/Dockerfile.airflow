@@ -24,7 +24,7 @@ RUN python3 -m venv /opt/airflow/dbt-venv && \
     /opt/airflow/dbt-venv/bin/pip install --no-cache-dir \
         dbt-core \
         dbt-postgres \
-        dbt-clickhouse
+        dbt-clickhouse 
 
 # Ensure Airflow picks up the virtual environment
 ENV VIRTUAL_ENV="/opt/airflow/dbt-venv"

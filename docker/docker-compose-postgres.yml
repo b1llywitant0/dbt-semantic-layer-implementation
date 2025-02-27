@@ -18,7 +18,7 @@ services:
       - ../postgres/ecommerce-ddl.sql:/seeding/ecommerce-ddl.sql
       - ../postgres/ingest.sql:/seeding/ingest.sql
       - ../postgres/tables-ddl.sql:/seeding/tables-ddl.sql
-      # - ../postgres/script/init-permissions.sh:/docker-entrypoint-initdb.d/init-permissions.sh
+      # - ../postgres/script/postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql
     ports:
       - ${POSTGRES_PORT}:5432
     # command: ["postgres", "-c", "config_file=/var/lib/postgresql/data/postgresql.conf"]
