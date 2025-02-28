@@ -619,3 +619,6 @@ ORDER BY tuple();
 --     if(op = 'd', 1, 0) AS deleted
 -- FROM ecommerce_dw.cdc_closed_deals
 -- WHERE (op = 'c') OR (op = 'r') OR (op = 'u') OR (op = 'd');
+
+CREATE DATABASE IF NOT EXISTS ecommerce_mart;
+CREATE DATABASE IF NOT EXISTS marketing_mart;
