@@ -40,15 +40,7 @@ models:
       +materialized: table
       ecommerce_mart:
         +schema: ecommerce_mart
-        facts:
-          +materialized: table
-        dims:
-          +materialized: table
       marketing_mart:
         +schema: marketing_mart
-        facts:
-          +materialized: table
-        dims:
-          +materialized: table
     consumption:
       +materialized: table

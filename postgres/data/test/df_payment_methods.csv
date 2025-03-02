@@ -1,0 +1,6 @@
+,payment_method_id,payment_method_name
+0,1,credit_card
+1,2,boleto
+2,3,voucher
+3,4,debit_card
+4,5,not_defined

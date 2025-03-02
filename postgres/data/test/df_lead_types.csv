@@ -1,0 +1,9 @@
+,lead_type_id,lead_type_name
+0,1,online_medium
+1,2,industry
+2,3,online_big
+3,4,online_small
+4,5,offline
+5,6,online_top
+6,7,online_beginner
+7,8,other
