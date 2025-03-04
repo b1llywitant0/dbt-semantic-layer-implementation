@@ -2,11 +2,9 @@ dbt_data:
   target: dev
   outputs:
     dev:
-      type: postgres
-      host: finpro-postgres
-      user: "{{ env_var('POSTGRES_USER') }}"
-      pass: "{{ env_var('POSTGRES_PASSWORD') }}"
-      port: 5432
-      dbname: "{{ env_var('POSTGRES_OLTP_DB') }}"
-      schema: public
-      threads: 4
+      type: clickhouse
+      host: "{{ env_var('CLICKHOUSE_CONTAINER_NAME') }}"
+      user: "{{ env_var('CLICKHOUSE_USER') }}"
+      password: "{{ env_var('CLICKHOUSE_PASSWORD') }}"
+      port: 8123
+      schema: "{{ env_var('CLICKHOUSE_DW_DB') }}"

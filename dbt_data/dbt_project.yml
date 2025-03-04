@@ -36,5 +36,11 @@ models:
       +materialized: view
     processing:
       +materialized: table
+    marts:
+      +materialized: table
+      ecommerce_mart:
+        +schema: ecommerce_mart
+      marketing_mart:
+        +schema: marketing_mart
     consumption:
       +materialized: table

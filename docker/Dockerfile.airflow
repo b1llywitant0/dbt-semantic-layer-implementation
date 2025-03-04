@@ -5,6 +5,7 @@ FROM apache/airflow:2.8.2-python3.9
 # Install system dependencies (Java for Spark, Python venv)
 USER root
 RUN apt update && apt-get install -y \
+    git \
     openjdk-17-jdk \
     ant \
     procps \
@@ -23,7 +24,8 @@ RUN python3 -m venv /opt/airflow/dbt-venv && \
     /opt/airflow/dbt-venv/bin/pip install --upgrade pip && \
     /opt/airflow/dbt-venv/bin/pip install --no-cache-dir \
         dbt-core \
-        dbt-postgres
+        dbt-postgres \
+        dbt-clickhouse 
 
 # Ensure Airflow picks up the virtual environment
 ENV VIRTUAL_ENV="/opt/airflow/dbt-venv"
@@ -38,10 +40,12 @@ RUN pip install --no-cache-dir \
     pyspark==3.3.2 \
     apache-airflow-providers-apache-spark \
     requests==2.31 \
-    pandas==1.2.4 \
+    pandas>=1.5.3 \
+    numpy==1.26.3 \
     apache-airflow-providers-slack==8.4.0 \
     great-expectations==0.16.13 \
-    sqlalchemy-bigquery==1.6.1
+    sqlalchemy-bigquery==1.6.1 
+    # clickhouse-connect
 
 # Copy DAGs into the Airflow directory
 COPY --chown=airflow:root ./airflow/dags /opt/airflow/dags
