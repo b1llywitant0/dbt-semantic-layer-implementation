@@ -3,7 +3,7 @@ COPY product_categories (
     product_category_name_spanish,
     product_category_name_english
 )
-FROM '/seeding/data/test/df_product_categories.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_product_categories.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY products (
     product_id,
@@ -18,7 +18,7 @@ COPY products (
     product_width_cm
 )
 -- FROM '/seeding/data/olist_products_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_products.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_products.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY geolocations (
     geolocation_zip_code_prefix,
@@ -37,7 +37,7 @@ COPY customers (
     -- customer_state
 ) 
 -- FROM '/seeding/data/olist_customers_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_customers.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_customers.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY sellers (
     seller_id,
@@ -46,13 +46,13 @@ COPY sellers (
     -- seller_state
 )
 -- FROM '/seeding/data/olist_sellers_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_sellers.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_sellers.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_status (
     order_status_id,
     order_status_name
 )
-FROM '/seeding/data/test/df_order_status.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_order_status.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY orders (
     order_id,
@@ -66,13 +66,13 @@ COPY orders (
     order_estimated_delivery_date
 ) 
 -- FROM '/seeding/data/olist_orders_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_orders.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_orders.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_payment_methods (
     payment_method_id,
     payment_method_name
 )
-FROM '/seeding/data/test/df_payment_methods.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_payment_methods.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_payments (
     order_id,
@@ -83,7 +83,7 @@ COPY order_payments (
     payment_value
 ) 
 -- FROM '/seeding/data/olist_order_payments_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_order_payments.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_order_payments.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY order_items (
     order_id,
@@ -111,7 +111,7 @@ COPY qualified_lead_origins (
     origin_id,
     origin_name
 )
-FROM '/seeding/data/test/df_qualified_lead_origins.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_qualified_lead_origins.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY qualified_leads (
     mql_id,
@@ -121,38 +121,38 @@ COPY qualified_leads (
     origin_id
 )
 -- FROM '/seeding/data/olist_marketing_qualified_leads_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_qualified_leads.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_qualified_leads.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY lead_business_segments (
     business_segment_id,
     business_segment_name
 )
-FROM '/seeding/data/test/df_business_segments.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_business_segments.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY lead_types (
     lead_type_id,
     lead_type_name
 )
-FROM '/seeding/data/test/df_lead_types.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_lead_types.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY lead_business_types (
     business_type_id,
     business_type_name
 )
-FROM '/seeding/data/test/df_business_types.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_business_types.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY lead_behaviour_profile (
     lead_behaviour_id,
     lead_behaviour_name
 )
-FROM '/seeding/data/test/df_lead_behaviour_profiles.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_lead_behaviour_profiles.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY bridge_lead_behaviour_profiles (
     mql_id,
     lead_behaviour_id,
     won_date
 )
-FROM '/seeding/data/test/df_lead_behaviour_bridge.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_lead_behaviour_bridge.csv' DELIMITER AS ',' CSV HEADER;
 
 -- Inconsistency between seller id in closed deals and seller
 COPY temp_closed_deals (
@@ -175,7 +175,7 @@ COPY temp_closed_deals (
     declared_monthly_revenue
 )
 -- FROM '/seeding/data/olist_closed_deals_dataset.csv' DELIMITER AS ',' CSV HEADER;
-FROM '/seeding/data/test/df_closed_deals.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/normalized/df_closed_deals.csv' DELIMITER AS ',' CSV HEADER;
 
 INSERT INTO closed_deals (
     mql_id, seller_id, sdr_id, sr_id, won_date, 
