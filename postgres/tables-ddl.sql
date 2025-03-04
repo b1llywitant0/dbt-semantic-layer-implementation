@@ -279,8 +279,8 @@ CREATE TABLE closed_deals (
   has_gtin BOOLEAN,
   average_stock VARCHAR,
   business_type_id INT REFERENCES lead_business_types(business_type_id),
-  declared_product_catalog_size DECIMAL,
-  declared_monthly_revenue DECIMAL,
+  declared_product_catalog_size INT,
+  declared_monthly_revenue INT,
   created_at TIMESTAMP NOT NULL, -- Will be based on won_date
   updated_at TIMESTAMP NOT NULL,
   deleted_at TIMESTAMP DEFAULT NULL
@@ -293,21 +293,21 @@ CREATE TABLE temp_closed_deals (
   sdr_id VARCHAR NOT NULL,
   sr_id VARCHAR NOT NULL,
   won_date TIMESTAMP NOT NULL,
-  business_segment VARCHAR,
-  lead_type VARCHAR,
+  business_segment_id INT,
+  lead_type_id INT,
   has_company BOOLEAN,
   has_gtin BOOLEAN,
   average_stock VARCHAR,
-  business_type VARCHAR,
-  declared_product_catalog_size DECIMAL,
-  declared_monthly_revenue DECIMAL,
+  business_type_id INT,
+  declared_product_catalog_size INT,
+  declared_monthly_revenue INT,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE bridge_lead_behaviour_profiles (
-  mql_id VARCHAR REFERENCES closed_deals(mql_id),
+  mql_id VARCHAR REFERENCES qualified_leads(mql_id),
   lead_behaviour_id INT REFERENCES lead_behaviour_profile(lead_behaviour_id),
   won_date TIMESTAMP,
   created_at TIMESTAMP NOT NULL,
@@ -338,15 +338,24 @@ EXECUTE FUNCTION closed_deals_set_time();
 CREATE TRIGGER lead_behaviours_set_time
 BEFORE INSERT ON bridge_lead_behaviour_profiles
 FOR EACH ROW
-EXECUTE FUNCTION lead_behaviours_set_time();
+EXECUTE FUNCTION closed_deals_set_time();
 
+ALTER TABLE product_categories REPLICA IDENTITY FULL;
 ALTER TABLE products REPLICA IDENTITY FULL;
 ALTER TABLE geolocations REPLICA IDENTITY FULL;
 ALTER TABLE customers REPLICA IDENTITY FULL;
 ALTER TABLE sellers REPLICA IDENTITY FULL;
+ALTER TABLE order_status REPLICA IDENTITY FULL;
 ALTER TABLE orders REPLICA IDENTITY FULL;
+ALTER TABLE order_payment_methods REPLICA IDENTITY FULL;
 ALTER TABLE order_payments REPLICA IDENTITY FULL;
 ALTER TABLE order_items REPLICA IDENTITY FULL;
 ALTER TABLE order_reviews REPLICA IDENTITY FULL;
+ALTER TABLE qualified_lead_origins REPLICA IDENTITY FULL;
 ALTER TABLE qualified_leads REPLICA IDENTITY FULL;
+ALTER TABLE lead_business_segments REPLICA IDENTITY FULL;
+ALTER TABLE lead_types REPLICA IDENTITY FULL;
+ALTER TABLE lead_business_types REPLICA IDENTITY FULL;
+ALTER TABLE lead_behaviour_profile REPLICA IDENTITY FULL;
 ALTER TABLE closed_deals REPLICA IDENTITY FULL;
+ALTER TABLE bridge_lead_behaviour_profiles REPLICA IDENTITY FULL;

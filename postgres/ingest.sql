@@ -1,7 +1,7 @@
 COPY product_categories (
-    product_category_id SERIAL PRIMARY KEY,
-    product_category_name_spanish VARCHAR,
-    product_category_name_english VARCHAR
+    product_category_id,
+    product_category_name_spanish,
+    product_category_name_english
 )
 FROM '/seeding/data/test/df_product_categories.csv' DELIMITER AS ',' CSV HEADER;
 
@@ -32,7 +32,7 @@ FROM '/seeding/data/olist_geolocation_dataset.csv' DELIMITER AS ',' CSV HEADER;
 COPY customers (
     customer_id,
     customer_unique_id,
-    customer_zip_code_prefix,
+    customer_zip_code_prefix
     -- customer_city,
     -- customer_state
 ) 
@@ -41,7 +41,7 @@ FROM '/seeding/data/test/df_customers.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY sellers (
     seller_id,
-    seller_zip_code_prefix,
+    seller_zip_code_prefix
     -- seller_city,
     -- seller_state
 )
@@ -147,23 +147,38 @@ COPY lead_behaviour_profile (
 )
 FROM '/seeding/data/test/df_lead_behaviour_profiles.csv' DELIMITER AS ',' CSV HEADER;
 
+COPY bridge_lead_behaviour_profiles (
+    mql_id,
+    lead_behaviour_id,
+    won_date
+)
+FROM '/seeding/data/test/df_lead_behaviour_bridge.csv' DELIMITER AS ',' CSV HEADER;
+
 -- Inconsistency between seller id in closed deals and seller
 COPY temp_closed_deals (
-    mql_id, seller_id, sdr_id, sr_id, won_date, 
+    mql_id, 
+    seller_id, 
+    sdr_id, 
+    sr_id, 
+    won_date, 
     -- business_segment, 
     -- lead_type, 
     business_segment_id,
     lead_type_id,
     -- lead_behaviour_profile, 
-    has_company, has_gtin, average_stock,
+    has_company, 
+    has_gtin, 
+    average_stock,
     -- business_type, 
     business_type_id,
-    declared_product_catalog_size, declared_monthly_revenue
+    declared_product_catalog_size, 
+    declared_monthly_revenue
 )
-FROM '/seeding/data/olist_closed_deals_dataset.csv' DELIMITER AS ',' CSV HEADER;
+-- FROM '/seeding/data/olist_closed_deals_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/test/df_closed_deals.csv' DELIMITER AS ',' CSV HEADER;
 
 INSERT INTO closed_deals (
-        mql_id, seller_id, sdr_id, sr_id, won_date, 
+    mql_id, seller_id, sdr_id, sr_id, won_date, 
     -- business_segment, 
     -- lead_type, 
     business_segment_id,
