@@ -115,7 +115,7 @@ services:
           -H 'Accept: application/json' \
           -d '{
           "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
-          "topics": "cdc_products,cdc_geolocations,cdc_customers,cdc_sellers,cdc_orders,cdc_order_payments,cdc_order_items,cdc_order_reviews,cdc_qualified_leads,cdc_closed_deals",
+          "topics": "cdc_product_categories,cdc_products,cdc_geolocations,cdc_customers,cdc_sellers,cdc_order_status,cdc_orders,cdc_order_payment_methods,cdc_order_payments,cdc_order_items,cdc_order_reviews,cdc_qualified_lead_origins,cdc_qualified_leads,cdc_lead_business_segments,cdc_lead_types,cdc_lead_business_types,cdc_lead_behaviour_profiles,cdc_closed_deals,cdc_bridge_lead_behaviour_profiles",
           "ssl": "false",
           "security.protocol": "PLAINTEXT",
           "behavior.on.null.values": "ignore",

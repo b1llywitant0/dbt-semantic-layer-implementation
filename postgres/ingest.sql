@@ -141,7 +141,7 @@ COPY lead_business_types (
 )
 FROM '/seeding/data/normalized/df_business_types.csv' DELIMITER AS ',' CSV HEADER;
 
-COPY lead_behaviour_profile (
+COPY lead_behaviour_profiles (
     lead_behaviour_id,
     lead_behaviour_name
 )

@@ -259,7 +259,7 @@ CREATE TABLE lead_business_types (
   deleted_at TIMESTAMP DEFAULT NULL
 );
 
-CREATE TABLE lead_behaviour_profile (
+CREATE TABLE lead_behaviour_profiles (
   lead_behaviour_id SMALLSERIAL PRIMARY KEY,
   lead_behaviour_name VARCHAR NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT '2015-01-01 12:00:00',
@@ -308,7 +308,7 @@ CREATE TABLE temp_closed_deals (
 
 CREATE TABLE bridge_lead_behaviour_profiles (
   mql_id VARCHAR REFERENCES qualified_leads(mql_id),
-  lead_behaviour_id INT REFERENCES lead_behaviour_profile(lead_behaviour_id),
+  lead_behaviour_id INT REFERENCES lead_behaviour_profiles(lead_behaviour_id),
   won_date TIMESTAMP,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
@@ -356,6 +356,6 @@ ALTER TABLE qualified_leads REPLICA IDENTITY FULL;
 ALTER TABLE lead_business_segments REPLICA IDENTITY FULL;
 ALTER TABLE lead_types REPLICA IDENTITY FULL;
 ALTER TABLE lead_business_types REPLICA IDENTITY FULL;
-ALTER TABLE lead_behaviour_profile REPLICA IDENTITY FULL;
+ALTER TABLE lead_behaviour_profiles REPLICA IDENTITY FULL;
 ALTER TABLE closed_deals REPLICA IDENTITY FULL;
 ALTER TABLE bridge_lead_behaviour_profiles REPLICA IDENTITY FULL;
