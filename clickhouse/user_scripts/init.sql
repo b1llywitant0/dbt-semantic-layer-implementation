@@ -557,10 +557,10 @@ ORDER BY tuple();
 -- WHERE (op = 'c') OR (op = 'r') OR (op = 'u') OR (op = 'd');
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_business_segments (
-    `business_segment_id` Nullable(UInt16),
-    `business_segment_name` Nullable(String),
-    `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `business_segment_id` UInt16,
+    `business_segment_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()

@@ -21,6 +21,7 @@ services:
       - CLICKHOUSE_DW_DB=${CLICKHOUSE_DW_DB}
       - CLICKHOUSE_PORT=${CLICKHOUSE_HTTP_PORT}
       - TZ=${TIMEZONE}
+      - AIRFLOW__CORE__TEST_CONNECTION=Enabled
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
@@ -50,6 +51,7 @@ services:
       - CLICKHOUSE_DW_DB=${CLICKHOUSE_DW_DB}
       - CLICKHOUSE_PORT=${CLICKHOUSE_HTTP_PORT}
       - TZ=${TIMEZONE}
+      - AIRFLOW__CORE__TEST_CONNECTION=Enabled
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
