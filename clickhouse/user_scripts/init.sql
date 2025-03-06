@@ -1,25 +1,13 @@
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_product_categories (
-    `before.product_category_id` Nullable(UInt32),
-    `before.product_category_name_spanish` Nullable(String),
-    `before.product_category_name_english` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.product_category_id` Nullable(UInt32),
-    `after.product_category_name_spanish` Nullable(String),
-    `after.product_category_name_english` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.product_categories (
+    `product_category_id` UInt32,
+    `product_category_name_spanish` String,
+    `product_category_name_english` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY product_category_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_products (
     `before.product_id` Nullable(String),
@@ -92,32 +80,18 @@ ORDER BY tuple();
 -- FROM ecommerce_dw.cdc_products
 -- WHERE (op = 'c') OR (op = 'r') OR (op = 'u') OR (op = 'd');
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_geolocations (
-    `before.geolocation_zip_code_prefix` Nullable(UInt64),
-    `before.geolocation_lat` Nullable(Float64),
-    `before.geolocation_lng` Nullable(Float64),
-    `before.geolocation_city` Nullable(String),
-    `before.geolocation_state` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.geolocation_zip_code_prefix` Nullable(UInt64),
-    `after.geolocation_lat` Nullable(Float64),
-    `after.geolocation_lng` Nullable(Float64),
-    `after.geolocation_city` Nullable(String),
-    `after.geolocation_state` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.geolocations (
+    `geolocation_zip_code_prefix` UInt64,
+    `geolocation_lat` Float64,
+    `geolocation_lng` Float64,
+    `geolocation_city` String,
+    `geolocation_state` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY geolocation_zip_code_prefix;
 
 -- CREATE MATERIALIZED VIEW ecommerce_dw.mv_geolocations (
 --     `geolocation_zip_code_prefix` UInt64,
@@ -253,26 +227,15 @@ ORDER BY tuple();
 -- FROM ecommerce_dw.cdc_sellers
 -- WHERE op IN ('c', 'r', 'u', 'd');
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_order_status (
-    `before.order_status_id` Nullable(UInt16),
-    `before.order_status_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.order_status_id` Nullable(UInt16),
-    `after.order_status_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.order_status (
+    `order_status_id` UInt16,
+    `order_status_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY order_status_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_orders (
     `before.order_id` Nullable(String),
@@ -341,26 +304,15 @@ ORDER BY tuple();
 -- FROM ecommerce_dw.cdc_orders
 -- WHERE op IN ('c', 'r', 'u', 'd');
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_order_payment_methods (
-    `before.payment_method_id` Nullable(UInt16),
-    `before.payment_method_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.payment_method_id` Nullable(UInt16),
-    `after.payment_method_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.order_payment_methods (
+    `payment_method_id` UInt16,
+    `payment_method_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY payment_method_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_order_payments (
     `before.order_id` Nullable(String),
@@ -543,26 +495,15 @@ ORDER BY tuple();
 -- FROM ecommerce_dw.cdc_order_reviews
 -- WHERE (op = 'c') OR (op = 'r') OR (op = 'u') OR (op = 'd');
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_qualified_lead_origins (
-    `before.origin_id` Nullable(UInt16),
-    `before.origin_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.origin_id` Nullable(UInt16),
-    `after.origin_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.qualified_lead_origins (
+    `origin_id` UInt16,
+    `origin_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY origin_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_qualified_leads (
     `before.mql_id` Nullable(String),
@@ -615,89 +556,45 @@ ORDER BY tuple();
 -- FROM ecommerce_dw.cdc_qualified_leads
 -- WHERE (op = 'c') OR (op = 'r') OR (op = 'u') OR (op = 'd');
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_lead_business_segments (
-    `before.business_segment_id` Nullable(UInt16),
-    `before.business_segment_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.business_segment_id` Nullable(UInt16),
-    `after.business_segment_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_business_segments (
+    `business_segment_id` Nullable(UInt16),
+    `business_segment_name` Nullable(String),
+    `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY business_segment_id;
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_lead_types (
-    `before.lead_type_id` Nullable(UInt16),
-    `before.lead_type_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.lead_type_id` Nullable(UInt16),
-    `after.lead_type_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_types (
+    `lead_type_id` UInt16,
+    `lead_type_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY lead_type_id;
 
-CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_lead_business_types (
-    `before.business_type_id` Nullable(UInt16),
-    `before.business_type_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.business_type_id` Nullable(UInt16),
-    `after.business_type_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_business_types (
+    `business_type_id` UInt16,
+    `business_type_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY business_type_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_lead_behaviour_profile (
-    `before.lead_behaviour_id` Nullable(UInt16),
-    `before.lead_behaviour_name` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `after.lead_behaviour_id` Nullable(UInt16),
-    `after.lead_behaviour_name` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+    `lead_behaviour_id` UInt16,
+    `lead_behaviour_name` String,
+    `created_at` DateTime64(0,'Asia/Jakarta'),
+    `updated_at` DateTime64(0,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
-ORDER BY tuple();
+ORDER BY lead_behaviour_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_closed_deals (
     `before.mql_id` Nullable(String),
@@ -811,5 +708,6 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_bridge_lead_behaviour_profiles (
 ENGINE = MergeTree()
 ORDER BY tuple();
 
+CREATE DATABASE IF NOT EXISTS core_mart;
 CREATE DATABASE IF NOT EXISTS ecommerce_mart;
 CREATE DATABASE IF NOT EXISTS marketing_mart;
