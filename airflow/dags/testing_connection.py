@@ -18,7 +18,7 @@ with DAG(
         ),
         # query_id is templated and allows to quickly identify query in ClickHouse logs
         query_id='{{ ti.dag_id }}-{{ ti.task_id }}-{{ ti.run_id }}-{{ ti.try_number }}',
-        clickhouse_conn_id='clickhouse_dw',
+        clickhouse_conn_id='clickhouse_ecommerce_dw',
     ) >> PythonOperator(
         task_id='print_month_income',
         python_callable=lambda task_instance:

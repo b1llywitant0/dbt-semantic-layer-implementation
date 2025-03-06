@@ -8,7 +8,14 @@ airflow connections add 'postgres_main' \
 --conn-host $POSTGRES_CONTAINER_NAME \
 --conn-port 5432 \
 --conn-schema $POSTGRES_AIRFLOW_DB
-airflow connections add 'clickhouse_dw' \
+airflow connections add 'postgres_ecommerce_db' \
+--conn-type 'postgres' \
+--conn-login $POSTGRES_USER \
+--conn-password $POSTGRES_PASSWORD \
+--conn-host $POSTGRES_CONTAINER_NAME \
+--conn-port 5432 \
+--conn-schema $POSTGRES_OLTP_DB
+airflow connections add 'clickhouse_ecommerce_dw' \
 --conn-type 'sqlite' \
 --conn-login $CLICKHOUSE_USER \
 --conn-password $CLICKHOUSE_PASSWORD \
