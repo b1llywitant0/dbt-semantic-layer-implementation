@@ -4,18 +4,22 @@ from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.operators.empty import EmptyOperator
+import datetime
 
 POSTGRES_CONN_ID = 'postgres_ecommerce_db'
 CLICKHOUSE_CONN_ID = 'clickhouse_ecommerce_dw'
 
-REFERENCE_TABLES = [
+FULL_REFRESH_TABLES = [
     'product_categories',
-    'geolocations',
     'order_status',
     'order_payment_methods',
     'qualified_lead_origins',
     'lead_business_segments',
     'lead_business_types'
+    ]
+
+INCREMENTAL_LOAD_TABLES = [
+    'geolocations'
     ]
 
 @dag(
@@ -29,8 +33,8 @@ def reference_table_dag():
     start_task = EmptyOperator(task_id="start_task")
     end_task   = EmptyOperator(task_id="end_task")
 
-    def create_el_process_task(table_name):
-        @task(task_id=f'el_{table_name}')
+    def create_full_refresh_task(table_name):
+        @task(task_id=f'full_refresh_{table_name}')
         def full_refresh():
             postgres_hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
             ch_hook = ClickHouseHook(clickhouse_conn_id=CLICKHOUSE_CONN_ID)
@@ -41,14 +45,43 @@ def reference_table_dag():
                 ch_hook.execute(f'INSERT INTO {table_name} VALUES', records)
 
         return full_refresh
+    
+    def create_incremental_load_task(table_name):
+        @task(task_id=f'incremental_load_{table_name}')
+        def incremental_load():
+            postgres_hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
+            ch_hook = ClickHouseHook(clickhouse_conn_id=CLICKHOUSE_CONN_ID)
+            
+            last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
+            last_updated_result = ch_hook.execute(last_updated_query)
+            last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(2000, 1, 1)
+            last_updated_str = last_updated.strftime('%Y-%m-%d %H:%M:%S')
 
-    el_tasks = {}
+            print(f"Last updated timestamp for {table_name}: {last_updated_str}")
 
-    for table in REFERENCE_TABLES:
-        transfer_tasks = create_el_process_task(table)
-        el_tasks[table] = transfer_tasks()
+            new_records = postgres_hook.get_records(f"SELECT * FROM {table_name} WHERE updated_at > '{last_updated_str}' ORDER BY updated_at ASC")
+            if new_records:
+                ch_hook.execute(f'INSERT INTO {table_name} VALUES', new_records)
+            else:
+                print('No new data')
+        
+        return incremental_load
 
-    for table in REFERENCE_TABLES:
-        start_task >> el_tasks[table] >> end_task
+    full_refresh_tasks = {}
+    incremental_load_tasks = {}
+
+    for table in FULL_REFRESH_TABLES:
+        fr_tasks = create_full_refresh_task(table)
+        full_refresh_tasks[table] = fr_tasks()
+
+    for table in INCREMENTAL_LOAD_TABLES:
+        il_tasks = create_incremental_load_task(table)
+        incremental_load_tasks[table] = il_tasks()
+
+    for table in FULL_REFRESH_TABLES:
+        start_task >> full_refresh_tasks[table] >> end_task
+
+    for table in INCREMENTAL_LOAD_TABLES:
+        start_task >> incremental_load_tasks[table] >> end_task
 
 reference_table_dag()
