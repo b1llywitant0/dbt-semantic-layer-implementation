@@ -1,11 +1,11 @@
 from airflow.decorators import dag, task
 from airflow_clickhouse_plugin.hooks.clickhouse import ClickHouseHook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.operators.empty import EmptyOperator
 import datetime
 from airflow.utils.task_group import TaskGroup
+from airflow.models.variable import Variable
 
 # Connection ID from entrypoint
 POSTGRES_CONN_ID = 'postgres_ecommerce_db'
@@ -49,6 +49,8 @@ def reference_table_dag():
             if records:
                 ch_hook.execute(f'TRUNCATE TABLE {table_name}')
                 ch_hook.execute(f'INSERT INTO {table_name} VALUES', records)
+            else:
+                print(f'Table: {table_name} not exists')
 
         return full_refresh
     
@@ -59,11 +61,16 @@ def reference_table_dag():
             postgres_hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
             ch_hook = ClickHouseHook(clickhouse_conn_id=CLICKHOUSE_CONN_ID)
             
-            last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
-            last_updated_result = ch_hook.execute(last_updated_query)
-            last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(2000, 1, 1)
+            stored_last_updated = f'last_updated_{table_name}'
+            last_updated = Variable.get(stored_last_updated, default_var=None)
+            
+            if last_updated == None:
+                last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
+                last_updated_result = ch_hook.execute(last_updated_query)
+                last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(2000, 1, 1)
+                Variable.set(stored_last_updated,last_updated)
+            
             last_updated_str = last_updated.strftime('%Y-%m-%d %H:%M:%S')
-
             print(f"Last updated timestamp for {table_name}: {last_updated_str}")
 
             new_records = postgres_hook.get_records(f"SELECT * FROM {table_name} WHERE updated_at > '{last_updated_str}' ORDER BY updated_at ASC")
