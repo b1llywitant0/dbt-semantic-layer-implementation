@@ -1,11 +1,11 @@
 from airflow.decorators import dag, task
 from airflow_clickhouse_plugin.hooks.clickhouse import ClickHouseHook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.utils.dates import days_ago
 from airflow.operators.empty import EmptyOperator
 import datetime
 from airflow.utils.task_group import TaskGroup
 from airflow.models.variable import Variable
+import pytz
 
 # Connection ID from entrypoint
 POSTGRES_CONN_ID = 'postgres_ecommerce_db'
@@ -28,8 +28,8 @@ INCREMENTAL_LOAD_TABLES = [
 # DAG settings
 @dag(
      dag_id='reference_tables_postgres_to_clickhouse',
-     schedule_interval='@daily',
-     start_date=days_ago(1),
+     schedule_interval='0 0 * * *',
+     start_date=datetime.datetime(2025, 3, 6, tzinfo=pytz.timezone("Asia/Jakarta")),
      catchup=False
      )    
 
