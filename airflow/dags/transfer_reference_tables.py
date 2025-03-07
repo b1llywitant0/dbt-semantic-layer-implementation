@@ -5,10 +5,13 @@ from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 from airflow.operators.empty import EmptyOperator
 import datetime
+from airflow.utils.task_group import TaskGroup
 
+# Connection ID from entrypoint
 POSTGRES_CONN_ID = 'postgres_ecommerce_db'
 CLICKHOUSE_CONN_ID = 'clickhouse_ecommerce_dw'
 
+# Tables
 FULL_REFRESH_TABLES = [
     'product_categories',
     'order_status',
@@ -22,6 +25,7 @@ INCREMENTAL_LOAD_TABLES = [
     'geolocations'
     ]
 
+# DAG settings
 @dag(
      dag_id='reference_tables_postgres_to_clickhouse',
      schedule_interval='@daily',
@@ -30,9 +34,11 @@ INCREMENTAL_LOAD_TABLES = [
      )    
 
 def reference_table_dag():
+    # Indicating start and end
     start_task = EmptyOperator(task_id="start_task")
     end_task   = EmptyOperator(task_id="end_task")
 
+    # Full refresh task
     def create_full_refresh_task(table_name):
         @task(task_id=f'full_refresh_{table_name}')
         def full_refresh():
@@ -46,6 +52,7 @@ def reference_table_dag():
 
         return full_refresh
     
+    # Incremental load task
     def create_incremental_load_task(table_name):
         @task(task_id=f'incremental_load_{table_name}')
         def incremental_load():
@@ -66,22 +73,16 @@ def reference_table_dag():
                 print('No new data')
         
         return incremental_load
-
-    full_refresh_tasks = {}
-    incremental_load_tasks = {}
-
-    for table in FULL_REFRESH_TABLES:
-        fr_tasks = create_full_refresh_task(table)
-        full_refresh_tasks[table] = fr_tasks()
-
-    for table in INCREMENTAL_LOAD_TABLES:
-        il_tasks = create_incremental_load_task(table)
-        incremental_load_tasks[table] = il_tasks()
-
-    for table in FULL_REFRESH_TABLES:
-        start_task >> full_refresh_tasks[table] >> end_task
-
-    for table in INCREMENTAL_LOAD_TABLES:
-        start_task >> incremental_load_tasks[table] >> end_task
+    
+    with TaskGroup('full_refresh_group') as full_refresh_group:
+        for table in FULL_REFRESH_TABLES:
+            create_full_refresh_task(table)()
+    
+    with TaskGroup('incremental_load_group') as incremental_load_group:
+        for table in INCREMENTAL_LOAD_TABLES:
+            create_incremental_load_task(table)()
+    
+    start_task >> full_refresh_group >> end_task
+    start_task >> incremental_load_group >> end_task
 
 reference_table_dag()
