@@ -62,23 +62,31 @@ def reference_table_dag():
             ch_hook = ClickHouseHook(clickhouse_conn_id=CLICKHOUSE_CONN_ID)
             
             stored_last_updated = f'last_updated_{table_name}'
-            last_updated = Variable.get(stored_last_updated, default_var=None)
-            
-            if last_updated == None:
-                last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
-                last_updated_result = ch_hook.execute(last_updated_query)
-                last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(2000, 1, 1)
-                Variable.set(stored_last_updated,last_updated)
-            
-            last_updated_str = last_updated.strftime('%Y-%m-%d %H:%M:%S')
-            print(f"Last updated timestamp for {table_name}: {last_updated_str}")
+            last_updated = Variable.get(key=stored_last_updated, default_var='1970-01-01 07:00:00.000000')
+                
+            print(f"Last updated timestamp for {table_name}: {last_updated}")
 
-            new_records = postgres_hook.get_records(f"SELECT * FROM {table_name} WHERE updated_at > '{last_updated_str}' ORDER BY updated_at ASC")
+            new_records = postgres_hook.get_records(f'''
+                                                    SELECT *
+                                                    FROM {table_name}
+                                                    WHERE updated_at > '{last_updated}'
+                                                    ORDER BY updated_at ASC
+                                                    ''')
+            
             if new_records:
                 ch_hook.execute(f'INSERT INTO {table_name} VALUES', new_records)
+                ch_hook.execute(f'OPTIMIZE TABLE {table_name} FINAL')
+                
+                last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
+                last_updated_result = ch_hook.execute(last_updated_query)
+                last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(1970, 1, 1, 7, 0, tzinfo=pytz.timezone("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M:%S.%f')
+                if isinstance(last_updated, str) == False:
+                    last_updated = last_updated.strftime('%Y-%m-%d %H:%M:%S.%f')
+                Variable.set(key=stored_last_updated,value=last_updated)
+
             else:
                 print('No new data')
-        
+            
         return incremental_load
     
     with TaskGroup('full_refresh_group') as full_refresh_group:

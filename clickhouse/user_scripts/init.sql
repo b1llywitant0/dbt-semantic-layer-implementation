@@ -2,9 +2,9 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.product_categories (
     `product_category_id` UInt32,
     `product_category_name_spanish` String,
     `product_category_name_english` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY product_category_id;
@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_products (
     `before.product_length_cm` Nullable(UInt32),
     `before.product_height_cm` Nullable(UInt32),
     `before.product_width_cm` Nullable(UInt32),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.product_id` Nullable(String),
     `after.product_category_id` Nullable(UInt32),
@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_products (
     `after.product_length_cm` Nullable(UInt32),
     `after.product_height_cm` Nullable(UInt32),
     `after.product_width_cm` Nullable(UInt32),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -54,9 +54,9 @@ ORDER BY tuple();
 --     `product_length_cm` Nullable(UInt32),
 --     `product_height_cm` Nullable(UInt32),
 --     `product_width_cm` Nullable(UInt32),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -86,12 +86,13 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.geolocations (
     `geolocation_lng` Float64,
     `geolocation_city` String,
     `geolocation_state` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
-ENGINE = MergeTree()
-ORDER BY geolocation_zip_code_prefix;
+ENGINE = ReplacingMergeTree(updated_at)
+PRIMARY KEY (geolocation_zip_code_prefix, geolocation_state, geolocation_city,  geolocation_lat, geolocation_lng)
+ORDER BY (geolocation_zip_code_prefix, geolocation_state, geolocation_city,  geolocation_lat, geolocation_lng);
 
 -- CREATE MATERIALIZED VIEW ecommerce_dw.mv_geolocations (
 --     `geolocation_zip_code_prefix` UInt64,
@@ -99,9 +100,9 @@ ORDER BY geolocation_zip_code_prefix;
 --     `geolocation_lng` Nullable(Float64),
 --     `geolocation_city` Nullable(String),
 --     `geolocation_state` Nullable(String),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -127,18 +128,18 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_customers (
     `before.customer_zip_code_prefix` Nullable(UInt64),
     -- `before.customer_city` Nullable(String),
     -- `before.customer_state` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.customer_id` Nullable(String),
     `after.customer_unique_id` Nullable(String),
     `after.customer_zip_code_prefix` Nullable(UInt64),
     -- `after.customer_city` Nullable(String),
     -- `after.customer_state` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -154,9 +155,9 @@ ORDER BY tuple();
 --     `customer_zip_code_prefix` Nullable(UInt64),
 --     `customer_city` Nullable(String),
 --     `customer_state` Nullable(String),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -181,17 +182,17 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_sellers (
     `before.seller_zip_code_prefix` Nullable(UInt64),
     -- `before.seller_city` Nullable(String),
     -- `before.seller_state` Nullable(String),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.seller_id` Nullable(String),
     `after.seller_zip_code_prefix` Nullable(UInt64),
     -- `after.seller_city` Nullable(String),
     -- `after.seller_state` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -206,9 +207,9 @@ ORDER BY tuple();
 --     `seller_zip_code_prefix` Nullable(UInt64),
 --     `seller_city` Nullable(String),
 --     `seller_state` Nullable(String),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -230,9 +231,9 @@ ORDER BY tuple();
 CREATE TABLE IF NOT EXISTS ecommerce_dw.order_status (
     `order_status_id` UInt16,
     `order_status_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY order_status_id;
@@ -241,26 +242,26 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_orders (
     `before.order_id` Nullable(String),
     `before.customer_id` Nullable(String),
     `before.order_status_id` Nullable(UInt16),
-    `before.order_purchase_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.order_approved_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.order_delivered_carrier_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.order_delivered_customer_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.order_estimated_delivery_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.order_purchase_timestamp` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.order_approved_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.order_delivered_carrier_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.order_delivered_customer_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.order_estimated_delivery_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.order_id` Nullable(String),
     `after.customer_id` Nullable(String),
     `after.order_status_id` Nullable(UInt16),
-    `after.order_purchase_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.order_approved_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.order_delivered_carrier_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.order_delivered_customer_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.order_estimated_delivery_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.order_purchase_timestamp` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.order_approved_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.order_delivered_carrier_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.order_delivered_customer_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.order_estimated_delivery_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -274,14 +275,14 @@ ORDER BY tuple();
 --     `order_id` String,
 --     `customer_id` Nullable(String),
 --     `order_status` Nullable(String),
---     `order_purchase_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `order_approved_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `order_delivered_carrier_date` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `order_delivered_customer_date` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `order_estimated_delivery_date` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `order_purchase_timestamp` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `order_approved_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `order_delivered_carrier_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `order_delivered_customer_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `order_estimated_delivery_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -307,9 +308,9 @@ ORDER BY tuple();
 CREATE TABLE IF NOT EXISTS ecommerce_dw.order_payment_methods (
     `payment_method_id` UInt16,
     `payment_method_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY payment_method_id;
@@ -320,18 +321,18 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_order_payments (
     `before.payment_type_id` Nullable(UInt16),
     `before.payment_installments` Nullable(Float64),
     `before.payment_value` Nullable(Float64),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.order_id` Nullable(String),
     `after.payment_sequential` Nullable(UInt8),
     `after.payment_type` Nullable(String),
     `after.payment_installments` Nullable(Float64),
     `after.payment_value` Nullable(Float64),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -347,9 +348,9 @@ ORDER BY tuple();
 --     `payment_type` Nullable(String),
 --     `payment_installments` Nullable(Float64),
 --     `payment_value` Nullable(Float64),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -374,23 +375,23 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_order_items (
     `before.order_item_id` Nullable(UInt32),
     `before.product_id` Nullable(String),
     `before.seller_id` Nullable(String),
-    `before.shipping_limit_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.shipping_limit_date` Nullable(DateTime64(6,'Asia/Jakarta')),
     `before.price` Nullable(Float64),
     `before.freight_value` Nullable(Float64),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.order_id` Nullable(String),
     `after.order_item_id` Nullable(UInt32),
     `after.product_id` Nullable(String),
     `after.seller_id` Nullable(String),
-    `after.shipping_limit_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.shipping_limit_date` Nullable(DateTime64(6,'Asia/Jakarta')),
     `after.price` Nullable(Float64),
     `after.freight_value` Nullable(Float64),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -405,12 +406,12 @@ ORDER BY tuple();
 --     `order_item_id` UInt32,
 --     `product_id` Nullable(String),
 --     `seller_id` Nullable(String),
---     `shipping_limit_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `shipping_limit_date` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `price` Nullable(Float64),
 --     `freight_value` Nullable(Float64),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -438,22 +439,22 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_order_reviews (
     `before.review_score` Nullable(UInt8),
     `before.review_comment_title` Nullable(String),
     `before.review_comment_message` Nullable(String),
-    `before.review_creation_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.review_answer_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.review_creation_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.review_answer_timestamp` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.review_id` Nullable(String),
     `after.order_id` Nullable(String),
     `after.review_score` Nullable(UInt8),
     `after.review_comment_title` Nullable(String),
     `after.review_comment_message` Nullable(String),
-    `after.review_creation_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.review_answer_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.review_creation_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.review_answer_timestamp` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -469,11 +470,11 @@ ORDER BY tuple();
 --     `review_score` Nullable(UInt8),
 --     `review_comment_title` Nullable(String),
 --     `review_comment_message` Nullable(String),
---     `review_creation_date` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `review_answer_timestamp` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `review_creation_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `review_answer_timestamp` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -498,29 +499,29 @@ ORDER BY tuple();
 CREATE TABLE IF NOT EXISTS ecommerce_dw.qualified_lead_origins (
     `origin_id` UInt16,
     `origin_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY origin_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_qualified_leads (
     `before.mql_id` Nullable(String),
-    `before.first_contact_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.first_contact_date` Nullable(DateTime64(6,'Asia/Jakarta')),
     `before.landing_page_id` Nullable(String),
     `before.origin_id` Nullable(UInt16),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.mql_id` Nullable(String),
-    `after.first_contact_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.first_contact_date` Nullable(DateTime64(6,'Asia/Jakarta')),
     `after.landing_page_id` Nullable(String),
     `after.origin` Nullable(String),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -532,12 +533,12 @@ ORDER BY tuple();
 
 -- CREATE MATERIALIZED VIEW ecommerce_dw.mv_qualified_leads (
 --     `mql_id` String,
---     `first_contact_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `first_contact_date` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `landing_page_id` Nullable(String),
 --     `origin` Nullable(String),
---     `created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
---     `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+--     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+--     `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 --     `version` UInt64,
 --     `deleted` UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -559,9 +560,9 @@ ORDER BY tuple();
 CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_business_segments (
     `business_segment_id` UInt16,
     `business_segment_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY business_segment_id;
@@ -569,9 +570,9 @@ ORDER BY business_segment_id;
 CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_types (
     `lead_type_id` UInt16,
     `lead_type_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY lead_type_id;
@@ -579,9 +580,9 @@ ORDER BY lead_type_id;
 CREATE TABLE IF NOT EXISTS ecommerce_dw.lead_business_types (
     `business_type_id` UInt16,
     `business_type_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY business_type_id;
@@ -589,9 +590,9 @@ ORDER BY business_type_id;
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_lead_behaviour_profile (
     `lead_behaviour_id` UInt16,
     `lead_behaviour_name` String,
-    `created_at` DateTime64(0,'Asia/Jakarta'),
-    `updated_at` DateTime64(0,'Asia/Jakarta'),
-    `deleted_at` Nullable(DateTime64(0,'Asia/Jakarta'))
+    `created_at` DateTime64(6,'Asia/Jakarta'),
+    `updated_at` DateTime64(6,'Asia/Jakarta'),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY lead_behaviour_id;
@@ -601,7 +602,7 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_closed_deals (
     `before.seller_id` Nullable(String),
     `before.sdr_id` Nullable(String),
     `before.sr_id` Nullable(String),
-    `before.won_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
     `before.business_segment_id` Nullable(UInt16),
     `before.lead_type_id` Nullable(UInt16),
     `before.has_company` Nullable(Bool),
@@ -610,15 +611,15 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_closed_deals (
     `before.business_type_id` Nullable(UInt16),
     `before.declared_product_catalog_size` Nullable(UInt64),
     `before.declared_monthly_revenue` Nullable(UInt64),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.mql_id` Nullable(String),
     `after.seller_id` Nullable(String),
     `after.sdr_id` Nullable(String),
     `after.sr_id` Nullable(String),
-    `after.won_date` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
     `after.business_segment` Nullable(String),
     `after.lead_type` Nullable(String),
     `after.has_company` Nullable(Bool),
@@ -627,9 +628,9 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_closed_deals (
     `after.business_type_id` Nullable(UInt16),
     `after.declared_product_catalog_size` Nullable(UInt64),
     `after.declared_monthly_revenue` Nullable(UInt64),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
@@ -644,7 +645,7 @@ ORDER BY tuple();
 --     seller_id Nullable(String),
 --     sdr_id Nullable(String),
 --     sr_id Nullable(String),
---     won_date Nullable(DateTime64(0,'Asia/Jakarta')),
+--     won_date Nullable(DateTime64(6,'Asia/Jakarta')),
 --     business_segment Nullable(String),
 --     lead_type Nullable(String),
 --     lead_behaviour_profile Nullable(String),
@@ -654,9 +655,9 @@ ORDER BY tuple();
 --     business_type Nullable(String),
 --     declared_product_catalog_size Nullable(Float64),
 --     declared_monthly_revenue Nullable(Float64),
---     created_at Nullable(DateTime64(0,'Asia/Jakarta')),
---     updated_at Nullable(DateTime64(0,'Asia/Jakarta')),
---     deleted_at Nullable(DateTime64(0,'Asia/Jakarta')),
+--     created_at Nullable(DateTime64(6,'Asia/Jakarta')),
+--     updated_at Nullable(DateTime64(6,'Asia/Jakarta')),
+--     deleted_at Nullable(DateTime64(6,'Asia/Jakarta')),
 --     version UInt64,
 --     deleted UInt8
 -- ) ENGINE = ReplacingMergeTree(version, deleted)
@@ -688,17 +689,17 @@ ORDER BY tuple();
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_bridge_lead_behaviour_profiles (
     `before.mql_id` Nullable(String),
     `before.lead_behaviour_id` Nullable(UInt32),
-    `before.won_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `before.won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `after.mql_id` Nullable(String),
     `after.lead_behaviour_id` Nullable(UInt32),
-    `after.won_date` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.created_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(0,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
+    `after.won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
 
     `op` LowCardinality(String),
     `ts_ms` UInt64,
