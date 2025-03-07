@@ -11,7 +11,7 @@ ORDER BY product_category_id;
 
 CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_products (
     `before.product_id` Nullable(String),
-    `before.product_category_name` Nullable(String),
+    `before.product_category_id` Nullable(UInt32),
     `before.product_name_lenght` Nullable(UInt32),
     `before.product_description_lenght` Nullable(UInt32),
     `before.product_photo_qty` Nullable(UInt8),
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS ecommerce_dw.cdc_products (
     `before.deleted_at` Nullable(DateTime64(0,'Asia/Jakarta')),
 
     `after.product_id` Nullable(String),
-    `after.product_category_name` Nullable(String),
+    `after.product_category_id` Nullable(UInt32),
     `after.product_name_lenght` Nullable(UInt32),
     `after.product_description_lenght` Nullable(UInt32),
     `after.product_photo_qty` Nullable(UInt8),
