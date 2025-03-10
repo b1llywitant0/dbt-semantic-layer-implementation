@@ -7,7 +7,7 @@ product_categories AS (
 products AS (
     SELECT *
     FROM {{ source('olist','mv_products') }}
-    FINAL
+    -- FINAL
 )
 
 SELECT
@@ -15,4 +15,4 @@ SELECT
     product_categories.product_category_name_english AS product_category
 FROM products
 LEFT JOIN product_categories 
-USING product_category_id
+ON products.product_category_id = product_categories.product_category_id

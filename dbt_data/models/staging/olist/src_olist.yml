@@ -5,7 +5,6 @@ sources:
     description: >
       Source tables which consists of reference tables from Airflow batch job and CDC tables from Debezium+Kafka streaming job.
       The data are collected from PostgreSQL.      
-    database: raw
     schema: raw
     tables:
       - name: product_categories

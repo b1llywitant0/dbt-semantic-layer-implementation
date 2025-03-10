@@ -67,7 +67,7 @@ ORDER BY (created_at, product_id)
 AS
 SELECT 
     if(op = 'd', `before.product_id`, `after.product_id`) AS product_id,
-    if(op = 'd', `before.product_category_id`, `after.product_category_id`) AS product_category_name,
+    if(op = 'd', `before.product_category_id`, `after.product_category_id`) AS product_category_id,
     if(op = 'd', `before.product_name_lenght`, `after.product_name_lenght`) AS product_name_length,
     if(op = 'd', `before.product_description_lenght`, `after.product_description_lenght`) AS product_description_length,
     if(op = 'd', `before.product_photo_qty`, `after.product_photo_qty`) AS product_photo_qty,

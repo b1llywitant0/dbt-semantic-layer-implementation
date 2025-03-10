@@ -21,5 +21,5 @@ airflow connections add 'clickhouse_ecommerce_dw' \
 --conn-password $CLICKHOUSE_PASSWORD \
 --conn-host $CLICKHOUSE_CONTAINER_NAME \
 --conn-port 9000 \
---conn-schema $CLICKHOUSE_DW_DB
+--conn-schema 'raw'
 airflow webserver
