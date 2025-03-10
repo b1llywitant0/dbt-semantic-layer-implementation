@@ -1,5 +1,5 @@
 version: 2
 
 models:
-  - name: stg_olist__products_scd2
-    description: Historical data of products.
+  - name: stg_olist__products
+    description: Staging data of products.

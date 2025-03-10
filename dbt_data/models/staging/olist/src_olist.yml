@@ -6,6 +6,7 @@ sources:
       Source tables which consists of reference tables from Airflow batch job and CDC tables from Debezium+Kafka streaming job.
       The data are collected from PostgreSQL.      
     database: raw
+    schema: raw
     tables:
       - name: product_categories
         description: Reference table for product categories information.
@@ -25,103 +26,11 @@ sources:
             description: Product category information update timestamp.
           - name: deleted_at
             description: Product category information deletion timestamp.
-      - name: cdc_products
-        description: Change Data Capture (CDC) table for products.
-        tests:
-          - dbt_utils.unique_combination_of_columns:
-              combination_of_columns:
-                - before.product_id
-                - after.product_id
-                - ts_ms
-                - op
+      - database: raw
+        name: mv_products
+        description: Materialized table of products, created from CDC table.
         columns:
-          - name: before.product_id
-            description: Product ID before the change.
-          - name: before.product_category_id
-            description: Product category ID before the change.
-          - name: before.product_name_lenght
-            description: Product name length before the change.
-          - name: before.product_description_lenght
-            description: Product description length before the change.
-          - name: before.product_photo_qty
-            description: Number of product photos before the change.
-          - name: before.product_weight_g
-            description: Product weight in grams before the change.
-          - name: before.product_length_cm
-            description: Product length in cm before the change.
-          - name: before.product_height_cm
-            description: Product height in cm before the change.
-          - name: before.product_width_cm
-            description: Product width in cm before the change.
-          - name: before.created_at
-            description: Product creation timestamp before the change.
-          - name: before.updated_at
-            description: Product update timestamp before the change.
-          - name: before.deleted_at
-            description: Product deletion timestamp before the change.
-
-          - name: after.product_id
-            description: Product ID after the change.
-            tests:
-              - not_null
-          - name: after.product_category_id
-            description: Product category ID after the change.
-            tests:
-              - not_null
-          - name: after.product_name_lenght
-            description: Product name length after the change.
-            tests:
-              - not_null
-          - name: after.product_description_lenght
-            description: Product description length after the change.
-            tests:
-              - not_null
-          - name: after.product_photo_qty
-            description: Number of product photos after the change.
-            tests:
-              - not_null
-          - name: after.product_weight_g
-            description: Product weight in grams after the change.
-            tests:
-              - not_null
-          - name: after.product_length_cm
-            description: Product length in cm after the change.
-            tests:
-              - not_null
-          - name: after.product_height_cm
-            description: Product height in cm after the change.
-            tests:
-              - not_null
-          - name: after.product_width_cm
-            description: Product width in cm after the change.
-            tests:
-              - not_null
-          - name: after.created_at
-            description: Product creation timestamp after the change.
-            tests:
-              - not_null
-          - name: after.updated_at
-            description: Product update timestamp after the change.
-            tests:
-              - not_null
-          - name: after.deleted_at
-            description: Product deletion timestamp after the change.
-          
-          - name: op
-            description: Operation type (insert, update, delete).
-            tests:
-              - not_null
-              - accepted_values: 
-                  values: ['c', 'r', 'u', 'd']
-          - name: ts_ms
-            description: Timestamp in milliseconds.
-            tests:
-              - not_null
-          - name: source.sequence
-            description: CDC sequence.
-            tests:
-              - not_null
-          - name: source.lsn
-            description: CDC Log Sequence Number (LSN).
-            tests:
-              - not_null
+        - name: product_id
+          tests:
+            - unique
+            - not_null
