@@ -122,7 +122,7 @@ services:
           "hostname": "finpro-clickhouse-server",
           "username": "clickhouse",
           "password": "root",
-          "database": "ecommerce_dw",
+          "database": "raw",
           "port": "8123",
           "value.converter.schemas.enable": "false",
           "batch.json.as.array": "true",
