@@ -6,8 +6,7 @@ product_categories AS (
 
 products AS (
     SELECT *
-    FROM {{ source('olist','mv_products') }}
-    -- FINAL
+    FROM {{ ref('base_olist__products') }}
 )
 
 SELECT

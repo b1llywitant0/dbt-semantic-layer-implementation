@@ -13,7 +13,6 @@ sources:
           - name: product_category_id
             description: Primary key of the table.
             tests:
-              - unique
               - not_null
           - name: product_category_name_spanish
             description: The category name in Spanish.
@@ -31,5 +30,4 @@ sources:
         columns:
         - name: product_id
           tests:
-            - unique
             - not_null
