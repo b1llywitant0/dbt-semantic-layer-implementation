@@ -10,8 +10,15 @@ products AS (
 )
 
 SELECT
-    products.*,
-    product_categories.product_category_name_english AS product_category
+    products.product_id,
+    product_categories.product_category_name_english AS product_category,
+    products.product_weight_g,
+    products.product_length_cm,
+    products.product_height_cm,
+    products.product_width_cm,
+    products.created_at,
+    products.updated_at,
+    products.deleted
 FROM products
 LEFT JOIN product_categories 
 ON products.product_category_id = product_categories.product_category_id
