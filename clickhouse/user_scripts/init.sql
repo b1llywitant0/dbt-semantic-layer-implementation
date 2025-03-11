@@ -60,7 +60,7 @@ CREATE MATERIALIZED VIEW raw.mv_products (
     `updated_at` DateTime64(6,'Asia/Jakarta'),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 PRIMARY KEY (created_at, product_id)
 ORDER BY (created_at, product_id)
 AS
@@ -75,7 +75,7 @@ SELECT
     if(op = 'd', `before.product_height_cm`, `after.product_height_cm`) AS product_height_cm,
     if(op = 'd', `before.product_width_cm`, `after.product_width_cm`) AS product_width_cm,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     if(op = 'd', source.lsn, source.lsn) AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_products
@@ -126,7 +126,7 @@ CREATE MATERIALIZED VIEW raw.mv_customers (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (customer_zip_code_prefix, created_at, customer_unique_id, customer_id)
 AS
 SELECT 
@@ -134,7 +134,7 @@ SELECT
     if(op = 'd', `before.customer_unique_id`, `after.customer_unique_id`) AS customer_unique_id,
     if(op = 'd', `before.customer_zip_code_prefix`, `after.customer_zip_code_prefix`) AS customer_zip_code_prefix,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     source.lsn AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_customers
@@ -168,14 +168,14 @@ CREATE MATERIALIZED VIEW raw.mv_sellers (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (seller_zip_code_prefix, created_at, seller_id)
 AS
 SELECT 
     if(op = 'd', `before.seller_id`, `after.seller_id`) AS seller_id,
     if(op = 'd', `before.seller_zip_code_prefix`, `after.seller_zip_code_prefix`) AS seller_zip_code_prefix,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     source.lsn AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_sellers
@@ -237,7 +237,7 @@ CREATE MATERIALIZED VIEW raw.mv_orders (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (order_status_id, order_purchase_timestamp, customer_id, order_id)
 AS
 SELECT 
@@ -250,7 +250,7 @@ SELECT
     if(op = 'd', `before.order_delivered_customer_date`, `after.order_delivered_customer_date`) AS order_delivered_customer_date,
     if(op = 'd', `before.order_estimated_delivery_date`, `after.order_estimated_delivery_date`) AS order_estimated_delivery_date,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     source.lsn AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_orders
@@ -303,7 +303,7 @@ CREATE MATERIALIZED VIEW raw.mv_order_payments (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (payment_type_id, payment_sequential, payment_installments, payment_value, created_at, order_id)
 AS
 SELECT 
@@ -313,7 +313,7 @@ SELECT
     if(op = 'd', `before.payment_installments`, `after.payment_installments`) AS payment_installments,
     if(op = 'd', `before.payment_value`, `after.payment_value`) AS payment_value,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     source.lsn AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_order_payments
@@ -362,7 +362,7 @@ CREATE MATERIALIZED VIEW raw.mv_order_items (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (order_item_id, seller_id, created_at, price, freight_value, product_id, order_id)
 AS
 SELECT 
@@ -374,7 +374,7 @@ SELECT
     if(op = 'd', `before.price`, `after.price`) AS price,
     if(op = 'd', `before.freight_value`, `after.freight_value`) AS freight_value,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     source.lsn AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_order_items
@@ -423,7 +423,7 @@ CREATE MATERIALIZED VIEW raw.mv_order_reviews (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (order_id, review_id)
 AS
 SELECT 
@@ -435,7 +435,7 @@ SELECT
     if(op = 'd', `before.review_creation_date`, `after.review_creation_date`) AS review_creation_date,
     if(op = 'd', `before.review_answer_timestamp`, `after.review_answer_timestamp`) AS review_answer_timestamp,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     if(op = 'd', source.lsn, source.lsn) AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_order_reviews
@@ -485,7 +485,7 @@ CREATE MATERIALIZED VIEW raw.mv_qualified_leads (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (origin_id, first_contact_date, landing_page_id, mql_id)
 AS
 SELECT 
@@ -494,7 +494,7 @@ SELECT
     if(op = 'd', `before.landing_page_id`, `after.landing_page_id`) AS landing_page_id,
     if(op = 'd', `before.origin_id`, `after.origin_id`) AS origin_id,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
-    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', toDateTime64(ts_ms / 1000.0, 6, 'Asia/Jakarta'), `after.updated_at`) AS updated_at,
     if(op = 'd', source.lsn, source.lsn) AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_qualified_leads
@@ -601,7 +601,7 @@ CREATE MATERIALIZED VIEW raw.mv_closed_deals (
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
     `deleted` UInt8
-) ENGINE = ReplacingMergeTree(version, deleted)
+) ENGINE = ReplacingMergeTree(version)
 ORDER BY (lead_type_id, business_type_id, business_segment_id, won_date, sr_id, mql_id)
 AS
 SELECT 

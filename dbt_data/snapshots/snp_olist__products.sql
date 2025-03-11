@@ -1,4 +1,4 @@
-{% snapshot products_snapshot %}
+{% snapshot snp_olist__products %}
 
 {{
     config(

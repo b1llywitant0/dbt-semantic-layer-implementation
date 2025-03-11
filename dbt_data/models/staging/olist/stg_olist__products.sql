@@ -6,7 +6,7 @@ product_categories AS (
 
 products AS (
     SELECT *
-    FROM {{ ref('base_olist__products') }}
+    FROM {{ ref('snp_olist__products') }}
 )
 
 SELECT
@@ -16,9 +16,9 @@ SELECT
     products.product_length_cm,
     products.product_height_cm,
     products.product_width_cm,
-    products.created_at,
-    products.updated_at,
-    products.deleted
+    products.deleted,
+    products.dbt_valid_from AS valid_from,
+    COALESCE(products.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
 FROM products
 LEFT JOIN product_categories 
 ON products.product_category_id = product_categories.product_category_id

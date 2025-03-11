@@ -18,6 +18,7 @@ SELECT
     updated_at,
     deleted
 FROM {{ source('olist','mv_products') }}
+FINAL
 
 -- Also handling late data, if exists
 {% if is_incremental() %}
