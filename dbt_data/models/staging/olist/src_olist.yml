@@ -140,4 +140,90 @@ sources:
               - not_null
           - name: deleted_at
             description: The deletion timestamp.
+      - name: mv_customers
+        description: >
+          Materialized table of customers, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'customer_id', 'customer_unique_id', 'version', and/or 'updated_at'.
+          Ideally, if user have status, it can be tracked this way. However, the functionality of this table is still limited for this project due to limited data given by Olist.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - customer_id
+                - customer_unique_id
+        columns:
+          - name: customer_id
+            description: Represents account ID. One user can have more than one account.
+            tests:
+              - unique
+              - not_null
+          - name: customer_unique_id
+            description: Represents user ID. One user can have more than one account.
+            tests:
+              - not_null
+          - name: customer_zip_code_prefix
+            description: Indicating customer's location.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '> 0'
+          - name: created_at
+            description: The timestamp of user creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of user update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the user data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+      - name: mv_sellers
+        description: >
+          Materialized table of sellers, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'seller_id', 'version', and/or 'updated_at'.
+          Ideally, if sellers have status, it can be tracked this way. However, the functionality of this table is still limited for this project due to limited data given by Olist.
+        columns:
+          - name: seller_id
+            description: Represents account ID. One user can have more than one account.
+            tests:
+              - unique
+              - not_null
+          - name: seller_zip_code_prefix
+            description: Indicating seller's location.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '> 0'
+          - name: created_at
+            description: The timestamp of user creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of user update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the user data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+
 
