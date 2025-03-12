@@ -51,4 +51,42 @@ models:
         description: Timestamp indicating the end of period.
         tests:
           - not_null
+  - name: stg_olist__customers
+    description: Staging data of customers in SCD2 format. The primary key of SCD2 table is 'account_id', 'user_id', and 'valid_from'. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - account_id
+            - user_id
+            - valid_from
+    columns:
+      - name: account_id
+        description: The unique identifier of an account.
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: The unique identifier of a user.
+        tests:
+          - not_null
+      - name: city
+        description: City of user.
+      - name: state
+        description: State of user.
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
 
