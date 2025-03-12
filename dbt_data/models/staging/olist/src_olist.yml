@@ -8,7 +8,9 @@ sources:
     schema: raw
     tables:
       - name: product_categories
-        description: Reference table for product categories information.
+        description: >
+          Reference table for product categories information.
+          Processed using Airflow batch job.
         columns:
           - name: product_category_id
             description: Primary key of the table.
@@ -21,8 +23,12 @@ sources:
             description: The category name in English.
           - name: created_at
             description: Product category information creation timestamp.
+            tests:
+              - not_null
           - name: updated_at
             description: Product category information update timestamp.
+            tests:
+              - not_null
           - name: deleted_at
             description: Product category information deletion timestamp.
       - name: mv_products
@@ -92,3 +98,46 @@ sources:
                 values:
                   - 0
                   - 1
+      - name: geolocations
+        description: >
+          Table which indicated the location of users, both customers and sellers. 
+          The primary key is the combination of 'geolocation_zip_code_prefix', 'geolocation_lat', 'geolocation_lng' columns.
+          Processed using Airflow batch job.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - geolocation_zip_code_prefix
+                - geolocation_lat
+                - geolocation_lng
+        columns:
+          - name: geolocation_zip_code_prefix
+            description: Zip code identifier.
+          - name: geolocation_lat
+            description: Latitude.
+            tests:
+            - dbt_utils.accepted_range:
+                min_value: -90
+                max_value: 90
+                inclusive: false
+          - name: geolocation_lng
+            description: Longitude.
+            tests:
+            - dbt_utils.accepted_range:
+                min_value: -180
+                max_value: 180
+                inclusive: false
+          - name: geolocation_city
+            description: City.
+          - name: geolocation_state
+            description: State.
+          - name: created_at
+            description: The creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: The deletion timestamp.
+
