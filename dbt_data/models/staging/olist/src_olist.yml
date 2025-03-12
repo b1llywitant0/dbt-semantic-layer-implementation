@@ -13,6 +13,7 @@ sources:
           - name: product_category_id
             description: Primary key of the table.
             tests:
+              - unique
               - not_null
           - name: product_category_name_spanish
             description: The category name in Spanish.
@@ -24,10 +25,70 @@ sources:
             description: Product category information update timestamp.
           - name: deleted_at
             description: Product category information deletion timestamp.
-      - database: raw
-        name: mv_products
-        description: Materialized table of products, created from CDC table.
+      - name: mv_products
+        description: >
+          Materialized table of products, created from CDC table.
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'product_id', 'version', and/or 'updated_at'.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - product_id
+                - version
         columns:
         - name: product_id
+          description: Unique identifier of product. Not primary key since 
           tests:
             - not_null
+        - name: product_category_id
+          description: Product category of the product.
+          tests:
+            - relationships:
+                to: source('olist','product_categories')
+                field: product_category_id
+        - name: product_name_length
+          description: The length of product name.
+        - name: product_description_length
+          description: The length of product description.
+        - name: product_photo_qty
+          description: The number of photo available of the product.
+        - name: product_weight_g
+          description: The weight of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: product_length_cm
+          description: The length of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: product_height_cm
+          description: The height of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: product_width_cm
+          description: The width of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: created_at
+          description: The timestamp of product creation.
+          tests:
+            - not_null
+        - name: updated_at
+          description: The timestamp of product update, including deletion.
+          tests:
+            - not_null
+        - name: version
+          description: The version of the product data, retrieved from lsn of CDC table.
+          tests:
+            - not_null
+        - name: deleted
+          description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+          tests:
+            - not_null
+            - accepted_values:
+                values:
+                  - 0
+                  - 1
