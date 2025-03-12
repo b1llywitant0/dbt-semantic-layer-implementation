@@ -151,11 +151,11 @@ sources:
               combination_of_columns:
                 - customer_id
                 - customer_unique_id
+                - version
         columns:
           - name: customer_id
             description: Represents account ID. One user can have more than one account.
             tests:
-              - unique
               - not_null
           - name: customer_unique_id
             description: Represents user ID. One user can have more than one account.
@@ -167,6 +167,9 @@ sources:
               - not_null
               - dbt_utils.expression_is_true:
                   expression: '> 0'
+              # - relationships:
+              #     to: ref('base_olist__geolocations')
+              #     field: geolocation_zip_code_prefix
           - name: created_at
             description: The timestamp of user creation.
             tests:
@@ -193,11 +196,15 @@ sources:
           Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
           Without FINAL clause, the primary key will be the combination of 'seller_id', 'version', and/or 'updated_at'.
           Ideally, if sellers have status, it can be tracked this way. However, the functionality of this table is still limited for this project due to limited data given by Olist.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - seller_id
+                - version
         columns:
           - name: seller_id
             description: Represents account ID. One user can have more than one account.
             tests:
-              - unique
               - not_null
           - name: seller_zip_code_prefix
             description: Indicating seller's location.
@@ -205,6 +212,9 @@ sources:
               - not_null
               - dbt_utils.expression_is_true:
                   expression: '> 0'
+              # - relationships:
+              #     to: ref('base_olist__geolocations')
+              #     field: geolocation_zip_code_prefix
           - name: created_at
             description: The timestamp of user creation.
             tests:
@@ -225,5 +235,86 @@ sources:
                   values:
                     - 0
                     - 1
-
-
+      - name: order_status
+        description: >
+          Reference table for order status information.
+          Processed using Airflow batch job.
+        columns:
+          - name: order_status_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: order_status_name
+            description: The order status name.
+          - name: created_at
+            description: Order status information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Order status information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Order status information deletion timestamp.        
+      - name: mv_orders
+        description: >
+          Materialized table of orders, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'order_id', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - order_id
+                - version
+        columns:
+          - name: order_id
+            description: Unique identifier of the order.
+            tests:
+              - not_null
+          - name: customer_id
+            description: Unique identifier of the account who made the order.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__customers')
+                  field: customer_id
+          - name: order_status_id
+            description: The status of the order. Check raw.order_status for the interpretation.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('olist','order_status')
+                  field: order_status_id
+          - name: order_purchase_timestamp
+            description: Timestamp of purchase.
+            tests:
+              - not_null
+          - name: order_approved_at
+            description: Timestamp of order approval.
+          - name: order_delivered_carrier_date
+            description: Timestamp of order delivery by carrier.
+          - name: order_delivered_customer_date
+            description: Timestamp of order delivered to customer.
+          - name: order_estimated_delivery_date
+            description: Estimated timestamp of order delivered to customer.
+          - name: created_at
+            description: The timestamp of user creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of user update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the user data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
