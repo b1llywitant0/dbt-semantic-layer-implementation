@@ -102,6 +102,7 @@ services:
               "key.converter.schemas.enable": "false",
               "value.converter.schemas.enable": "false",
               "decimal.format": "BASE64",
+              "decimal.handling.mode": "precise",
               "plugin.name": "pgoutput",
               "publication.name": "dbz_publication",
               "publication.autocreate.mode": "filtered",

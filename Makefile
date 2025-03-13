@@ -6,6 +6,8 @@ docker-build:
 	@chmod +x ./airflow/scripts/entrypoint.sh
 	@echo '__________________________________________________________'
 	@docker build -t finpro/airflow -f ./docker/Dockerfile.airflow .
+	@echo '__________________________________________________________'
+	@docker build -t finpro/clickhouse -f ./docker/Dockerfile.clickhouse .
 	@echo '==========================================================='
 
 postgres-create:

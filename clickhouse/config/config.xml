@@ -21,4 +21,5 @@
     <merge_tree>
         <allow_nullable_key>1</allow_nullable_key>
     </merge_tree>
+    <user_defined_executable_functions_config>functions.xml</user_defined_executable_functions_config>
 </yandex>

@@ -113,7 +113,7 @@ CREATE TABLE order_payments (
   order_id VARCHAR NOT NULL REFERENCES orders(order_id),
   payment_sequential INT NOT NULL,
   payment_type_id INT NOT NULL REFERENCES order_payment_methods(payment_method_id),
-  payment_installments DECIMAL NOT NULL,
+  payment_installments INT NOT NULL,
   payment_value DECIMAL NOT NULL,
   created_at TIMESTAMP NOT NULL, -- Will be based on order_purchase_timestamp based on order_id
   updated_at TIMESTAMP NOT NULL,
