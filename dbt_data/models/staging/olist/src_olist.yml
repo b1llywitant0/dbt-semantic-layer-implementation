@@ -1,0 +1,545 @@
+version: 2
+
+sources:
+  - name: olist
+    description: >
+      Source tables which consists of reference tables from Airflow batch job and CDC tables from Debezium+Kafka streaming job.
+      The data are collected from PostgreSQL, which from e-commerce data.      
+    schema: raw
+    tables:
+      - name: product_categories
+        description: >
+          Reference table for product categories information.
+          Processed using Airflow batch job.
+        columns:
+          - name: product_category_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: product_category_name_spanish
+            description: The category name in Spanish.
+          - name: product_category_name_english
+            description: The category name in English.
+          - name: created_at
+            description: Product category information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Product category information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Product category information deletion timestamp.
+      - name: mv_products
+        description: >
+          Materialized table of products, created from CDC table.
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'product_id', 'version', and/or 'updated_at'.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - product_id
+                - version
+        columns:
+        - name: product_id
+          description: Unique identifier of product. Not primary key since 
+          tests:
+            - not_null
+        - name: product_category_id
+          description: Product category of the product.
+          tests:
+            - relationships:
+                to: source('olist','product_categories')
+                field: product_category_id
+        - name: product_name_length
+          description: The length of product name.
+        - name: product_description_length
+          description: The length of product description.
+        - name: product_photo_qty
+          description: The number of photo available of the product.
+        - name: product_weight_g
+          description: The weight of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: product_length_cm
+          description: The length of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: product_height_cm
+          description: The height of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: product_width_cm
+          description: The width of the product.
+          tests:
+            - dbt_utils.expression_is_true:
+                expression: '>= 0'
+        - name: created_at
+          description: The timestamp of product creation.
+          tests:
+            - not_null
+        - name: updated_at
+          description: The timestamp of product update, including deletion.
+          tests:
+            - not_null
+        - name: version
+          description: The version of the product data, retrieved from lsn of CDC table.
+          tests:
+            - not_null
+        - name: deleted
+          description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+          tests:
+            - not_null
+            - accepted_values:
+                values:
+                  - 0
+                  - 1
+      - name: geolocations
+        description: >
+          Table which indicated the location of users, both customers and sellers. 
+          The primary key is the combination of 'geolocation_zip_code_prefix', 'geolocation_lat', 'geolocation_lng' columns.
+          Processed using Airflow batch job.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - geolocation_zip_code_prefix
+                - geolocation_lat
+                - geolocation_lng
+        columns:
+          - name: geolocation_zip_code_prefix
+            description: Zip code identifier.
+          - name: geolocation_lat
+            description: Latitude.
+            tests:
+            - dbt_utils.accepted_range:
+                min_value: -90
+                max_value: 90
+                inclusive: false
+          - name: geolocation_lng
+            description: Longitude.
+            tests:
+            - dbt_utils.accepted_range:
+                min_value: -180
+                max_value: 180
+                inclusive: false
+          - name: geolocation_city
+            description: City.
+          - name: geolocation_state
+            description: State.
+          - name: created_at
+            description: The creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: The deletion timestamp.
+      - name: mv_customers
+        description: >
+          Materialized table of customers, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'customer_id', 'customer_unique_id', 'version', and/or 'updated_at'.
+          Ideally, if user have status, it can be tracked this way. However, the functionality of this table is still limited for this project due to limited data given by Olist.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - customer_id
+                - customer_unique_id
+                - version
+        columns:
+          - name: customer_id
+            description: Represents account ID. One user can have more than one account.
+            tests:
+              - not_null
+          - name: customer_unique_id
+            description: Represents user ID. One user can have more than one account.
+            tests:
+              - not_null
+          - name: customer_zip_code_prefix
+            description: Indicating customer's location.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '> 0'
+              # - relationships:
+              #     to: ref('base_olist__geolocations')
+              #     field: geolocation_zip_code_prefix
+          - name: created_at
+            description: The timestamp of user creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of user update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the user data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+      - name: mv_sellers
+        description: >
+          Materialized table of sellers, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'seller_id', 'version', and/or 'updated_at'.
+          Ideally, if sellers have status, it can be tracked this way. However, the functionality of this table is still limited for this project due to limited data given by Olist.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - seller_id
+                - version
+        columns:
+          - name: seller_id
+            description: Represents account ID. One user can have more than one account.
+            tests:
+              - not_null
+          - name: seller_zip_code_prefix
+            description: Indicating seller's location.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '> 0'
+              # - relationships:
+              #     to: ref('base_olist__geolocations')
+              #     field: geolocation_zip_code_prefix
+          - name: created_at
+            description: The timestamp of user creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of user update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the user data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+      - name: order_status
+        description: >
+          Reference table for order status information.
+          Processed using Airflow batch job.
+        columns:
+          - name: order_status_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: order_status_name
+            description: The order status name.
+          - name: created_at
+            description: Order status information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Order status information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Order status information deletion timestamp.        
+      - name: mv_orders
+        description: >
+          Materialized table of orders, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'order_id', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - order_id
+                - version
+        columns:
+          - name: order_id
+            description: Unique identifier of the order.
+            tests:
+              - not_null
+          - name: customer_id
+            description: Unique identifier of the account who made the order.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__customers')
+                  field: customer_id
+          - name: order_status_id
+            description: The status of the order. Check raw.order_status for the interpretation.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('olist','order_status')
+                  field: order_status_id
+          - name: order_purchase_timestamp
+            description: Timestamp of purchase.
+            tests:
+              - not_null
+          - name: order_approved_at
+            description: Timestamp of order approval.
+          - name: order_delivered_carrier_date
+            description: Timestamp of order delivery by carrier.
+          - name: order_delivered_customer_date
+            description: Timestamp of order delivered to customer.
+          - name: order_estimated_delivery_date
+            description: Estimated timestamp of order delivered to customer.
+          - name: created_at
+            description: The timestamp of order creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of order update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the order data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+      - name: order_payment_methods
+        description: >
+          Reference table for order payment methods information.
+          Processed using Airflow batch job.
+        columns:
+          - name: payment_method_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: payment_method_name
+            description: The payment method's name.
+          - name: created_at
+            description: Payment method creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Payment method update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Payment method deletion timestamp.        
+      - name: mv_order_payments
+        description: >
+          Materialized table of order payments, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'order_id', 'payment_type_id', 'payment_sequential', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - order_id
+                - payment_type_id
+                - payment_sequential
+                - version
+        columns:
+          - name: order_id
+            description: Unique identifier of the order.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__orders')
+                  field: order_id
+          - name: payment_sequential
+            description: >
+              A customer may pay an order with more than one payment method. 
+              If he does so, a sequence will be created.
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: '> 0'
+          - name: payment_type_id
+            description: >
+              Method of payment chosen by the customer. 
+              Check raw.order_payment_methods for the interpretation.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('olist','order_payment_methods')
+                  field: payment_method_id
+          - name: payment_installments
+            description: Number of installments chosen by the customer.
+            tests:
+              - not_null
+          - name: payment_value
+            description: Transactional value.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'
+          - name: created_at
+            description: The timestamp of payment creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of payment update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the payment data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+      - name: mv_order_items
+        description: >
+          Materialized table of order items, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'order_id', 'order_item_id', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - order_id
+                - order_item_id
+                - version
+        columns:
+          - name: order_id
+            description: Indicating the order.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__orders')
+                  field: order_id
+          - name: order_item_id
+            description: One order can contain several items. This is the order of the item(s).
+            tests:
+              - not_null
+          - name: product_id
+            description: Indicating the product.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__products')
+                  field: product_id
+          - name: seller_id
+            description: Indicating the seller.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__sellers')
+                  field: seller_id
+          - name: shipping_limit_date
+            description: The deadline of product shipping.
+            tests:
+              - not_null
+          - name: price
+            description: The price of product.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'
+          - name: freight_value
+            description: The price of delivery.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'
+          - name: created_at
+            description: The timestamp of payment creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of payment update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the payment data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+      - name: mv_order_reviews
+        description: >
+          Materialized table of order reviews, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'review_id', 'order_id', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - review_id
+                - order_id
+                - version
+        columns:
+          - name: review_id
+            description: Indicating the review of order. With final clause, it will be the primary key of the table.
+            tests:
+              - not_null
+          - name: order_id
+            description: Indicating the order being reviewed.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__orders')
+                  field: order_id
+          - name: review_score
+            description: Satisfactory level of customer towards the order.
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: 1
+                  max_value: 5
+                  inclusive: true
+          - name: review_comment_title
+            description: Title of review
+          - name: review_comment_message
+            description: Message of review
+          - name: review_creation_date
+            description: Shows the date in which the satisfaction survey was sent to the customer.
+            tests:
+              - not_null
+          - name: review_answer_timestamp
+            description: Shows satisfaction survey answer timestamp.
+            tests:
+              - not_null
+          - name: created_at
+            description: The timestamp of payment creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of payment update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the payment data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+                                  

@@ -1,0 +1,350 @@
+version: 2
+
+models:
+  - name: stg_olist__products
+    description: Staging data of products in SCD2 format. The primary key of SCD2 table is the combination of 'product_id' and 'valid_from'. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - product_id
+            - valid_from
+    columns:
+      - name: product_id
+        description: The unique identifier of the product.
+        tests:
+          - not_null
+      - name: product_category
+        description: Category of the product. Some data may have NULL data.
+      - name: product_weight_g
+        description: The weight of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: product_length_cm
+        description: The length of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: product_height_cm
+        description: The height of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: product_width_cm
+        description: The width of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
+  - name: stg_olist__customers
+    description: Staging data of customers in SCD2 format. The primary key of SCD2 table is 'account_id', 'user_id', and 'valid_from'. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - account_id
+            - user_id
+            - valid_from
+    columns:
+      - name: account_id
+        description: The unique identifier of an account.
+        tests:
+          - not_null
+      - name: user_id
+        description: The unique identifier of a user.
+        tests:
+          - not_null
+      - name: city
+        description: City of user.
+      - name: state
+        description: State of user.
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
+  - name: stg_olist__sellers
+    description: Staging data of sellers in SCD2 format. The primary key of SCD2 table is 'seller_id' and 'valid_from'. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - seller_id
+            - valid_from
+    columns:
+      - name: seller_id
+        description: The unique identifier of the seller.
+        tests:
+          - not_null
+      - name: city
+        description: City of seller.
+      - name: state
+        description: State of seller.
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
+  - name: stg_olist__orders
+    description: Staging data of orders in SCD2 format. The primary key of SCD2 table is 'order_id' and 'valid_from'. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - valid_from
+    columns:
+      - name: order_id
+        description: Unique identifier of the order.
+        tests:
+          - not_null
+      - name: customer_id
+        description: Unique identifier of the account who made the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__customers')
+              field: customer_id
+      - name: order_status
+        description: The status of the order.
+        tests:
+          - not_null
+      - name: order_purchase_timestamp
+        description: Timestamp of purchase.
+        tests:
+          - not_null
+      - name: order_approved_at
+        description: Timestamp of order approval.
+      - name: order_delivered_carrier_date
+        description: Timestamp of order delivery by carrier.
+      - name: order_delivered_customer_date
+        description: Timestamp of order delivered to customer.
+      - name: order_estimated_delivery_date
+        description: Estimated timestamp of order delivered to customer.
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
+  - name: stg_olist__order_payments
+    description: Staging data of order payments in SCD2 format. The primary key of SCD2 table is 'order_payment_sk' and 'valid_from'.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_payment_sk
+            - valid_from
+    columns:
+      - name: order_payment_sk
+        description: The primary key of the table, created as surrogate key from 'order_id' - 'payment_type_id' - 'payment_sequential'.
+        tests:
+          - not_null
+      - name: order_id
+        description: The unique identifier of order.
+        tests:
+          - not_null
+      - name: payment_method
+        description: The payment method selected by customer.
+        tests:
+          - not_null
+      - name: payment_sequential
+        description: >
+          A customer may pay an order with more than one payment method. 
+          If he does so, a sequence will be created.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '> 0'
+      - name: payment_installments
+        description: Number of installments chosen by the customer.
+        tests:
+          - not_null
+      - name: payment_value
+        description: Transactional value.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
+  - name: stg_olist__order_items
+    description: Staging data of order payments in SCD2 format. The primary key of SCD2 table is 'order_item_sk' and 'valid_from'.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_item_sk
+            - valid_from
+    columns:
+      - name: order_item_sk
+        description: The primary key of the table, created as surrogate key from 'order_id' - 'order_item_id'.
+        tests:
+          - not_null
+      - name: order_id
+        description: The unique identifier of order.
+        tests:
+          - not_null
+      - name: order_item_id
+        description: One order can contain several items. This is the order of the item(s).
+        tests:
+          - not_null
+      - name: product_id
+        description: Indicating the product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__products')
+              field: product_id
+      - name: seller_id
+        description: Indicating the seller.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__sellers')
+              field: seller_id
+      - name: shipping_limit_date
+        description: The deadline of product shipping.
+        tests:
+          - not_null
+      - name: price
+        description: The price of product.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: freight_value
+        description: The price of delivery.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null
+  - name: stg_olist__order_reviews
+    description: >
+      Deduplicated table generated from ReplacingMergeTree mv_order_reviews using FINAL clause.
+      With increasing number of reviews, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    tests: 
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - review_id
+            - order_id
+    columns:
+      - name: review_id
+        description: Indicating the review of order. With final clause, it will be the primary key of the table.
+        tests:
+          - not_null
+      - name: order_id
+        description: Indicating the order being reviewed.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__orders')
+              field: order_id
+      - name: review_score
+        description: Satisfactory level of customer towards the order.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 5
+              inclusive: true
+      - name: review_comment_title
+        description: Title of review
+      - name: review_comment_message
+        description: Message of review
+      - name: review_creation_date
+        description: Shows the date in which the satisfaction survey was sent to the customer.
+        tests:
+          - not_null
+      - name: review_answer_timestamp
+        description: Shows satisfaction survey answer timestamp.
+        tests:
+          - not_null
+      - name: created_at
+        description: The timestamp of payment creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of payment update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1

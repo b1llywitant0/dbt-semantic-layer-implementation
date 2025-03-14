@@ -34,7 +34,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV DBT_PROFILES_DIR=/opt/airflow/dbt/config
 
 # Install additional Python dependencies for Airflow
-RUN pip install --no-cache-dir \
+RUN pip install --no-cache-dir --verbose \
     apache-airflow-providers-postgres \
     lxml \
     pyspark==3.3.2 \
@@ -44,8 +44,9 @@ RUN pip install --no-cache-dir \
     numpy==1.26.3 \
     apache-airflow-providers-slack==8.4.0 \
     great-expectations==0.16.13 \
-    sqlalchemy-bigquery==1.6.1 
-    # clickhouse-connect
+    sqlalchemy-bigquery==1.6.1 \
+    clickhouse-driver \
+    airflow-clickhouse-plugin 
 
 # Copy DAGs into the Airflow directory
 COPY --chown=airflow:root ./airflow/dags /opt/airflow/dags

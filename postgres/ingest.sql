@@ -27,7 +27,7 @@ COPY geolocations (
     geolocation_city,
     geolocation_state
 )
-FROM '/seeding/data/olist_geolocation_dataset.csv' DELIMITER AS ',' CSV HEADER;
+FROM '/seeding/data/olist_geolocation_dataset_deduplicated.csv' DELIMITER AS ',' CSV HEADER;
 
 COPY customers (
     customer_id,

@@ -1,0 +1,340 @@
+version: 2
+
+models:
+  - name: base_olist__product_categories
+    description: Base model of active product categories.
+    columns:
+      - name: product_category_id
+        description: The primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: product_category_name_english
+        description: The name of product category in English.
+        tests:
+          - not_null
+  - name: base_olist__products
+    description: >
+      Base model created from ReplacingMergeTree table of mv_products with FINAL clause, to be snapshotted.
+      With increasing number of products, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    columns:
+      - name: product_id
+        description: The primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: product_category_id
+        description: The product category of product.
+        tests:
+          - relationships:
+              to: ref('base_olist__product_categories')
+              field: product_category_id
+      - name: product_weight_g
+        description: The weight of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: product_length_cm
+        description: The length of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: product_height_cm
+        description: The height of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: product_width_cm
+        description: The width of the product.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: created_at
+        description: The timestamp of product creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of product update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+  - name: base_olist__geolocations
+    description: >
+      Base model of geolocation reference table indicating users' location.
+      Since Olist didn't give exact lat, lng of customers, this table only consists of prefix which indicated city and state.
+    columns:
+      - name: geolocation_zip_code_prefix
+        description: The primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: geolocation_city
+        description: The name of city.
+        tests:
+          - not_null
+      - name: geolocation_state
+        description: The name of state.
+        tests:
+          - not_null
+  - name: base_olist__customers
+    description: >
+      Base model created from ReplacingMergeTree table of mv_customers with FINAL clause, to be snapshotted.
+      With increasing number of users, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    columns:
+      - name: customer_id
+        description: The primary key of the table, indicating account ID.
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: Indicating user ID. One user can have more than 1 account.
+        tests:
+          - not_null
+      - name: customer_zip_code_prefix
+        description: Location of the user.
+        tests:
+          - not_null
+      - name: created_at
+        description: The timestamp of account creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of account update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+  - name: base_olist__sellers
+    description: >
+      Base model created from ReplacingMergeTree table of mv_sellers with FINAL clause, to be snapshotted.
+      With increasing number of users, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    columns:
+      - name: seller_id
+        description: The primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: seller_zip_code_prefix
+        description: Location of the user.
+        tests:
+          - not_null
+      - name: created_at
+        description: The timestamp of seller creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of seller update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+  - name: base_olist__orders
+    description: >
+      Base model created from ReplacingMergeTree table of mv_orders with FINAL clause, to be snapshotted.
+      With increasing number of orders, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - customer_id
+    columns:
+      - name: order_id
+        description: The primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: The customer who made the order.
+        tests:
+          - not_null
+      - name: order_status_id
+        description: The status of the order. Check raw.order_status for the interpretation.
+        tests:
+          - not_null
+          - relationships:
+              to: source('olist','order_status')
+              field: order_status_id
+      - name: order_purchase_timestamp
+        description: Timestamp of purchase.
+        tests:
+          - not_null
+      - name: order_approved_at
+        description: Timestamp of order approval.
+      - name: order_delivered_carrier_date
+        description: Timestamp of order delivery by carrier.
+      - name: order_delivered_customer_date
+        description: Timestamp of order delivered to customer.
+      - name: order_estimated_delivery_date
+        description: Estimated timestamp of order delivered to customer.
+      - name: created_at
+        description: The timestamp of order creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of order update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+  - name: base_olist__order_payments
+    description: >
+      Base model created from ReplacingMergeTree table of mv_order_payments with FINAL clause, to be snapshotted.
+      With increasing number of orders' payments, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - payment_type_id
+            - payment_sequential
+    columns:
+      - name: order_id
+        description: Unique identifier of the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__orders')
+              field: order_id
+      - name: payment_sequential
+        description: >
+          A customer may pay an order with more than one payment method or multiple times.
+          If he does so, a sequence will be created.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: '> 0'
+      - name: payment_type_id
+        description: >
+          Method of payment chosen by the customer. 
+          Check raw.order_payment_methods for the interpretation.
+        tests:
+          - not_null
+          - relationships:
+              to: source('olist','order_payment_methods')
+              field: payment_method_id
+      - name: payment_installments
+        description: Number of installments chosen by the customer.
+        tests:
+          - not_null
+      - name: payment_value
+        description: Transactional value.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: created_at
+        description: The timestamp of payment creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of payment update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+  - name: base_olist__order_items
+    description: >
+      Base model created from ReplacingMergeTree table of mv_order_items with FINAL clause, to be snapshotted.
+      With increasing number of orders' items, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - order_item_id
+            - product_id
+    columns:
+      - name: order_id
+        description: Indicating the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__orders')
+              field: order_id
+      - name: order_item_id
+        description: One order can contain several items. This is the order of the item(s).
+        tests:
+          - not_null
+      - name: product_id
+        description: Indicating the product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__products')
+              field: product_id
+      - name: seller_id
+        description: Indicating the seller.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_olist__sellers')
+              field: seller_id
+      - name: shipping_limit_date
+        description: The deadline of product shipping.
+        tests:
+          - not_null
+      - name: price
+        description: The price of product.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: freight_value
+        description: The price of delivery.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: created_at
+        description: The timestamp of payment creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of payment update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+
+
+

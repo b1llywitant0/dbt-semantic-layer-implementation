@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:23.3.13
+    image: finpro/clickhouse
     container_name: ${CLICKHOUSE_CONTAINER_NAME}
     networks:
       - finpro-network
@@ -11,11 +11,12 @@ services:
       - ${CLICKHOUSE_HTTP_PORT}:8123  # HTTP interface
       - ${CLICKHOUSE_TCP_PORT}:9000  # Native TCP interface
     volumes:
-      # - ../clickhouse/data:/var/lib/clickhouse
+      - ../clickhouse/logs:/var/lib/clickhouse/logs
       - ../clickhouse/user_scripts:/var/lib/clickhouse/user_scripts
       - ../clickhouse/user_scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ../clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
       - ../clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
+      - ../clickhouse/config/functions.xml:/etc/clickhouse-server/functions.xml
     environment:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}

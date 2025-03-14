@@ -18,4 +18,8 @@
         </users_xml>
     </user_directories>
     <mark_cache_size>5368709120</mark_cache_size>
+    <merge_tree>
+        <allow_nullable_key>1</allow_nullable_key>
+    </merge_tree>
+    <user_defined_executable_functions_config>functions.xml</user_defined_executable_functions_config>
 </yandex>

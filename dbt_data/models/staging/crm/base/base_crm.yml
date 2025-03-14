@@ -1,0 +1,111 @@
+version: 2
+
+models:
+  - name: base_crm__qualified_leads
+    description: >
+      Base model created from ReplacingMergeTree table of mv_qualified_leads with FINAL clause, to be snapshotted.
+      Handled with full-refresh since the number of qualified leads is not that much.
+    columns:
+      - name: mql_id
+        description: The primary key of the table. Indicating unique qualified lead.
+        tests:
+          - unique
+          - not_null
+      - name: landing_page_id
+        description: Where the lead came from, based on landing page conversion.
+        tests: 
+          - not_null
+      - name: origin_id
+        description: Where the lead came from, based on marketing channels.
+        tests:
+          - relationships:
+              to: source('crm','qualified_lead_origins')
+              field: origin_id
+      - name: created_at
+        description: The timestamp of product creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of product update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+  - name: base_crm__closed_deals
+    description: >
+      Base model created from ReplacingMergeTree table of mv_closed_deals with FINAL clause, to be snapshotted.
+      Handled with full-refresh since the number of closed deals is not that much.
+    columns:
+    - name: mql_id
+      description: Indicating unique qualified lead.
+      tests:
+        - unique
+        - not_null
+    - name: seller_id
+      description: Assigned seller ID to mql_id.
+      tests:
+        - unique
+        - not_null
+    - name: sdr_id
+      description: Sales development representative ID.
+      tests: 
+        - not_null
+    - name: sr_id
+      description: Sales representative ID.
+      tests:
+        - not_null
+    - name: business_segment_id
+      description: Lead business segment information.
+    - name: lead_type_id
+      description: Lead type information.
+    - name: has_company
+      description: Does the lead have a company (formal documentation)?
+      tests:
+        - accepted_values:
+            values:
+              - 0
+              - 1
+    - name: has_gtin
+      description: Does the lead have Global Trade Item Number (barcode) for his products?
+      tests:
+        - accepted_values:
+            values:
+              - 0
+              - 1
+    - name: average_stock
+      description: Average stock information.
+    - name: business_type_id
+      description: Lead's business type information.
+    - name: declared_product_catalog_size
+      description: Declared product catalog size.
+      tests:
+        - dbt_utils.expression_is_true:
+            expression: '>= 0'
+    - name: declared_monthly_revenue
+      description: Declared monthly revenue. 
+      tests:
+        - dbt_utils.expression_is_true:
+            expression: '>= 0'                     
+    - name: created_at
+      description: The timestamp of product creation.
+      tests:
+        - not_null
+    - name: updated_at
+      description: The timestamp of product update, including deletion.
+      tests:
+        - not_null
+    - name: deleted
+      description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+      tests:
+        - not_null
+        - accepted_values:
+            values:
+              - 0
+              - 1
+              

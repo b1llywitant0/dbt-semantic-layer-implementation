@@ -1,0 +1,36 @@
+<functions>
+    <function>
+        <type>executable</type>
+        <name>bigDecimalDecode</name>
+        <return_type>Nullable(String)</return_type>
+        <!-- <result_name>decoded_decimal</result_name> -->
+        <argument>
+            <type>String</type>
+            <name>value_base64</name>
+        </argument>
+        <argument>
+            <type>Int32</type>
+            <name>scale</name>
+        </argument>
+        <format>JSONEachRow</format>
+        <command>big_decimal_decode.py</command>
+        <execute_direct>1</execute_direct>
+    </function>
+    <function>
+        <type>executable</type>
+        <name>addNumber</name>
+        <return_type>Nullable(Int32)</return_type>
+        <!-- <result_name>added</result_name> -->
+        <argument>
+            <type>Int32</type>
+            <name>num1</name>
+        </argument>
+        <argument>
+            <type>Int32</type>
+            <name>num2</name>
+        </argument>
+        <format>JSONEachRow</format>
+        <command>add_number.py</command>
+        <execute_direct>1</execute_direct>
+    </function>
+</functions>
