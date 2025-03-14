@@ -545,7 +545,7 @@ CREATE TABLE IF NOT EXISTS raw.lead_business_types (
 ENGINE = MergeTree()
 ORDER BY business_type_id;
 
-CREATE TABLE IF NOT EXISTS raw.lead_behaviour_profile (
+CREATE TABLE IF NOT EXISTS raw.lead_behaviour_profiles (
     `lead_behaviour_id` UInt16,
     `lead_behaviour_name` String,
     `created_at` DateTime64(6,'Asia/Jakarta'),
@@ -641,25 +641,13 @@ SELECT
 FROM raw.cdc_closed_deals
 WHERE (op = 'c') OR (op = 'r') OR (op = 'u') OR (op = 'd');
 
-CREATE TABLE IF NOT EXISTS raw.cdc_bridge_lead_behaviour_profiles (
-    `before.mql_id` Nullable(String),
-    `before.lead_behaviour_id` Nullable(UInt32),
-    `before.won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
-    `before.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
-    `before.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
-    `before.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
-
-    `after.mql_id` Nullable(String),
-    `after.lead_behaviour_id` Nullable(UInt32),
-    `after.won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
-    `after.created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
-    `after.updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
-    `after.deleted_at` Nullable(DateTime64(6,'Asia/Jakarta')),
-
-    `op` LowCardinality(String),
-    `ts_ms` UInt64,
-    `source.sequence` String,
-    `source.lsn` UInt64       
+CREATE TABLE IF NOT EXISTS raw.bridge_lead_behaviour_profiles (
+    `mql_id` Nullable(String),
+    `lead_behaviour_id` Nullable(UInt32),
+    `won_date` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
+    `deleted_at` Nullable(DateTime64(6,'Asia/Jakarta'))
 )
 ENGINE = MergeTree()
 ORDER BY tuple();

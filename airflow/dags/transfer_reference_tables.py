@@ -18,11 +18,13 @@ FULL_REFRESH_TABLES = [
     'order_payment_methods',
     'qualified_lead_origins',
     'lead_business_segments',
-    'lead_business_types'
+    'lead_business_types',
+    'lead_behaviour_profiles'
     ]
 
 INCREMENTAL_LOAD_TABLES = [
-    'geolocations'
+    'geolocations',
+    'bridge_lead_behaviour_profiles'
     ]
 
 # DAG settings
