@@ -4,7 +4,7 @@ sources:
   - name: olist
     description: >
       Source tables which consists of reference tables from Airflow batch job and CDC tables from Debezium+Kafka streaming job.
-      The data are collected from PostgreSQL.      
+      The data are collected from PostgreSQL, which from e-commerce data.      
     schema: raw
     tables:
       - name: product_categories
@@ -479,5 +479,67 @@ sources:
                   values:
                     - 0
                     - 1
-          
+      - name: mv_order_reviews
+        description: >
+          Materialized table of order reviews, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'review_id', 'order_id', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - review_id
+                - order_id
+                - version
+        columns:
+          - name: review_id
+            description: Indicating the review of order. With final clause, it will be the primary key of the table.
+            tests:
+              - not_null
+          - name: order_id
+            description: Indicating the order being reviewed.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__orders')
+                  field: order_id
+          - name: review_score
+            description: Satisfactory level of customer towards the order.
+            tests:
+              - not_null
+              - dbt_utils.accepted_range:
+                  min_value: 1
+                  max_value: 5
+                  inclusive: true
+          - name: review_comment_title
+            description: Title of review
+          - name: review_comment_message
+            description: Message of review
+          - name: review_creation_date
+            description: Shows the date in which the satisfaction survey was sent to the customer.
+            tests:
+              - not_null
+          - name: review_answer_timestamp
+            description: Shows satisfaction survey answer timestamp.
+            tests:
+              - not_null
+          - name: created_at
+            description: The timestamp of payment creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of payment update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the payment data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
                                   

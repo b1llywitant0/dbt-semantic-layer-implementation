@@ -178,11 +178,11 @@ CREATE OR REPLACE FUNCTION order_reviews_set_time()
 RETURNS TRIGGER AS $$
 BEGIN
   IF NEW.created_at IS NULL THEN
-  NEW.created_at := NEW.review_creation_date;
+  NEW.created_at := NEW.review_answer_timestamp;
   END IF;
 
   IF NEW.updated_at IS NULL THEN
-  NEW.updated_at := NEW.review_creation_date;
+  NEW.updated_at := NEW.review_answer_timestamp;
   END IF;
 
   RETURN NEW;
