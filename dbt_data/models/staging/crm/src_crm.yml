@@ -1,0 +1,84 @@
+version: 2
+
+sources:
+  - name: crm
+    description: >
+      Source tables which consists of reference tables from Airflow batch job and CDC tables from Debezium+Kafka streaming job.
+      The data are collected from PostgreSQL, which from CRM data.      
+    schema: raw
+    tables:
+      - name: qualified_lead_origins
+        description: >
+          Reference table for origin information of qualified leads.
+          Processed using Airflow batch job.
+        columns:
+          - name: origin_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: origin_name
+            description: The name of origin.
+            tests:
+              - unique
+              - not_null
+          - name: created_at
+            description: Origin information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Origin information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Origin information deletion timestamp.
+      - name: mv_qualified_leads
+        description: >
+          Materialized table of qualified leads, created from CDC table.
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'mql_id', 'version', and/or 'updated_at'.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - mql_id
+                - version
+        columns:
+          - name: mql_id
+            description: Indicating unique qualified lead.
+            tests:
+              - not_null
+          - name: first_contact_date
+            description: Date of first contact with the lead.
+            tests:
+              - not_null
+          - name: landing_page_id
+            description: Where the lead came from, based on landing page conversion.
+            tests: 
+              - not_null
+          - name: origin_id
+            description: Where the lead came from, based on marketing channels.
+            tests:
+              - relationships:
+                  to: source('crm','qualified_lead_origins')
+                  field: origin_id
+          - name: created_at
+            description: The timestamp of product creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of product update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the product data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+            

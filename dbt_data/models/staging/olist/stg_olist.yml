@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_olist__products
-    description: Staging data of products in SCD2 format. The primary key of SCD2 table is 'product_id' and 'valid_from'. 
+    description: Staging data of products in SCD2 format. The primary key of SCD2 table is the combination of 'product_id' and 'valid_from'. 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
