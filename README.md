@@ -29,7 +29,7 @@ git clone https://github.com/b1llywitant0/dbt-semantic-layer-implementation.git
 
 ## Getting Started
 
-1. <strong>Important:</strong> entrypoint.sh should be in LF format, not CRLF. Please run:
+1. <strong>Important:</strong> All scripts using [Shebang](https://linuxhandbook.com/shebang/) should be in LF format, not CRLF. Please run if you use Windows:
 ```
 git config --global core.autocrlf false
 ```
@@ -67,24 +67,35 @@ make airflow
 
 <strong>Important:</strong> Do this sequentially.
 
-### Loading Reference Tables to OLAP
+### Loading Reference Tables to ClickHouse Using Airflow Batch Job
 
-1. Open [Airflow](http://localhost:8081/home) and run reference_tables_postgres_to_clickhouse DAG to load data from PostgreSQL to ClickHouse.
+1. Open [Airflow](http://localhost:8081/home) and run `reference_tables_postgres_to_clickhouse` DAG to load data from PostgreSQL to ClickHouse. The DAG had been scheduled to run daily at midnight (00:00:00 WIB / UTC+7).
 2. Open [Tabix](http://localhost:8082/#!/login) and login using:
     - Name: <anything_you_like>
     - http://host:port: http://localhost:8123
     - Login: clickhouse
     - Password: root
-3. Check the presence of data in ClickHouse inside 'raw' database. 
+3. Check the presence of data in ClickHouse inside 'raw' schema/database using SELECT statement.
 
 ### Running dbt
 
-<strong>Note:</strong> dbt is installed inside Airflow. To run the dbt project:
+<strong>Note:</strong> dbt is installed inside Airflow. To run the dbt project manually:
+
+1. Accessing the Airflow container:
 ```
 make airflow-bash
 ```
+2. Change directory to dbt project folder inside the container:
 ```
-cd dbt && dbt build
+cd dbt
+```
+3. Installing dependencies of dbt:
+```
+dbt deps
+```
+4. Building the models:
+```
+dbt build
 ```
 
 ## Other References
@@ -96,17 +107,19 @@ cd dbt && dbt build
 - [Using dbt-ClickHouse with examples](https://clickhouse.com/docs/integrations/dbt)
 - [Datetime functions](https://clickhouse.com/docs/sql-reference/functions/date-time-functions)
 - [Connecting ClickHouse with Airflow for Batch Job](https://github.com/bryzgaloff/airflow-clickhouse-plugin)
-- UDF
+- [User Defined Functions](https://clickhouse.com/docs/sql-reference/functions/udf#executable-user-defined-functions)
 
 ### About dbt
 
-- [Best practice of structuring dbt project](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview)
+- [Best Practice of Structuring dbt Project](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview)
 - [Configuration of ClickHouse in dbt](https://docs.getdbt.com/reference/resource-configs/clickhouse-configs)
-- [Snapshot model for generating SCD2 tables](https://docs.getdbt.com/docs/build/snapshots)
-- [dbt utils package](https://github.com/dbt-labs/dbt-utils)
+- [Snapshot Model for Generating SCD2 Tables](https://docs.getdbt.com/docs/build/snapshots)
+- [Incremental Model](https://docs.getdbt.com/docs/build/incremental-models-overview)
+- [dbt utils Package](https://github.com/dbt-labs/dbt-utils)
 
 ### About Strategies
 
-- [Strategies for change data capture in dbt](https://docs.getdbt.com/blog/change-data-capture)
+- [Strategies for Change Data Capture in dbt](https://docs.getdbt.com/blog/change-data-capture)
 - [Data Warehouse Guideline: SCD2](https://appflowy.com/41518cd2-22c3-48b9-bd3e-9ffeac63d8d0/2025-02-21-SC-feb534c3-477a-4d2b-9345-047777925a47)
-- [Data modeling techniques for more modularity](https://www.getdbt.com/blog/modular-data-modeling-techniques)
+- [Data Modeling Techniques for More Modularity](https://www.getdbt.com/blog/modular-data-modeling-techniques)
+- [Decimal Types](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-decimal-types)
