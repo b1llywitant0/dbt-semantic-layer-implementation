@@ -106,4 +106,32 @@ models:
               values:
                 - 0
                 - 1
-                   
+  - name: stg_crm__lead_behaviours
+    description: Table to represents the many-to-many relationships between lead and behaviour types.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mql_id
+            - behaviour
+    columns:
+      - name: mql_id
+        description: Indicating unique lead.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_crm__qualified_leads')
+              field: mql_id
+      - name: behaviour
+        description: Indicating behaviour type.
+        tests:
+          - not_null
+      - name: created_at
+        description: Creation timestamp based on won date.
+        tests:
+          - not_null
+      - name: updated_at
+        description: Update timestamp.
+        tests:
+          - not_null
+      - name: deleted_at
+        description: Deletion timestamp.
