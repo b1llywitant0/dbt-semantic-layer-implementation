@@ -81,4 +81,186 @@ sources:
                   values:
                     - 0
                     - 1
-            
+      - name: lead_business_segments
+        description: >
+          Reference table for business segment information of closed deals.
+          Processed using Airflow batch job.
+        columns:
+          - name: business_segment_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: business_segment_name
+            description: The name of business segment.
+            tests:
+              - unique
+              - not_null
+          - name: created_at
+            description: Segment information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Segment information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Segment information deletion timestamp.
+      - name: lead_types
+        description: >
+          Reference table for lead type information of closed deals.
+          Processed using Airflow batch job.
+        columns:
+          - name: lead_type_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: lead_type_name
+            description: The name of lead type.
+            tests:
+              - unique
+              - not_null
+          - name: created_at
+            description: Lead type information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Lead type information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Lead type information deletion timestamp.
+      - name: lead_business_types
+        description: >
+          Reference table for business type of leads in closed deals.
+          Processed using Airflow batch job.
+        columns:
+          - name: business_type_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: business_type_name
+            description: The name of business type.
+            tests:
+              - unique
+              - not_null
+          - name: created_at
+            description: Business type information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Business type information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Business type information deletion timestamp.
+      - name: lead_behaviour_profile
+        description: >
+          Reference table for lead behaviour profile.
+          Processed using Airflow batch job.
+        columns:
+          - name: lead_behaviour_id
+            description: Primary key of the table.
+            tests:
+              - unique
+              - not_null
+          - name: lead_behaviour_name
+            description: The name of behaviour type.
+            tests:
+              - unique
+              - not_null
+          - name: created_at
+            description: Behaviour type information creation timestamp.
+            tests:
+              - not_null
+          - name: updated_at
+            description: Behaviour type information update timestamp.
+            tests:
+              - not_null
+          - name: deleted_at
+            description: Behaviour type information deletion timestamp.
+      - name: mv_closed_deals
+        description: >
+          Materialized table of closed deals of leads, created from CDC table.
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'mql_id', 'version', and/or 'updated_at'.
+        tests:
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - mql_id
+                - version
+        columns:
+          - name: mql_id
+            description: Indicating unique qualified lead.
+            tests:
+              - not_null
+          - name: seller_id
+            description: Assigned seller ID to mql_id.
+            tests:
+              - not_null
+          - name: sdr_id
+            description: Sales development representative ID.
+            tests: 
+              - not_null
+          - name: sr_id
+            description: Sales representative ID.
+            tests:
+              - not_null
+          - name: won_date
+            description: Won date when the contract is signed.
+            tests:
+              - not_null
+          - name: business_segment_id
+            description: Lead business segment information.
+          - name: lead_type_id
+            description: Lead type information.
+          - name: has_company
+            description: Does the lead have a company (formal documentation)?
+            tests:
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+          - name: has_gtin
+            description: Does the lead have Global Trade Item Number (barcode) for his products?
+            tests:
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+          - name: average_stock
+            description: Average stock information.
+          - name: business_type_id
+            description: Lead's business type information.
+          - name: declared_product_catalog_size
+            description: Declared product catalog size.
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'
+          - name: declared_monthly_revenue
+            description: Declared monthly revenue.
+            tests:
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'                      
+          - name: created_at
+            description: The timestamp of product creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of product update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the product data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1

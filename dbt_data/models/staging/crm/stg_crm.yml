@@ -35,3 +35,75 @@ models:
         description: Timestamp indicating the end of period.
         tests:
           - not_null
+  - name: stg_crm__closed_deals
+    descriptions: >
+      Deduplicated table generated from ReplacingMergeTree mv_closed_deals using FINAL clause.
+      Handled with full-refresh mechanism since the mql data here is supposed to be final version and immutable.
+    columns:
+      - name: mql_id
+        description: Indicating unique qualified lead.
+        tests:
+          - unique
+          - not_null
+      - name: seller_id
+        description: Assigned seller ID to mql_id.
+        tests:
+          - unique
+          - not_null
+      - name: sdr_id
+        description: Sales development representative ID.
+        tests: 
+          - not_null
+      - name: sr_id
+        description: Sales representative ID.
+        tests:
+          - not_null
+      - name: lead_type
+        description: Lead type information.
+      - name: business_segment
+        description: Lead business segment information.
+      - name: business_type
+        description: Lead's business type information.
+      - name: has_company
+        description: Does the lead have a company (formal documentation)?
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: has_gtin
+        description: Does the lead have Global Trade Item Number (barcode) for his products?
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1
+      - name: average_stock
+        description: Average stock information.
+      - name: declared_product_catalog_size
+        description: Declared product catalog size.
+        tests:
+        - dbt_utils.expression_is_true:
+            expression: '>= 0'
+      - name: declared_monthly_revenue
+        description: Declared monthly revenue.
+        tests:
+        - dbt_utils.expression_is_true:
+            expression: '>= 0'   
+      - name: created_at
+        description: The timestamp of closed deal (won date).
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of closed deal update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
+                   

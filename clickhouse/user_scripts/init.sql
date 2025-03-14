@@ -545,7 +545,7 @@ CREATE TABLE IF NOT EXISTS raw.lead_business_types (
 ENGINE = MergeTree()
 ORDER BY business_type_id;
 
-CREATE TABLE IF NOT EXISTS raw.cdc_lead_behaviour_profile (
+CREATE TABLE IF NOT EXISTS raw.lead_behaviour_profile (
     `lead_behaviour_id` UInt16,
     `lead_behaviour_name` String,
     `created_at` DateTime64(6,'Asia/Jakarta'),
@@ -610,8 +610,8 @@ CREATE MATERIALIZED VIEW raw.mv_closed_deals (
     `has_gtin` Nullable(Bool),
     `average_stock` Nullable(String),
     `business_type_id` Nullable(UInt16),
-    `declared_product_catalog_size` Nullable(Float64),
-    `declared_monthly_revenue` Nullable(Float64),
+    `declared_product_catalog_size` Nullable(UInt64),
+    `declared_monthly_revenue` Nullable(UInt64),
     `created_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `updated_at` Nullable(DateTime64(6,'Asia/Jakarta')),
     `version` UInt64,
@@ -620,22 +620,22 @@ CREATE MATERIALIZED VIEW raw.mv_closed_deals (
 ORDER BY (lead_type_id, business_type_id, business_segment_id, won_date, sr_id, mql_id)
 AS
 SELECT 
-    if(op = 'd', 'before.mql_id', 'after.mql_id') AS mql_id,
-    if(op = 'd', 'before.seller_id', 'after.seller_id') AS seller_id,
-    if(op = 'd', 'before.sdr_id', 'after.sdr_id') AS sdr_id,
-    if(op = 'd', 'before.sr_id', 'after.sr_id') AS sr_id,
-    if(op = 'd', 'before.won_date', 'after.won_date') AS won_date,
-    if(op = 'd', 'before.business_segment_id', 'after.business_segment_id') AS business_segment_id,
-    if(op = 'd', 'before.lead_type_id', 'after.lead_type_id') AS lead_type_id,
+    if(op = 'd', `before.mql_id`, `after.mql_id`) AS mql_id,
+    if(op = 'd', `before.seller_id`, `after.seller_id`) AS seller_id,
+    if(op = 'd', `before.sdr_id`, `after.sdr_id`) AS sdr_id,
+    if(op = 'd', `before.sr_id`, `after.sr_id`) AS sr_id,
+    if(op = 'd', `before.won_date`, `after.won_date`) AS won_date,
+    if(op = 'd', `before.business_segment_id`, `after.business_segment_id`) AS business_segment_id,
+    if(op = 'd', `before.lead_type_id`, `after.lead_type_id`) AS lead_type_id,
     if(op = 'd', before.has_company, after.has_company) AS has_company,
     if(op = 'd', before.has_gtin, after.has_gtin) AS has_gtin,
-    if(op = 'd', 'before.average_stock', 'after.average_stock') AS average_stock,
-    if(op = 'd', 'before.business_type_id', 'after.business_type_id') AS business_type_id,
-    if(op = 'd', 'before.declared_product_catalog_size', 'after.declared_product_catalog_size') AS declared_product_catalog_size,
-    if(op = 'd', 'before.declared_monthly_revenue', 'after.declared_monthly_revenue') AS declared_monthly_revenue,
-    if(op = 'd', 'before.created_at', 'after.created_at') AS created_at,
-    if(op = 'd', 'before.updated_at', 'after.updated_at') AS updated_at,
-    if(op = 'd', 'before.deleted_at', 'after.deleted_at') AS deleted_at,
+    if(op = 'd', `before.average_stock`, `after.average_stock`) AS average_stock,
+    if(op = 'd', `before.business_type_id`, `after.business_type_id`) AS business_type_id,
+    if(op = 'd', `before.declared_product_catalog_size`, `after.declared_product_catalog_size`) AS declared_product_catalog_size,
+    if(op = 'd', `before.declared_monthly_revenue`, `after.declared_monthly_revenue`) AS declared_monthly_revenue,
+    if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
+    if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
+    if(op = 'd', `before.deleted_at`, `after.deleted_at`) AS deleted_at,
     if(op = 'd', source.lsn, source.lsn) AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_closed_deals
