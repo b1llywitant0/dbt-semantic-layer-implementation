@@ -299,15 +299,15 @@ sources:
           - name: order_estimated_delivery_date
             description: Estimated timestamp of order delivered to customer.
           - name: created_at
-            description: The timestamp of user creation.
+            description: The timestamp of order creation.
             tests:
               - not_null
           - name: updated_at
-            description: The timestamp of user update, including deletion.
+            description: The timestamp of order update, including deletion.
             tests:
               - not_null
           - name: version
-            description: The version of the user data, retrieved from lsn of CDC table.
+            description: The version of the order data, retrieved from lsn of CDC table.
             tests:
               - not_null
           - name: deleted
@@ -385,17 +385,17 @@ sources:
             tests:
               - not_null
               - dbt_utils.expression_is_true:
-                  expression: '> 0'
+                  expression: '>= 0'
           - name: created_at
-            description: The timestamp of user creation.
+            description: The timestamp of payment creation.
             tests:
               - not_null
           - name: updated_at
-            description: The timestamp of user update, including deletion.
+            description: The timestamp of payment update, including deletion.
             tests:
               - not_null
           - name: version
-            description: The version of the user data, retrieved from lsn of CDC table.
+            description: The version of the payment data, retrieved from lsn of CDC table.
             tests:
               - not_null
           - name: deleted

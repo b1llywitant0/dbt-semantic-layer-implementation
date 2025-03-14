@@ -382,7 +382,7 @@ SELECT
     if(op = 'd', `before.shipping_limit_date`, `after.shipping_limit_date`) AS shipping_limit_date,
     if(op = 'd', 
         bigDecimalDecode(`before.price.value`,before.price.scale),
-        bigDecimalDecode(`after.price.value`,before.price.scale)
+        bigDecimalDecode(`after.price.value`,after.price.scale)
         ) AS price,
     if(op = 'd', 
         bigDecimalDecode(`before.freight_value.value`,before.freight_value.scale),

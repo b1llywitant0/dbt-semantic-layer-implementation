@@ -15,7 +15,10 @@ active_geolocations AS (
         deleted_at IS NULL
 )
 
-SELECT * 
+SELECT 
+    geolocation_zip_code_prefix,
+    geolocation_city,
+    geolocation_state
 FROM active_geolocations
 WHERE 
     row_num = 1

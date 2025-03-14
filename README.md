@@ -96,6 +96,7 @@ cd dbt && dbt build
 - [Using dbt-ClickHouse with examples](https://clickhouse.com/docs/integrations/dbt)
 - [Datetime functions](https://clickhouse.com/docs/sql-reference/functions/date-time-functions)
 - [Connecting ClickHouse with Airflow for Batch Job](https://github.com/bryzgaloff/airflow-clickhouse-plugin)
+- UDF
 
 ### About dbt
 
