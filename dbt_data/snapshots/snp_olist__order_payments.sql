@@ -3,14 +3,14 @@
 {{
     config(
         target_schema='snapshots',
-        unique_key='order_payment_id',
+        unique_key='order_payment_sk',
         strategy='timestamp',
         updated_at='updated_at',
     )
 }}
 
 SELECT 
-    order_id || '-' || payment_type_id || '-' || payment_sequential AS order_payment_id,
+    order_id || '-' || payment_type_id || '-' || payment_sequential AS order_payment_sk,
     * 
 FROM {{ ref('base_olist__order_payments') }}
 

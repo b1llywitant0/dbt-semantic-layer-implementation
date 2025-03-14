@@ -10,7 +10,7 @@ order_payments AS (
 )
 
 SELECT
-    order_payments.order_payment_id,
+    order_payments.order_payment_sk,
     order_payments.order_id,
     payment_types.payment_method_name AS payment_method,
     order_payments.payment_sequential,

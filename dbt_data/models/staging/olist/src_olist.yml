@@ -406,3 +406,78 @@ sources:
                   values:
                     - 0
                     - 1
+      - name: mv_order_items
+        description: >
+          Materialized table of order items, created from CDC table. 
+          Using ReplacingMergeTree engine, the data can be deduplicated using 'FINAL' clause when conducting SELECT operation.
+          Without FINAL clause, the primary key will be the combination of 'order_id', 'order_item_id', 'version', and/or 'updated_at'.
+        tests: 
+          - dbt_utils.unique_combination_of_columns:
+              combination_of_columns:
+                - order_id
+                - order_item_id
+                - version
+        columns:
+          - name: order_id
+            description: Indicating the order.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__orders')
+                  field: order_id
+          - name: order_item_id
+            description: One order can contain several items. This is the order of the item(s).
+            tests:
+              - not_null
+          - name: product_id
+            description: Indicating the product.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__products')
+                  field: product_id
+          - name: seller_id
+            description: Indicating the seller.
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('base_olist__sellers')
+                  field: seller_id
+          - name: shipping_limit_date
+            description: The deadline of product shipping.
+            tests:
+              - not_null
+          - name: price
+            description: The price of product.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'
+          - name: freight_value
+            description: The price of delivery.
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  expression: '>= 0'
+          - name: created_at
+            description: The timestamp of payment creation.
+            tests:
+              - not_null
+          - name: updated_at
+            description: The timestamp of payment update, including deletion.
+            tests:
+              - not_null
+          - name: version
+            description: The version of the payment data, retrieved from lsn of CDC table.
+            tests:
+              - not_null
+          - name: deleted
+            description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+            tests:
+              - not_null
+              - accepted_values:
+                  values:
+                    - 0
+                    - 1
+          
+                                  
