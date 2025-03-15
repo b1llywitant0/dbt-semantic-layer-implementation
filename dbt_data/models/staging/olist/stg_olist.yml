@@ -172,32 +172,40 @@ models:
         tests:
           - not_null
   - name: stg_olist__order_payments
-    description: Staging data of order payments in SCD2 format. The primary key of SCD2 table is 'order_payment_sk' and 'valid_from'.
+    description: >
+      Staging model created from ReplacingMergeTree table of mv_order_payments with FINAL clause, to be snapshotted.
+      With increasing number of orders' payments, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - order_payment_sk
-            - valid_from
+            - order_id
+            - payment_type_id
+            - payment_sequential
     columns:
-      - name: order_payment_sk
-        description: The primary key of the table, created as surrogate key from 'order_id' - 'payment_type_id' - 'payment_sequential'.
-        tests:
-          - not_null
       - name: order_id
-        description: The unique identifier of order.
+        description: Unique identifier of the order.
         tests:
           - not_null
-      - name: payment_method
-        description: The payment method selected by customer.
-        tests:
-          - not_null
+          - relationships:
+              to: ref('base_olist__orders')
+              field: order_id
       - name: payment_sequential
         description: >
-          A customer may pay an order with more than one payment method. 
+          A customer may pay an order with more than one payment method or multiple times.
           If he does so, a sequence will be created.
         tests:
           - dbt_utils.expression_is_true:
               expression: '> 0'
+      - name: payment_type_id
+        description: >
+          Method of payment chosen by the customer. 
+          Check raw.order_payment_methods for the interpretation.
+        tests:
+          - not_null
+          - relationships:
+              to: source('olist','order_payment_methods')
+              field: payment_method_id
       - name: payment_installments
         description: Number of installments chosen by the customer.
         tests:
@@ -208,6 +216,14 @@ models:
           - not_null
           - dbt_utils.expression_is_true:
               expression: '>= 0'
+      - name: created_at
+        description: The timestamp of payment creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of payment update, including deletion.
+        tests:
+          - not_null
       - name: deleted
         description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
         tests:
@@ -216,17 +232,9 @@ models:
               values:
                 - 0
                 - 1
-      - name: valid_from
-        description: Timestamp indicating the start of period.
-        tests:
-          - not_null
-      - name: valid_to
-        description: Timestamp indicating the end of period.
-        tests:
-          - not_null
   - name: stg_olist__order_items
     description: >
-      Model created from ReplacingMergeTree table of mv_order_items with FINAL clause.
+      Staging model created from ReplacingMergeTree table of mv_order_items with FINAL clause.
       With increasing number of orders' items, this base table is handled incrementally with 3 days tolerance of late data.
       To truly reflect the true data, full refresh is conducted once a week.
     tests:
