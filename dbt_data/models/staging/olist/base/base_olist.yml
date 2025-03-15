@@ -152,7 +152,7 @@ models:
                 - 1
   - name: base_olist__orders
     description: >
-      Base model created from ReplacingMergeTree table of mv_orders with FINAL clause.
+      Base model created from ReplacingMergeTree table of mv_orders with FINAL clause, to be snapshotted.
       With increasing number of orders, this base table is handled incrementally with 3 days tolerance of late data.
       To truly reflect the true data, full refresh is conducted once a week.
     tests:

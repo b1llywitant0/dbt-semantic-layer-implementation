@@ -6,7 +6,7 @@ order_status AS (
 
 orders AS (
     SELECT *
-    FROM {{ ref('base_olist__orders') }}
+    FROM {{ ref('snp_olist__orders') }}
 )
 
 SELECT
@@ -18,9 +18,9 @@ SELECT
     orders.order_delivered_carrier_date,
     orders.order_delivered_customer_date,
     orders.order_estimated_delivery_date,
-    orders.created_at,
-    orders.updated_at,
-    orders.deleted
+    orders.deleted,
+    orders.dbt_valid_from AS valid_from,
+    COALESCE(orders.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
 FROM orders
 LEFT JOIN order_status 
 ON orders.order_status_id = order_status.order_status_id
