@@ -1,32 +1,26 @@
--- Handling duplicate records created by handling late data by using unique_key
-{{ 
-    config(
-        engine='MergeTree()', 
-        materialized='incremental', 
-        unique_key='order_id'
-        )
-}}
+WITH
+order_status AS (
+    SELECT *
+    FROM {{ source('olist','order_status') }}
+),
 
-SELECT    
-    order_id,
-    customer_id,
-    order_status_id,
-    order_purchase_timestamp,
-    order_approved_at,
-    order_delivered_carrier_date,
-    order_delivered_customer_date,
-    order_estimated_delivery_date,
-    created_at,
-    updated_at,
-    deleted
-FROM {{ source('olist','mv_orders') }}
-FINAL
+orders AS (
+    SELECT *
+    FROM {{ ref('base_olist__orders') }}
+)
 
--- Also handling late data, if exists
-{% if is_incremental() %}
-    WHERE updated_at >= ( 
-        SELECT addDays(MAX(updated_at), -3) from {{ this }}
-    )
-{% endif %} 
-
--- Once a week, run full refresh
+SELECT
+    orders.order_id,
+    orders.customer_id,
+    order_status.order_status_name AS order_status,
+    orders.order_purchase_timestamp,
+    orders.order_approved_at,
+    orders.order_delivered_carrier_date,
+    orders.order_delivered_customer_date,
+    orders.order_estimated_delivery_date,
+    orders.created_at,
+    orders.updated_at,
+    orders.deleted
+FROM orders
+LEFT JOIN order_status 
+ON orders.order_status_id = order_status.order_status_id

@@ -150,6 +150,61 @@ models:
               values:
                 - 0
                 - 1
+  - name: base_olist__orders
+    description: >
+      Base model created from ReplacingMergeTree table of mv_orders with FINAL clause.
+      With increasing number of orders, this base table is handled incrementally with 3 days tolerance of late data.
+      To truly reflect the true data, full refresh is conducted once a week.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - customer_id
+    columns:
+      - name: order_id
+        description: The primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: The customer who made the order.
+        tests:
+          - not_null
+      - name: order_status_id
+        description: The status of the order. Check raw.order_status for the interpretation.
+        tests:
+          - not_null
+          - relationships:
+              to: source('olist','order_status')
+              field: order_status_id
+      - name: order_purchase_timestamp
+        description: Timestamp of purchase.
+        tests:
+          - not_null
+      - name: order_approved_at
+        description: Timestamp of order approval.
+      - name: order_delivered_carrier_date
+        description: Timestamp of order delivery by carrier.
+      - name: order_delivered_customer_date
+        description: Timestamp of order delivered to customer.
+      - name: order_estimated_delivery_date
+        description: Estimated timestamp of order delivered to customer.
+      - name: created_at
+        description: The timestamp of order creation.
+        tests:
+          - not_null
+      - name: updated_at
+        description: The timestamp of order update, including deletion.
+        tests:
+          - not_null
+      - name: deleted
+        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 0
+                - 1
   - name: base_olist__order_reviews
     description: >
       Deduplicated table generated from ReplacingMergeTree mv_order_reviews using FINAL clause.

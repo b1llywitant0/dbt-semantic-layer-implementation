@@ -121,10 +121,7 @@ models:
         tests:
           - not_null
   - name: stg_olist__orders
-    description: >
-      Base model created from ReplacingMergeTree table of mv_orders with FINAL clause, to be snapshotted.
-      With increasing number of orders, this base table is handled incrementally with 3 days tolerance of late data.
-      To truly reflect the true data, full refresh is conducted once a week.
+    description: Staging data of orders.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -140,13 +137,10 @@ models:
         description: The customer who made the order.
         tests:
           - not_null
-      - name: order_status_id
-        description: The status of the order. Check raw.order_status for the interpretation.
+      - name: order_status
+        description: The status of the order.
         tests:
           - not_null
-          - relationships:
-              to: source('olist','order_status')
-              field: order_status_id
       - name: order_purchase_timestamp
         description: Timestamp of purchase.
         tests:
