@@ -205,120 +205,48 @@ models:
               values:
                 - 0
                 - 1
-  - name: base_olist__order_payments
+  - name: base_olist__order_reviews
     description: >
-      Base model created from ReplacingMergeTree table of mv_order_payments with FINAL clause, to be snapshotted.
-      With increasing number of orders' payments, this base table is handled incrementally with 3 days tolerance of late data.
+      Deduplicated table generated from ReplacingMergeTree mv_order_reviews using FINAL clause.
+      With increasing number of reviews, this base table is handled incrementally with 3 days tolerance of late data.
       To truly reflect the true data, full refresh is conducted once a week.
-    tests:
+    tests: 
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
+            - review_id
             - order_id
-            - payment_type_id
-            - payment_sequential
     columns:
+      - name: review_id
+        description: Indicating the review of order. With final clause, it will be the primary key of the table.
+        tests:
+          - not_null
       - name: order_id
-        description: Unique identifier of the order.
+        description: Indicating the order being reviewed.
         tests:
           - not_null
           - relationships:
               to: ref('base_olist__orders')
               field: order_id
-      - name: payment_sequential
-        description: >
-          A customer may pay an order with more than one payment method or multiple times.
-          If he does so, a sequence will be created.
-        tests:
-          - dbt_utils.expression_is_true:
-              expression: '> 0'
-      - name: payment_type_id
-        description: >
-          Method of payment chosen by the customer. 
-          Check raw.order_payment_methods for the interpretation.
+      - name: review_score
+        description: Satisfactory level of customer towards the order.
         tests:
           - not_null
-          - relationships:
-              to: source('olist','order_payment_methods')
-              field: payment_method_id
-      - name: payment_installments
-        description: Number of installments chosen by the customer.
+          - dbt_utils.accepted_range:
+              min_value: 1
+              max_value: 5
+              inclusive: true
+      - name: review_comment_title
+        description: Title of review
+      - name: review_comment_message
+        description: Message of review
+      - name: review_creation_date
+        description: Shows the date in which the satisfaction survey was sent to the customer.
         tests:
           - not_null
-      - name: payment_value
-        description: Transactional value.
+      - name: review_answer_timestamp
+        description: Shows satisfaction survey answer timestamp.
         tests:
           - not_null
-          - dbt_utils.expression_is_true:
-              expression: '>= 0'
-      - name: created_at
-        description: The timestamp of payment creation.
-        tests:
-          - not_null
-      - name: updated_at
-        description: The timestamp of payment update, including deletion.
-        tests:
-          - not_null
-      - name: deleted
-        description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
-        tests:
-          - not_null
-          - accepted_values:
-              values:
-                - 0
-                - 1
-  - name: base_olist__order_items
-    description: >
-      Base model created from ReplacingMergeTree table of mv_order_items with FINAL clause, to be snapshotted.
-      With increasing number of orders' items, this base table is handled incrementally with 3 days tolerance of late data.
-      To truly reflect the true data, full refresh is conducted once a week.
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - order_id
-            - order_item_id
-            - product_id
-    columns:
-      - name: order_id
-        description: Indicating the order.
-        tests:
-          - not_null
-          - relationships:
-              to: ref('base_olist__orders')
-              field: order_id
-      - name: order_item_id
-        description: One order can contain several items. This is the order of the item(s).
-        tests:
-          - not_null
-      - name: product_id
-        description: Indicating the product.
-        tests:
-          - not_null
-          - relationships:
-              to: ref('base_olist__products')
-              field: product_id
-      - name: seller_id
-        description: Indicating the seller.
-        tests:
-          - not_null
-          - relationships:
-              to: ref('base_olist__sellers')
-              field: seller_id
-      - name: shipping_limit_date
-        description: The deadline of product shipping.
-        tests:
-          - not_null
-      - name: price
-        description: The price of product.
-        tests:
-          - not_null
-          - dbt_utils.expression_is_true:
-              expression: '>= 0'
-      - name: freight_value
-        description: The price of delivery.
-        tests:
-          - not_null
-          - dbt_utils.expression_is_true:
-              expression: '>= 0'
       - name: created_at
         description: The timestamp of payment creation.
         tests:

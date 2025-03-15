@@ -1,19 +1,31 @@
-WITH
-order_items AS (
-    SELECT *
-    FROM {{ ref('snp_olist__order_items') }}
-)
+-- Handling duplicate records created by handling late data by using unique_key
+{{ 
+    config(
+        engine='MergeTree()', 
+        materialized='incremental', 
+        unique_key=['order_id','order_item_id'],
+        )
+}}
 
-SELECT
-    order_items.order_item_sk,
-    order_items.order_id,
-    order_items.order_item_id,
-    order_items.product_id,
-    order_items.seller_id,
-    order_items.shipping_limit_date,
-    order_items.price,
-    order_items.freight_value,
-    order_items.deleted,
-    order_items.dbt_valid_from AS valid_from,
-    COALESCE(order_items.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
-FROM order_items
+SELECT    
+    order_id,
+    order_item_id,
+    product_id,
+    seller_id,
+    shipping_limit_date,
+    price,
+    freight_value,
+    created_at,
+    updated_at,
+    deleted
+FROM {{ source('olist','mv_order_items') }}
+FINAL
+
+-- Also handling late data, if exists
+{% if is_incremental() %}
+    WHERE updated_at >= ( 
+        SELECT addDays(MAX(updated_at), -3) from {{ this }}
+    )
+{% endif %} 
+
+-- Once a week, run full refresh

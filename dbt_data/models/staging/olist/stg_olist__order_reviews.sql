@@ -1,31 +1,18 @@
--- Handling duplicate records created by handling late data by using unique_key
-{{ 
-    config(
-        engine='MergeTree()', 
-        materialized='incremental', 
-        unique_key='review_id'
-        )
-}}
+WITH
+order_reviews AS (
+    SELECT *
+    FROM {{ ref('snp_olist__order_reviews') }}
+)
 
-SELECT 
-    review_id,
-    order_id,
-    review_score,
-    review_comment_title,
-    review_comment_message,
-    review_creation_date,
-    review_answer_timestamp,
-    created_at,
-    updated_at,
-    deleted
-FROM {{ source('olist','mv_order_reviews') }}
-FINAL
-
--- Also handling late data, if exists
-{% if is_incremental() %}
-    WHERE updated_at >= ( 
-        SELECT addDays(MAX(updated_at), -3) from {{ this }}
-    )
-{% endif %} 
-
--- Once a week, run full refresh
+SELECT
+    order_reviews.review_id,
+    order_reviews.order_id,
+    order_reviews.review_score,
+    order_reviews.review_comment_title,
+    order_reviews.review_comment_message,
+    order_reviews.review_creation_date,
+    order_reviews.review_answer_timestamp,
+    order_reviews.deleted,
+    order_reviews.dbt_valid_from AS valid_from,
+    COALESCE(order_reviews.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
+FROM order_reviews
