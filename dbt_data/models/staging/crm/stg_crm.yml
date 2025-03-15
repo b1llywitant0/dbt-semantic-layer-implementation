@@ -19,6 +19,8 @@ models:
           - not_null
       - name: channel
         description: Where the lead came from, based on marketing channels.
+      - name: status
+        description: Status of lead based on mql_id appearance in closed deals table.
       - name: deleted
         description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
         tests:
