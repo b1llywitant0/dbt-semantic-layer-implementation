@@ -18,9 +18,12 @@ models:
       - name: origin_id
         description: Where the lead came from, based on marketing channels.
         tests:
+          - not_null
           - relationships:
               to: source('crm','qualified_lead_origins')
               field: origin_id
+      - name: status
+        description: Status of lead based on mql_id appearance in closed deals table.
       - name: created_at
         description: The timestamp of product creation.
         tests:

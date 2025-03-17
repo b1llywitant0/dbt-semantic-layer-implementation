@@ -1,24 +1,29 @@
-WITH
-payment_types AS (
-    SELECT *
-    FROM {{ source('olist','order_payment_methods') }}
-),
+-- Handling duplicate records created by handling late data by using unique_key
+{{ 
+    config(
+        engine='MergeTree()', 
+        materialized='incremental', 
+        unique_key=['order_id','payment_type_id','payment_sequential'],
+        )
+}}
 
-order_payments AS (
-    SELECT *
-    FROM {{ ref('snp_olist__order_payments') }}
-)
+SELECT    
+    order_id,
+    payment_sequential,
+    payment_type_id,
+    payment_installments,
+    payment_value,
+    created_at,
+    updated_at,
+    deleted
+FROM {{ source('olist','mv_order_payments') }}
+FINAL
 
-SELECT
-    order_payments.order_payment_sk,
-    order_payments.order_id,
-    payment_types.payment_method_name AS payment_method,
-    order_payments.payment_sequential,
-    order_payments.payment_installments,
-    order_payments.payment_value,
-    order_payments.deleted,
-    order_payments.dbt_valid_from AS valid_from,
-    COALESCE(order_payments.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
-FROM order_payments
-LEFT JOIN payment_types 
-ON order_payments.payment_type_id = payment_types.payment_method_id
+-- Also handling late data, if exists
+{% if is_incremental() %}
+    WHERE updated_at >= ( 
+        SELECT addDays(MAX(updated_at), -3) from {{ this }}
+    )
+{% endif %} 
+
+-- Once a week, run full refresh

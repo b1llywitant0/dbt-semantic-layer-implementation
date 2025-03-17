@@ -3,22 +3,22 @@
     config(
         engine='MergeTree()', 
         materialized='incremental', 
-        unique_key=['order_id','order_item_id'],
+        unique_key='review_id'
         )
 }}
 
-SELECT    
+SELECT 
+    review_id,
     order_id,
-    order_item_id,
-    product_id,
-    seller_id,
-    shipping_limit_date,
-    price,
-    freight_value,
+    review_score,
+    review_comment_title,
+    review_comment_message,
+    review_creation_date,
+    review_answer_timestamp,
     created_at,
     updated_at,
     deleted
-FROM {{ source('olist','mv_order_items') }}
+FROM {{ source('olist','mv_order_reviews') }}
 FINAL
 
 -- Also handling late data, if exists
