@@ -1,6 +1,7 @@
 from airflow.decorators import dag, task
 from airflow_clickhouse_plugin.hooks.clickhouse import ClickHouseHook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.exceptions import AirflowFailException
 from airflow.operators.empty import EmptyOperator
 import datetime
 from airflow.utils.task_group import TaskGroup
@@ -47,12 +48,15 @@ def reference_table_dag():
             postgres_hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
             ch_hook = ClickHouseHook(clickhouse_conn_id=CLICKHOUSE_CONN_ID)
             
-            records = postgres_hook.get_records(f'SELECT * FROM {table_name}')
-            if records:
-                ch_hook.execute(f'TRUNCATE TABLE {table_name}')
-                ch_hook.execute(f'INSERT INTO {table_name} VALUES', records)
-            else:
-                print(f'Table: {table_name} not exists')
+            try:
+                records = postgres_hook.get_records(f'SELECT * FROM {table_name}')
+                if records:
+                    ch_hook.execute(f'TRUNCATE TABLE {table_name}')
+                    ch_hook.execute(f'INSERT INTO {table_name} VALUES', records)
+                else:
+                    print(f'Table: {table_name} not exists')
+            except Exception as e:
+                raise AirflowFailException(f'Full refresh failed for table {table_name}: {str(e)}')
 
         return full_refresh
     
@@ -68,26 +72,29 @@ def reference_table_dag():
                 
             print(f"Last updated timestamp for {table_name}: {last_updated}")
 
-            new_records = postgres_hook.get_records(f'''
-                                                    SELECT *
-                                                    FROM {table_name}
-                                                    WHERE updated_at > '{last_updated}'
-                                                    ORDER BY updated_at ASC
-                                                    ''')
-            
-            if new_records:
-                ch_hook.execute(f'INSERT INTO {table_name} VALUES', new_records)
-                ch_hook.execute(f'OPTIMIZE TABLE {table_name} FINAL')
+            try:
+                new_records = postgres_hook.get_records(f'''
+                                                        SELECT *
+                                                        FROM {table_name}
+                                                        WHERE updated_at > '{last_updated}'
+                                                        ORDER BY updated_at ASC
+                                                        ''')
                 
-                last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
-                last_updated_result = ch_hook.execute(last_updated_query)
-                last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(1970, 1, 1, 7, 0, tzinfo=pytz.timezone("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M:%S.%f')
-                if isinstance(last_updated, str) == False:
-                    last_updated = last_updated.strftime('%Y-%m-%d %H:%M:%S.%f')
-                Variable.set(key=stored_last_updated,value=last_updated)
+                if new_records:
+                    ch_hook.execute(f'INSERT INTO {table_name} VALUES', new_records)
+                    ch_hook.execute(f'OPTIMIZE TABLE {table_name} FINAL')
+                    
+                    last_updated_query = f"SELECT MAX(updated_at) FROM {table_name}"
+                    last_updated_result = ch_hook.execute(last_updated_query)
+                    last_updated = last_updated_result[0][0] if last_updated_result and last_updated_result[0] else datetime.datetime(1970, 1, 1, 7, 0, tzinfo=pytz.timezone("Asia/Jakarta")).strftime('%Y-%m-%d %H:%M:%S.%f')
+                    if isinstance(last_updated, str) == False:
+                        last_updated = last_updated.strftime('%Y-%m-%d %H:%M:%S.%f')
+                    Variable.set(key=stored_last_updated,value=last_updated)
 
-            else:
-                print('No new data')
+                else:
+                    print('No new data')
+            except Exception as e:
+                raise AirflowFailException(f'Full refresh failed for table {table_name}: {str(e)}')
             
         return incremental_load
     
