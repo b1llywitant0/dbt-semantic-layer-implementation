@@ -123,3 +123,4 @@ dbt build
 - [Data Warehouse Guideline: SCD2](https://appflowy.com/41518cd2-22c3-48b9-bd3e-9ffeac63d8d0/2025-02-21-SC-feb534c3-477a-4d2b-9345-047777925a47)
 - [Data Modeling Techniques for More Modularity](https://www.getdbt.com/blog/modular-data-modeling-techniques)
 - [Decimal Types](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-decimal-types)
+- [Dead Letter Queue](https://medium.com/snowflake/snowflake-kafka-connector-and-dead-letter-queues-fb7f8e0cc5ef)
