@@ -21,6 +21,10 @@ models:
         description: Where the lead came from, based on marketing channels.
       - name: status
         description: Status of lead based on mql_id appearance in closed deals table.
+      - name: first_approach_date
+        description: Date when first approaching the lead.
+        tests:
+          - not_null
       - name: deleted
         description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
         tests:

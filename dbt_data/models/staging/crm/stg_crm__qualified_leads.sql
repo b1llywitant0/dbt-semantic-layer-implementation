@@ -15,6 +15,7 @@ SELECT
     origins.origin_name AS channel,
     qualified_leads.status,
     qualified_leads.deleted,
+    qualified_leads.created_at AS first_approach_date,
     qualified_leads.dbt_valid_from AS valid_from,
     COALESCE(qualified_leads.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
 FROM qualified_leads

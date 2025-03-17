@@ -20,7 +20,8 @@ FULL_REFRESH_TABLES = [
     'qualified_lead_origins',
     'lead_business_segments',
     'lead_business_types',
-    'lead_behaviour_profiles'
+    'lead_behaviour_profiles',
+    'lead_types'
     ]
 
 INCREMENTAL_LOAD_TABLES = [
