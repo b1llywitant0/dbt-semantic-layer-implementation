@@ -1,3 +1,9 @@
+{{ 
+    config(
+        order_by='(first_contact_date, won_date, sdr_id, sr_id, mql_id)' 
+        )
+}}
+
 WITH
 closed_deals AS (
     SELECT *

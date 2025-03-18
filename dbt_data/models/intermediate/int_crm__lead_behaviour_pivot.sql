@@ -1,3 +1,9 @@
+{{ 
+    config(
+        order_by='(mql_id)' 
+        )
+}}
+
 {% set lead_behaviours = get_lead_behaviours() %}
 
 WITH

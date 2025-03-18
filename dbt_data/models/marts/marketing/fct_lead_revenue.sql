@@ -1,3 +1,9 @@
+{{ 
+    config(
+        order_by='(won_date, order_delivered_carrier_date, seller_id, order_id, mql_id)' 
+        )
+}}
+
 WITH 
 closed_deals_order_items AS (
     SELECT *

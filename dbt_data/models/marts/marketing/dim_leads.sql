@@ -1,3 +1,9 @@
+{{ 
+    config(
+        order_by='(valid_to, valid_from, mql_id)' 
+        )
+}}
+
 WITH
 closed_deals AS (
     SELECT 
