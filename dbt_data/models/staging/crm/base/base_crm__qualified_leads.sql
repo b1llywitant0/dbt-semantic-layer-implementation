@@ -21,12 +21,14 @@ SELECT
     qualified_leads.landing_page_id,
     qualified_leads.origin_id,
     CASE
-        WHEN closed_deals.mql_id = '' THEN 'Closed'
-        ELSE 'On progress'
+        WHEN closed_deals.mql_id = '' THEN 'On progress'
+        ELSE 'Closed'
     END AS status,
     qualified_leads.created_at,
-    qualified_leads.updated_at,
+    CASE
+        WHEN closed_deals.mql_id = '' OR qualified_leads.deleted = 1 THEN qualified_leads.updated_at
+        ELSE closed_deals.created_at
+    END AS updated_at,
     qualified_leads.deleted
 FROM qualified_leads
 LEFT JOIN closed_deals ON qualified_leads.mql_id = closed_deals.mql_id
-    

@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: fct_lead_conversions
+    descriptions: >
+      Fact table of which record information of lead conversion progress.
+    columns:
+      - name: mql_id
+        description: Indicating unique qualified lead. Primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: landing_page_id
+        description: Landing page ID. The dimension table is not available.
+        tests:
+          - not_null
+      - name: sdr_id
+        description: Sales development representative ID. The dimension table is not available.
+      - name: sr_id
+        description: Sales representative ID. The dimension table is not available.
+      - name: first_contact_date
+        description: First contact date when user sign up as lead.
+        tests:
+          - not_null
+      - name: won_date
+        description: Date of closed deal.
