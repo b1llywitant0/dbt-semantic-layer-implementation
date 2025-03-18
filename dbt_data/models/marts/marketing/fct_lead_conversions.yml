@@ -4,12 +4,19 @@ models:
   - name: fct_lead_conversions
     descriptions: >
       Fact table of which record information of lead conversion progress.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mql_id
+            - landing_page_id
     columns:
       - name: mql_id
-        description: Indicating unique qualified lead. Primary key of the table.
+        description: Indicating unique qualified lead.
         tests:
-          - unique
           - not_null
+          - relationships:
+              to: ref('dim_leads')
+              field: mql_id
       - name: landing_page_id
         description: Landing page ID. The dimension table is not available.
         tests:
