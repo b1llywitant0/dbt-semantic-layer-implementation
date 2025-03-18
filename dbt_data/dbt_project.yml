@@ -33,14 +33,14 @@ models:
     # Config indicated by + and applies to all files under models/example/
     staging:
       +materialized: view
-    processing:
-      +materialized: table
+    intermediate:
+      +materialized: view
     marts:
       +materialized: table
       ecommerce:
-        schema: mart_marketing
-      marketing:
         schema: mart_ecommerce
+      marketing:
+        schema: mart_marketing
     consumption:
       +materialized: table
 
