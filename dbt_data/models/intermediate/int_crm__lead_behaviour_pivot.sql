@@ -2,7 +2,9 @@
 
 WITH
 bridge_lead_behaviour AS (
-    SELECT *
+    SELECT
+        mql_id,
+        behaviour
     FROM {{ ref('stg_crm__lead_behaviours') }}
 )
 

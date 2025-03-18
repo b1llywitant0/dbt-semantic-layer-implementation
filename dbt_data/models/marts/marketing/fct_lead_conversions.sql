@@ -11,11 +11,6 @@ qualified_leads AS (
     WHERE 
         valid_to = '{{var("future_proof_date")}}' AND 
         deleted = 0
-),
-
-lead_behaviours AS (
-    SELECT *
-    FROM {{ ref('int_crm__lead_behaviour_pivot') }}
 )
 
 SELECT 
@@ -27,4 +22,3 @@ SELECT
     closed_deals.created_at AS won_date
 FROM qualified_leads
 LEFT JOIN closed_deals ON qualified_leads.mql_id = closed_deals.mql_id
-LEFT JOIN lead_behaviours ON qualified_leads.mql_id = lead_behaviours.mql_id

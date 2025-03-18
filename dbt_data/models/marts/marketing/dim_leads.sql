@@ -1,16 +1,31 @@
 WITH
 closed_deals AS (
-    SELECT *
+    SELECT 
+        mql_id,
+        lead_type,
+        business_segment,
+        business_type
     FROM {{ ref('stg_crm__closed_deals') }}
 ),
 
 qualified_leads AS (
-    SELECT *
+    SELECT 
+        mql_id,
+        channel,
+        status,
+        deleted,
+        valid_from,
+        valid_to
     FROM {{ ref('stg_crm__qualified_leads') }}
 ),
 
 lead_behaviours AS (
-    SELECT *
+    SELECT 
+        mql_id,
+        is_cat,
+        is_eagle,
+        is_wolf,
+        is_shark
     FROM {{ ref('int_crm__lead_behaviour_pivot') }}
 )
 
