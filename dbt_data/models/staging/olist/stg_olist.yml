@@ -286,11 +286,11 @@ models:
           - dbt_utils.expression_is_true:
               expression: '>= 0'
       - name: created_at
-        description: The timestamp of payment creation.
+        description: The timestamp of order creation.
         tests:
           - not_null
       - name: updated_at
-        description: The timestamp of payment update, including deletion.
+        description: The timestamp of data update, including deletion.
         tests:
           - not_null
       - name: deleted
