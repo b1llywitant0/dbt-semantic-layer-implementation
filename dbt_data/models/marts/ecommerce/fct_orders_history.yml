@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: fct_orders_history
+    descriptions: >
+      Fact table which record information of orders' status change.
+      Timestamp column also provided for cross-checking purposes.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - valid_from
+    columns:
+      - name: order_id
+        description: Unique identifier of the order.
+        tests:
+          - not_null
+      - name: order_status
+        description: The status of the order.
+        tests:
+          - not_null
+      - name: order_purchase_timestamp
+        description: Timestamp of purchase.
+        tests:
+          - not_null
+      - name: order_approved_at
+        description: Timestamp of order approval.
+      - name: order_delivered_carrier_date
+        description: Timestamp of order delivery by carrier.
+      - name: order_delivered_customer_date
+        description: Timestamp of order delivered to customer.
+      - name: order_estimated_delivery_date
+        description: Estimated timestamp of order delivered to customer.
+      - name: valid_from
+        description: Timestamp indicating the start of period.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp indicating the end of period.
+        tests:
+          - not_null

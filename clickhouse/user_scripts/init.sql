@@ -651,6 +651,3 @@ CREATE TABLE IF NOT EXISTS raw.bridge_lead_behaviour_profiles (
 )
 ENGINE = MergeTree()
 ORDER BY tuple();
-
-CREATE DATABASE IF NOT EXISTS mart_ecommerce;
-CREATE DATABASE IF NOT EXISTS mart_marketing;

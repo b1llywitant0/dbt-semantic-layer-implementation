@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: fct_lead_conversions
+    descriptions: >
+      Fact table which record information of lead conversion progress.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mql_id
+            - landing_page_id
+    columns:
+      - name: mql_id
+        description: Indicating unique qualified lead.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_leads')
+              field: mql_id
+      - name: landing_page_id
+        description: Landing page ID. The dimension table is not available.
+        tests:
+          - not_null
+      - name: sdr_id
+        description: Sales development representative ID. The dimension table is not available.
+      - name: sr_id
+        description: Sales representative ID. The dimension table is not available.
+      - name: first_contact_date
+        description: First contact date when user sign up as lead.
+        tests:
+          - not_null
+      - name: won_date
+        description: Date of closed deal.

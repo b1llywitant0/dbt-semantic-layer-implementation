@@ -22,5 +22,4 @@ SELECT
     orders.dbt_valid_from AS valid_from,
     COALESCE(orders.dbt_valid_to, CAST('{{ var("future_proof_date") }}' AS DateTime64(6,'Asia/Jakarta'))) AS valid_to
 FROM orders
-LEFT JOIN order_status 
-ON orders.order_status_id = order_status.order_status_id
+LEFT JOIN order_status ON orders.order_status_id = order_status.order_status_id

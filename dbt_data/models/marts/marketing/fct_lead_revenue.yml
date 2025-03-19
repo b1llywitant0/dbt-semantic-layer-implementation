@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: fct_lead_revenue
+    descriptions: >
+      Fact table which record information about successful orders (indicated by Delivered status) related to closed deals' leads.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mql_id
+            - seller_id
+            - order_id
+    columns:
+      - name: mql_id
+        description: Indicating unique qualified lead.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_leads')
+              field: mql_id
+      - name: won_date
+        description: Indicating won date of the lead.
+        tests:
+          - not_null
+      - name: seller_id
+        description: Indicating the assigned seller ID given to the lead.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_sellers')
+              field: seller_id
+      - name: order_id
+        description: Indicating specific order.
+        tests:
+          - not_null
+      - name: order_delivered_carrier_date
+        description: >
+          The definition of active seller is a seller who process the order, which responsibility stop at delivering the ordered product(s) to carrier.
+        tests:
+          - not_null
+      - name: order_value
+        description: Product value + freight value.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'

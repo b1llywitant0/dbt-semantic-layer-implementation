@@ -8,3 +8,10 @@ dbt_data:
       password: "{{ env_var('CLICKHOUSE_PASSWORD') }}"
       port: 8123
       schema: "{{ env_var('CLICKHOUSE_DW_DB') }}"
+    marketing:
+      type: clickhouse
+      host: "{{ env_var('CLICKHOUSE_CONTAINER_NAME') }}"
+      user: "{{ env_var('CLICKHOUSE_USER') }}"
+      password: "{{ env_var('CLICKHOUSE_PASSWORD') }}"
+      port: 8123
+      schema: mart_marketing

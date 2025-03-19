@@ -33,12 +33,16 @@ models:
     # Config indicated by + and applies to all files under models/example/
     staging:
       +materialized: view
-    processing:
+    intermediate:
       +materialized: table
     marts:
       +materialized: table
+      ecommerce:
+        schema: mart_ecommerce
+      marketing:
+        schema: mart_marketing
     consumption:
       +materialized: table
 
 vars:
-  future_proof_date: '9999-12-31 00:00:00.000000'
+  future_proof_date: '2299-12-31 23:59:59.999999'

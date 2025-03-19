@@ -19,22 +19,22 @@ models:
         description: The weight of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: product_length_cm
         description: The length of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: product_height_cm
         description: The height of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: product_width_cm
         description: The width of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: deleted
         description: Boolean indicating whether the data is deleted or not, either from soft-delete or hard-delete.
         tests:
@@ -173,14 +173,12 @@ models:
           - not_null
   - name: stg_olist__order_payments
     description: >
-      Staging model created from ReplacingMergeTree table of mv_order_payments with FINAL clause, to be snapshotted.
-      With increasing number of orders' payments, this base table is handled incrementally with 3 days tolerance of late data.
-      To truly reflect the true data, full refresh is conducted once a week.
+      Staging data of order payments enriched with order type id's description.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - order_id
-            - payment_type_id
+            - payment_method
             - payment_sequential
     columns:
       - name: order_id
@@ -197,15 +195,10 @@ models:
         tests:
           - dbt_utils.expression_is_true:
               expression: '> 0'
-      - name: payment_type_id
-        description: >
-          Method of payment chosen by the customer. 
-          Check raw.order_payment_methods for the interpretation.
+      - name: payment_method
+        description: Method of payment chosen by the customer. 
         tests:
           - not_null
-          - relationships:
-              to: source('olist','order_payment_methods')
-              field: payment_method_id
       - name: payment_installments
         description: Number of installments chosen by the customer.
         tests:
@@ -286,11 +279,11 @@ models:
           - dbt_utils.expression_is_true:
               expression: '>= 0'
       - name: created_at
-        description: The timestamp of payment creation.
+        description: The timestamp of order creation.
         tests:
           - not_null
       - name: updated_at
-        description: The timestamp of payment update, including deletion.
+        description: The timestamp of data update, including deletion.
         tests:
           - not_null
       - name: deleted

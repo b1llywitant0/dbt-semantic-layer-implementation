@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: fct_order_items
+    descriptions: Fact table which record information of items associated with order.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - product_id
+            - seller_id
+    columns:
+      - name: order_id
+        description: Indicating the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_orders')
+              field: order_id
+      - name: product_id
+        description: Indicating the product.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: seller_id
+        description: Indicating the seller.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_sellers')
+              field: seller_id
+      - name: total_price
+        description: The total price of product(s).
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: total_freight_value
+        description: The total price of delivery.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: quantity
+        description: The quantity of product.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: order_creation_date
+        description: The date of order creation. Redundant with fct_orders but will not require join if needed for this table.
+        tests:
+          - not_null
+      - name: shipping_limit_date
+        description: The deadline of product shipping.
+        tests:
+          - not_null

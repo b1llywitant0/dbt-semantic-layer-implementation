@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: fct_orders
+    descriptions: >
+      Fact table which record information of orders.
+    columns:
+      - name: order_id
+        description: Indicating unique order. Primary key of the table.
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Indicating the customer who made the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: account_id
+      - name: order_creation_date
+        description: The date of order creation.
+        tests:
+          - not_null
+      - name: shipping_limit_date
+        description: Max shipping limit date from order items table.
+        tests:
+          - not_null
+      - name: order_estimated_delivery_date
+        description: Estimated date of order completion.
+        tests:
+          - not_null
+      - name: order_status
+        description: Status of the order.
+        tests:
+          - not_null
+      - name: order_value
+        description: Product price(s) + freight value(s).
+        tests:
+          - not_null
