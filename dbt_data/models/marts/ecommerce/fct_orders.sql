@@ -34,5 +34,4 @@ SELECT
     orders.order_status,
     order_values.order_value
 FROM orders
-LEFT JOIN order_values ON orders.order_id = order_values.order_id
-WHERE order_values.order_id != ''
+INNER JOIN order_values ON orders.order_id = order_values.order_id

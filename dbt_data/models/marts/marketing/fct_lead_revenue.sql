@@ -28,5 +28,4 @@ SELECT
     orders.order_delivered_carrier_date,
     closed_deals_order_items.order_value
 FROM closed_deals_order_items
-LEFT JOIN orders ON closed_deals_order_items.order_id = orders.order_id
-WHERE orders.order_id != ''
+INNER JOIN orders ON closed_deals_order_items.order_id = orders.order_id
