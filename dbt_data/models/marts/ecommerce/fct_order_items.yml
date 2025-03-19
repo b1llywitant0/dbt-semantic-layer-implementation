@@ -22,14 +22,14 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('fct_products')
+              to: ref('dim_products')
               field: product_id
       - name: seller_id
         description: Indicating the seller.
         tests:
           - not_null
           - relationships:
-              to: ref('fct_sellers')
+              to: ref('dim_sellers')
               field: seller_id
       - name: total_price
         description: The total price of product(s).

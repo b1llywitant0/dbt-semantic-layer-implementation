@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: fct_order_payments
+    descriptions: Fact table which record information of payments associated with order.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - payment_method
+    columns:
+      - name: order_id
+        description: Indicating the order.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_orders')
+              field: order_id
+      - name: order_creation_date
+        description: The date of order creation. Redundant with fct_orders but will not require join if needed for this table.
+        tests:
+          - not_null
+      - name: payment_method
+        description: Indicating the method used for payment.
+        tests:
+          - not_null
+      - name: payment_installments
+        description: Installment selected by customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: paid_installments
+        description: The number of success transaction, aggregated by payment_method.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
+      - name: total_payment_value
+        description: Total payment value aggregated by payment method.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: '>= 0'
