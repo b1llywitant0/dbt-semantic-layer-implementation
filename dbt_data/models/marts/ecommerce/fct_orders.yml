@@ -3,7 +3,7 @@ version: 2
 models:
   - name: fct_orders
     descriptions: >
-      Fact table of which record information of orders.
+      Fact table which record information of orders.
     columns:
       - name: order_id
         description: Indicating unique order. Primary key of the table.

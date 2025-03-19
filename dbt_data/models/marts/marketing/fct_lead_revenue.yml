@@ -3,7 +3,7 @@ version: 2
 models:
   - name: fct_lead_revenue
     descriptions: >
-      Fact table of which record information about successful orders (indicated by Delivered status) related to closed deals' leads.
+      Fact table which record information about successful orders (indicated by Delivered status) related to closed deals' leads.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

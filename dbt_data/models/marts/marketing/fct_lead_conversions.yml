@@ -3,7 +3,7 @@ version: 2
 models:
   - name: fct_lead_conversions
     descriptions: >
-      Fact table of which record information of lead conversion progress.
+      Fact table which record information of lead conversion progress.
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
