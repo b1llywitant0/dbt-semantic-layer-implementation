@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: dim_sellers
+    descriptions: Dimension table for sellers, containing the attributes of sellers with SCD2 tracking including deletion.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - seller_id
+            - valid_from
+            - valid_to
+    columns:
+      - name: seller_id
+        description: Indicating unique seller.
+        tests:
+          - not_null
+      - name: city
+        description: City location of the seller.
+        tests:
+          - not_null
+      - name: state
+        description: State location of the seller.
+        tests:
+          - not_null
+      - name: deleted
+        description: Indicating deletion.
+        tests:
+          - not_null
+      - name: valid_from
+        description: Timestamp of data validity period - beginning.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp of data validity period - end.
+        tests:
+          - not_null

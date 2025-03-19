@@ -34,22 +34,22 @@ models:
         description: The weight of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: product_length_cm
         description: The length of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: product_height_cm
         description: The height of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: product_width_cm
         description: The width of the product.
         tests:
           - dbt_utils.expression_is_true:
-              expression: '>= 0'
+              expression: '> 0'
       - name: created_at
         description: The timestamp of product creation.
         tests:

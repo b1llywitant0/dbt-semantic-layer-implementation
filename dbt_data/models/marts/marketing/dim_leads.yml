@@ -3,10 +3,16 @@ version: 2
 models:
   - name: dim_leads
     descriptions: >
-      Dimension table for leads, containing the attributes of leads with SCD2 tracking for lead status change.
+      Dimension table for leads, containing the attributes of leads with SCD2 tracking for lead status change, including deletion.
       For now, the lead status change only based on whether the lead exist in closed deal or not, since the data given by Olist is limited.
       All of the data, except channel, retrieved post-closed deal.
       About lead behaviour, Olist didn't give the explanation behind the classification.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - mql_id
+            - valid_from
+            - valid_to
     columns:
       - name: mql_id
         description: Indicating unique qualified lead. Primary key of the table.
@@ -34,3 +40,15 @@ models:
         description: Indicating lead behaviour - wolf.
       - name: is_shark
         description: Indicating lead behaviour - shark.
+      - name: deleted
+        description: Indicating deletion.
+        tests:
+          - not_null
+      - name: valid_from
+        description: Timestamp of data validity period - beginning.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp of data validity period - end.
+        tests:
+          - not_null

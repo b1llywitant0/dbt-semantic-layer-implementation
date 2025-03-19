@@ -28,6 +28,7 @@ models:
           - not_null
           - relationships:
               to: ref('dim_sellers')
+              field: seller_id
       - name: order_id
         description: Indicating specific order.
         tests:

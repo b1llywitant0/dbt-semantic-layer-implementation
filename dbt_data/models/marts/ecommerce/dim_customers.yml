@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: dim_customers
+    descriptions: Dimension table for customers, containing the attributes of customers with SCD2 tracking including deletion.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - account_id
+            - user_id
+            - valid_from
+            - valid_to
+    columns:
+      - name: account_id
+        description: Indicating unique account. One user can have more than one account.
+        tests:
+          - not_null
+      - name: user_id
+        description: Indicating unique user. One user can have more than one account.
+        tests:
+          - not_null
+      - name: city
+        description: City location of the user.
+        tests:
+          - not_null
+      - name: state
+        description: State location of the user.
+        tests:
+          - not_null
+      - name: deleted
+        description: Indicating deletion.
+        tests:
+          - not_null
+      - name: valid_from
+        description: Timestamp of data validity period - beginning.
+        tests:
+          - not_null
+      - name: valid_to
+        description: Timestamp of data validity period - end.
+        tests:
+          - not_null
