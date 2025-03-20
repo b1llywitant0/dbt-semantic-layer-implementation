@@ -57,22 +57,3 @@ models:
         description: The deadline of product shipping.
         tests:
           - not_null
-    metrics:
-      - name: total_quantity_sold
-        model: ref('fct_order_items')
-        label: "Total Quantity Sold"
-        description: "Total quantity of items sold"
-        calculation_method: sum
-        expression: quantity
-        timestamp: order_creation_date
-        time_grains: [day, week, month]
-        dimensions: [product_id]
-      - name: total_revenue
-        model: ref('fct_order_items')
-        label: "Total Revenue"
-        description: "Total revenue from items sold"
-        calculation_method: sum
-        expression: "total_price + total_freight_value"
-        timestamp: order_creation_date
-        time_grains: [day, week, month]
-        dimensions: [product_id]
