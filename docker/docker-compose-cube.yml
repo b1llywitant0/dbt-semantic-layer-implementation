@@ -14,8 +14,11 @@ services:
       - CUBEJS_DB_PASS=${CLICKHOUSE_PASSWORD}
       - CUBEJS_CUBESTORE_HOST=finpro-cubestore-router
       - CUBEJS_API_SECRET=${CUBE_API_SECRET}
+      - CUBEJS_DEV_MODE=true
     volumes:
       - ../cube/model:/cube/conf/model
+      - ../cube/cube.py:/cube/conf/cube.py
+      - ../dbt_data/target/manifest.json:/dbt/manifest.json
     depends_on:
       - finpro-cube-refresh-worker
       - finpro-cubestore-router
@@ -40,6 +43,8 @@ services:
       - CUBEJS_REFRESH_WORKER=true
     volumes:
       - ../cube/model:/cube/conf/model
+      - ../cube/cube.py:/cube/conf/cube.py
+      - ../dbt_data/target/manifest.json:/dbt/manifest.json
     networks:
     - finpro-network
 
