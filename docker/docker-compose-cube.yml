@@ -2,7 +2,7 @@ services:
   finpro-cube-api:
     container_name: finpro-cube-api
     restart: always
-    image: cubejs/cube:latest
+    image: finpro/cube
     ports:
       - 4000:4000
     environment:
@@ -15,7 +15,7 @@ services:
       - CUBEJS_CUBESTORE_HOST=finpro-cubestore-router
       - CUBEJS_API_SECRET=${CUBE_API_SECRET}
     volumes:
-      - ../cube/conf:/cube/conf
+      - ../cube/model:/cube/conf/model
     depends_on:
       - finpro-cube-refresh-worker
       - finpro-cubestore-router
@@ -39,7 +39,7 @@ services:
       - CUBEJS_API_SECRET=${CUBE_API_SECRET}
       - CUBEJS_REFRESH_WORKER=true
     volumes:
-      - ../cube/conf:/cube/conf
+      - ../cube/model:/cube/conf/model
     networks:
     - finpro-network
 

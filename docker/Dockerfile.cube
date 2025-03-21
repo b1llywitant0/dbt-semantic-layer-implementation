@@ -1,0 +1,8 @@
+FROM cubejs/cube:latest
+ 
+COPY ../cube/requirements.txt .
+RUN apt update && apt install -y pip python3-venv
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install -r requirements.txt
+RUN npm install

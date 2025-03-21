@@ -8,6 +8,8 @@ docker-build:
 	@docker build -t finpro/airflow -f ./docker/Dockerfile.airflow .
 	@echo '__________________________________________________________'
 	@docker build -t finpro/clickhouse -f ./docker/Dockerfile.clickhouse .
+	@echo '__________________________________________________________'
+	@docker build -t finpro/cube -f ./docker/Dockerfile.cube .
 	@echo '==========================================================='
 
 postgres-create:
