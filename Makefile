@@ -1,4 +1,4 @@
-.PHONY: airflow clickhouse
+.PHONY: airflow clickhouse cube
 include .env
 
 docker-build: 
@@ -64,6 +64,13 @@ cdc:
 	@echo 'Creating Kafka+Debezium Instance ...'
 	@echo '__________________________________________________________'
 	@docker compose -f ./docker/docker-compose-cdc.yml --env-file .env up -d
+	@echo '==========================================================='	
+
+cube:
+	@echo '__________________________________________________________'
+	@echo 'Creating Cube Semantic Layer ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-cube.yml --env-file .env up -d
 	@echo '==========================================================='	
 
 airflow-bash:
