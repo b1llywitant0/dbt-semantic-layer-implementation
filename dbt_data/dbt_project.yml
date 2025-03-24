@@ -41,8 +41,6 @@ models:
         schema: mart_ecommerce
       marketing:
         schema: mart_marketing
-    consumption:
-      +materialized: table
 
 vars:
   future_proof_date: '2299-12-31 23:59:59.999999'
