@@ -38,9 +38,9 @@ models:
     marts:
       +materialized: table
       ecommerce:
-        schema: mart_ecommerce
+        +schema: mart_ecommerce
       marketing:
-        schema: mart_marketing
+        +schema: mart_marketing
 
 vars:
   future_proof_date: '2299-12-31 23:59:59.999999'
