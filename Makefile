@@ -1,4 +1,4 @@
-.PHONY: airflow clickhouse cube
+.PHONY: airflow clickhouse cube metabase
 include .env
 
 docker-build: 
@@ -73,6 +73,13 @@ cube:
 	@echo 'Creating Cube Semantic Layer ...'
 	@echo '__________________________________________________________'
 	@docker compose -f ./docker/docker-compose-cube.yml --env-file .env up -d
+	@echo '==========================================================='	
+
+metabase:
+	@echo '__________________________________________________________'
+	@echo 'Creating Metabase ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-metabase.yml --env-file .env up -d
 	@echo '==========================================================='	
 
 airflow-bash:

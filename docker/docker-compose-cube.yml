@@ -5,6 +5,7 @@ services:
     image: finpro/cube
     ports:
       - 4000:4000
+      - 15432:15432
     environment:
       - CUBEJS_DB_TYPE=clickhouse
       - CUBEJS_DB_HOST=${CLICKHOUSE_CONTAINER_NAME}
@@ -15,6 +16,9 @@ services:
       - CUBEJS_CUBESTORE_HOST=finpro-cubestore-router
       - CUBEJS_API_SECRET=${CUBE_API_SECRET}
       - CUBEJS_DEV_MODE=true
+      - CUBEJS_PG_SQL_PORT=15432                  
+      - CUBEJS_SQL_USER=${CUBE_API_USER}          
+      - CUBEJS_SQL_PASSWORD=${CUBE_API_PASSWORD}  
     volumes:
       - ../cube/model:/cube/conf/model
       - ../cube/cube.py:/cube/conf/cube.py

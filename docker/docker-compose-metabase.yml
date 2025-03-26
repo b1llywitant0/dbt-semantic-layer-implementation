@@ -1,0 +1,24 @@
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    hostname: metabase
+    ports:
+      - 3000:3000
+    volumes:
+      - '../metabase/plugin/clickhouse.metabase-driver.jar:/plugins/clickhouse.jar'
+    environment:
+      'MB_HTTP_TIMEOUT': '5000'
+      'JAVA_TIMEZONE': ${TIMEZONE}
+    networks:
+      - finpro-network
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+networks:
+  finpro-network:
+    driver: bridge
+    external: true
