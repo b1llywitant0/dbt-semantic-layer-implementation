@@ -44,3 +44,10 @@ cubes:
       - name: avg_date_diff_closed_deals
         sql: "AVG(dateDiff('day', toDateTime64({CUBE}.first_contact_date, 0), toDateTime64({CUBE}.won_date, 0)))"
         type: number
+      - name: n_of_leads_conversed
+        sql: "countIf(distinct mql_id, {CUBE}.won_date IS NOT NULL)"
+        type: number
+      - name: conversion_rate
+        sql: "{n_of_leads_conversed} / {n_of_leads} * 100.0"
+        type: number
+        format: percent
