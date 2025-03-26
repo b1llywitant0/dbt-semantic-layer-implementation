@@ -16,6 +16,7 @@ closed_deals AS (
 
 qualified_leads AS (
     SELECT 
+        qualified_lead_sk,
         mql_id,
         channel,
         status,
@@ -35,7 +36,8 @@ lead_behaviours AS (
     FROM {{ ref('int_crm__lead_behaviour_pivot') }}
 )
 
-SELECT 
+SELECT
+    qualified_leads.qualified_lead_sk AS lead_sk,
     qualified_leads.mql_id AS mql_id,
     qualified_leads.channel,
     qualified_leads.status,
@@ -48,7 +50,11 @@ SELECT
     lead_behaviours.is_shark,
     qualified_leads.deleted AS deleted,
     qualified_leads.valid_from,
-    qualified_leads.valid_to
+    qualified_leads.valid_to,
+    CASE
+        WHEN qualified_leads.valid_to = '{{var("future_proof_date")}}' THEN 1
+        ELSE 0
+    END AS is_current
 FROM qualified_leads
 LEFT JOIN closed_deals ON qualified_leads.mql_id = closed_deals.mql_id
 LEFT JOIN lead_behaviours ON qualified_leads.mql_id = lead_behaviours.mql_id

@@ -10,6 +10,7 @@ qualified_leads AS (
 )
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['qualified_leads.mql_id', 'qualified_leads.dbt_valid_from']) }} AS qualified_lead_sk,
     qualified_leads.mql_id,
     qualified_leads.landing_page_id,
     origins.origin_name AS channel,
