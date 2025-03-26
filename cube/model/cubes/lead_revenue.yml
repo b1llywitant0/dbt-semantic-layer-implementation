@@ -50,7 +50,7 @@ cubes:
         sql: order_id
         type: count_distinct
 
-      - name: n_of_leads
+      - name: n_of_sellers
         sql: mql_id
         type: count_distinct
 
@@ -90,7 +90,7 @@ cubes:
       - name: avg_order_value
         sql: order_value
         type: avg
-        
+
       - name: latest_order
         sql: "argMax(order_id, order_delivered_carrier_date)"
         type: string

@@ -1,0 +1,84 @@
+views:
+  - name: lead_acquisition_performance
+    cubes:
+      - join_path: fct_lead_conversions
+        includes:
+          - n_of_leads
+          - n_of_leads_conversed
+          - conversion_rate
+          - avg_date_diff_closed_deals
+
+          - landing_page_id
+          - sdr_id
+          - sr_id
+          - first_contact_date
+          - won_date
+      
+      - join_path: fct_lead_conversions.dim_leads
+        includes:
+          - status
+          - channel
+  
+  - name: closed_deals_performance
+    cubes:
+      - join_path: fct_lead_revenue 
+        includes: 
+          - gmv
+          - n_of_sellers
+          - order_count
+          - avg_order_value
+          - max_order_value
+          - min_order_value
+          - latest_order
+
+          - order_delivered_carrier_date
+          - won_date
+
+      - join_path: fct_lead_conversions
+        includes:
+          - conversion_rate
+          - n_of_leads
+          - n_of_leads_conversed
+      
+      - join_path: dim_leads
+        includes:
+          - channel
+          - lead_type
+          - business_segment
+          - business_type
+          - is_cat
+          - is_eagle
+          - is_wolf
+          - is_shark
+
+  - name: active_closed_leads
+    cubes:
+      - join_path: fct_lead_revenue 
+        includes: 
+          - daily_active_sellers
+          - weekly_active_sellers
+          - monthly_active_sellers
+
+          - order_delivered_carrier_date
+
+      - join_path: dim_leads
+        includes:
+          - channel
+          - lead_type
+          - business_segment
+          - business_type
+          - is_cat
+          - is_eagle
+          - is_wolf
+          - is_shark
+
+  - name: cohort
+    cubes:
+      - join_path: monthly_retention
+        includes:
+          - total_count
+          - total_active_count
+          - percentage_of_active
+
+          - months_since_signup    
+          - signup_date
