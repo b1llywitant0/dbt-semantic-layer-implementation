@@ -15,7 +15,7 @@ cubes:
         {% elif column.name in ['mql_id'] %}
       - name: {{ column.name }}
         sql: {{ column.sql }}
-        type: time
+        type: {{ column.type }}
         primary_key: true
         description: {{ column.description }}
         meta:
@@ -30,10 +30,10 @@ cubes:
         {% endif %}
       {% endfor %}
 
-    # joins:
-    #   - name: dim_leads
-    #     sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
-    #     relationship: one_to_many
+    joins:
+      - name: dim_leads
+        sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
+        relationship: one_to_many
 
     measures:
       - name: count

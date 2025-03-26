@@ -12,6 +12,14 @@ cubes:
         description: {{ column.description }}
         meta:
           source: dbt
+        {% elif column.name in ['lead_sk'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        primary_key: true
+        description: {{ column.description }}
+        meta:
+          source: dbt
         {% else %}
       - name: {{ column.name }}
         sql: {{ column.sql }}
