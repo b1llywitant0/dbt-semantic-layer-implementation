@@ -45,24 +45,52 @@ cubes:
     measures:
       - name: count
         type: count
+
       - name: order_count
         sql: order_id
         type: count_distinct
+
       - name: n_of_leads
         sql: mql_id
         type: count_distinct
+
+      - name: monthly_active_sellers
+        type: count_distinct
+        sql: mql_id
+        rolling_window:
+          trailing: 30 day
+          offset: start     
+
+      - name: weekly_active_sellers
+        type: count_distinct
+        sql: mql_id
+        rolling_window:
+          trailing: 7 day
+          offset: start
+
+      - name: daily_active_sellers
+        type: count_distinct
+        sql: mql_id
+        rolling_window:
+          trailing: 1 day
+          offset: start
+              
       - name: gmv
         sql: order_value
         type: sum
+
       - name: max_order_value
         sql: order_value
         type: max
+
       - name: min_order_value
         sql: order_value
         type: min
+
       - name: avg_order_value
         sql: order_value
         type: avg
+        
       - name: latest_order
         sql: "argMax(order_id, order_delivered_carrier_date)"
         type: string

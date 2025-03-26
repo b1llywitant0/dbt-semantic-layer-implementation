@@ -33,6 +33,7 @@ cubes:
     measures:
       - name: count
         type: count
+        
       - name: n_of_leads
         sql: mql_id
         type: count_distinct
