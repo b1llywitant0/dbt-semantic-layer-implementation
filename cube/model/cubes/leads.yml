@@ -1,7 +1,10 @@
 {% set model = dbt_model('dim_leads') %}
  
 cubes:
-  - {{ model.as_cube() }}
+  - name: dim_leads
+    sql: >
+      SELECT * FROM ecommerce_dw_mart_marketing.dim_leads
+      WHERE is_current = 1 AND deleted = 0
  
     dimensions:
       {% for column in model.columns %}
