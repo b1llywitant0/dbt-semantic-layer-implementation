@@ -36,9 +36,9 @@ views:
 
       - join_path: fct_lead_conversions
         includes:
-          - conversion_rate
+          # - conversion_rate
           - n_of_leads
-          - n_of_leads_conversed
+          # - n_of_leads_conversed
       
       - join_path: dim_leads
         includes:
