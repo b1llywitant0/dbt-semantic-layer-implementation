@@ -53,27 +53,6 @@ cubes:
       - name: order_count
         sql: order_id
         type: count_distinct
-
-      # - name: monthly_active_sellers
-      #   sql: mql_id
-      #   type: count_distinct
-      #   rolling_window:
-      #     trailing: 30 day
-      #     offset: start     
-
-      # - name: weekly_active_sellers
-      #   sql: mql_id
-      #   type: count_distinct
-      #   rolling_window:
-      #     trailing: 7 day
-      #     offset: start
-
-      # - name: daily_active_sellers
-      #   sql: mql_id
-      #   type: count_distinct
-      #   rolling_window:
-      #     trailing: 1 day
-      #     offset: start
               
       - name: gmv
         sql: order_value

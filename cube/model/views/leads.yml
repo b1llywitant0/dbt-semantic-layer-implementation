@@ -51,27 +51,6 @@ views:
           - is_wolf
           - is_shark
 
-  - name: active_closed_leads
-    cubes:
-      - join_path: fct_lead_revenue 
-        includes: 
-          # - daily_active_sellers
-          # - weekly_active_sellers
-          # - monthly_active_sellers
-
-          - order_delivered_carrier_date
-
-      - join_path: dim_leads
-        includes:
-          - channel
-          - lead_type
-          - business_segment
-          - business_type
-          - is_cat
-          - is_eagle
-          - is_wolf
-          - is_shark
-
   - name: cohort
     cubes:
       - join_path: monthly_retention
