@@ -33,7 +33,7 @@ cubes:
     joins:
       - name: dim_leads
         sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
-        relationship: one_to_many
+        relationship: one_to_one
       - name: fct_lead_revenue
         sql: "{CUBE}.mql_id = {fct_lead_revenue.mql_id}"
         relationship: one_to_many

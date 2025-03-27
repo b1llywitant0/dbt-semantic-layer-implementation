@@ -46,6 +46,11 @@ cubes:
       WHERE ms.month >= l.signup_month
       ORDER BY l.mql_id, ms.month
     
+    joins:
+      - name: dim_leads
+        sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
+        relationship: many_to_one
+
     measures:
       - name: total_count
         sql: mql_id
@@ -58,9 +63,8 @@ cubes:
           - sql: order_count > 0
  
       - name: percentage_of_active
-        sql: "100.0 * {total_active_count} / NULLIF({total_count}, 0)"
+        sql: "{total_active_count} / NULLIF({total_count}, 0)"
         type: number
-        format: percent
 
     dimensions:
       - name: months_since_signup
@@ -70,3 +74,8 @@ cubes:
       - name: signup_date
         sql: signup_month
         type: time
+
+      - name: id
+        sql: "CONCAT(mql_id, '-', activity_month)"
+        type: string
+        primary_key: true

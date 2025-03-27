@@ -40,7 +40,7 @@ cubes:
     joins:
       - name: dim_leads
         sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
-        relationship: one_to_many
+        relationship: many_to_one
 
     measures:
       - name: count

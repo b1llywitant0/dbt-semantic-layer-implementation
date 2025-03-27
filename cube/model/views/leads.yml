@@ -82,3 +82,14 @@ views:
 
           - months_since_signup    
           - signup_date
+
+      - join_path: monthly_retention.dim_leads
+        includes:
+          - channel
+          - lead_type
+          - business_segment
+          - business_type
+          - is_cat
+          - is_eagle
+          - is_wolf
+          - is_shark
