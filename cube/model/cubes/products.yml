@@ -1,0 +1,131 @@
+{% set model = dbt_model('dim_products') %}
+ 
+cubes:
+  - name: dim_products
+    sql: >
+      SELECT * FROM ecommerce_dw_mart_ecommerce.dim_products
+      WHERE is_current = 1 AND deleted = 0
+ 
+    dimensions:
+      {% for column in model.columns %}
+        {% if column.name in ['valid_from', 'valid_to'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: time
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['product_sk'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        primary_key: true
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['product_height_cm','product_length_cm','product_width_cm','product_weight_g','product_volume_cm3'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: number
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% else %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        description: {{ column.description }}
+        meta:
+          source: dbt    
+        {% endif %}
+      {% endfor %}
+ 
+    measures:
+      - name: count
+        type: count
+
+      - name: n_of_products
+        sql: product_id
+        type: count_distinct
+
+# ['product_weight_g','product_volume_cm3'] %}
+
+      - name: total_height
+        sql: product_height_cm
+        type: sum
+
+      - name: avg_height
+        sql: product_height_cm
+        type: avg
+
+      - name: max_height
+        sql: product_height_cm
+        type: max
+      
+      - name: min_height
+        sql: product_height_cm
+        type: min
+
+      - name: total_width
+        sql: product_width_cm
+        type: sum
+
+      - name: avg_width
+        sql: product_width_cm
+        type: avg
+
+      - name: max_width
+        sql: product_width_cm
+        type: max
+      
+      - name: min_width
+        sql: product_width_cm
+        type: min
+
+      - name: total_length
+        sql: product_length_cm
+        type: sum
+
+      - name: avg_length
+        sql: product_length_cm
+        type: avg
+
+      - name: max_length
+        sql: product_length_cm
+        type: max
+      
+      - name: min_length
+        sql: product_length_cm
+        type: min
+
+      - name: total_weigth
+        sql: product_weigth_g
+        type: sum
+
+      - name: avg_weigth
+        sql: product_weigth_g
+        type: avg
+
+      - name: max_weigth
+        sql: product_weigth_g
+        type: max
+      
+      - name: min_weigth
+        sql: product_weigth_g
+        type: min
+
+      - name: total_volume
+        sql: product_volume_cm3
+        type: sum
+
+      - name: avg_volume
+        sql: product_volume_cm3
+        type: avg
+
+      - name: max_volume
+        sql: product_volume_cm3
+        type: max
+      
+      - name: min_volume
+        sql: product_volume_cm3
+        type: min
