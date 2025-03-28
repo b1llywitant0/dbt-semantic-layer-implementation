@@ -39,3 +39,10 @@ models:
         description: Timestamp of data validity period - end.
         tests:
           - not_null
+      - name: is_current
+        description: Indicating the latest data.
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1

@@ -39,3 +39,10 @@ models:
         description: Timestamp indicating the end of period.
         tests:
           - not_null
+      - name: is_current
+        description: Indicating the latest data.
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1
