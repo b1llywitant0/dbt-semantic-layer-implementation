@@ -1,9 +1,9 @@
-{% set model = dbt_model('dim_customers') %}
+{% set model = dbt_model('dim_sellers') %}
  
 cubes:
-  - name: dim_customers
+  - name: dim_sellers
     sql: >
-      SELECT * FROM ecommerce_dw_mart_ecommerce.dim_customers
+      SELECT * FROM ecommerce_dw_mart_ecommerce.dim_sellers
       WHERE is_current = 1 AND deleted = 0
  
     dimensions:
@@ -15,7 +15,7 @@ cubes:
         description: {{ column.description }}
         meta:
           source: dbt
-        {% elif column.name in ['customer_sk'] %}
+        {% elif column.name in ['seller_sk'] %}
       - name: {{ column.name }}
         sql: {{ column.sql }}
         type: {{ column.type }}
@@ -37,6 +37,6 @@ cubes:
       - name: count
         type: count
 
-      - name: n_of_customers
-        sql: account_id
+      - name: n_of_sellers
+        sql: seller_id
         type: count_distinct
