@@ -10,6 +10,7 @@ customers AS (
 )
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['customers.customer_id', 'customers.dbt_valid_from']) }} AS customer_sk,
     customers.customer_id AS account_id,
     customers.customer_unique_id AS user_id,
     geolocations.geolocation_city AS city,

@@ -9,6 +9,11 @@ models:
             - product_id
             - valid_from
     columns:
+      - name: product_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: product_id
         description: The unique identifier of the product.
         tests:
@@ -60,6 +65,11 @@ models:
             - user_id
             - valid_from
     columns:
+      - name: customer_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: account_id
         description: The unique identifier of an account.
         tests:
@@ -96,6 +106,11 @@ models:
             - seller_id
             - valid_from
     columns:
+      - name: seller_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: seller_id
         description: The unique identifier of the seller.
         tests:
@@ -128,6 +143,11 @@ models:
             - order_id
             - valid_from
     columns:
+      - name: order_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: order_id
         description: Unique identifier of the order.
         tests:
@@ -303,6 +323,11 @@ models:
             - order_id
             - valid_from
     columns:
+      - name: order_review_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: review_id
         description: Indicating the review of order. With final clause, it will be the primary key of the table.
         tests:
