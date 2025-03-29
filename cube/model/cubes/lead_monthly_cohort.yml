@@ -1,5 +1,5 @@
 cubes:
-  - name: monthly_retention
+  - name: lead_monthly_retention
     sql: >
       WITH 
           start_date AS (

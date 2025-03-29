@@ -53,7 +53,7 @@ views:
 
   - name: cohort
     cubes:
-      - join_path: monthly_retention
+      - join_path: lead_monthly_retention
         includes:
           - total_count
           - total_active_count
@@ -62,7 +62,7 @@ views:
           - months_since_signup    
           - signup_date
 
-      - join_path: monthly_retention.dim_leads
+      - join_path: lead_monthly_retention.dim_leads
         includes:
           - channel
           - lead_type
