@@ -5,6 +5,7 @@
 }}
 
 SELECT
+    seller_sk,
     seller_id,
     city,
     state,

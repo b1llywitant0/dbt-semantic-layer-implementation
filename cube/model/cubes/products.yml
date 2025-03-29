@@ -48,8 +48,6 @@ cubes:
         sql: product_id
         type: count_distinct
 
-# ['product_weight_g','product_volume_cm3'] %}
-
       - name: total_height
         sql: product_height_cm
         type: sum

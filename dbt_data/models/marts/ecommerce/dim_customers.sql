@@ -5,6 +5,7 @@
 }}
 
 SELECT
+    customer_sk,
     account_id,
     user_id,
     city,

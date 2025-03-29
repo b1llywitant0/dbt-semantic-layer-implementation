@@ -10,6 +10,11 @@ models:
             - valid_from
             - valid_to
     columns:
+      - name: product_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: product_id
         description: Indicating unique product.
         tests:

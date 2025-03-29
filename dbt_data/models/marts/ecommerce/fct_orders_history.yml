@@ -11,6 +11,11 @@ models:
             - order_id
             - valid_from
     columns:
+      - name: order_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: order_id
         description: Unique identifier of the order.
         tests:

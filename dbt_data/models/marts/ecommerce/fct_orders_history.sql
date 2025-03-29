@@ -5,6 +5,7 @@
 }}
 
 SELECT
+    order_sk,
     order_id,
     order_status,
     order_purchase_timestamp,

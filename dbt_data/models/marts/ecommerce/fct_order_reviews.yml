@@ -9,6 +9,11 @@ models:
             - review_id
             - order_id
     columns:
+      - name: order_review_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: review_id
         description: Indicating the review of order. Strangely, there are review ID for multiple order ID.
         tests:

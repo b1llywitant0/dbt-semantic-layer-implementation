@@ -5,6 +5,7 @@
 }}
 
 SELECT
+    product_sk,
     product_id,
     product_category,
     product_weight_g,

@@ -11,7 +11,8 @@ valid_orders AS (
 ),
 
 order_reviews AS (
-    SELECT 
+    SELECT
+        order_review_sk, 
         review_id,
         order_id,
         review_score,
@@ -25,6 +26,7 @@ order_reviews AS (
 )
 
 SELECT
+    order_reviews.order_review_sk,
     order_reviews.review_id,
     order_reviews.order_id AS order_id,
     valid_orders.customer_id,
