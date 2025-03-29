@@ -51,7 +51,7 @@ views:
           - is_wolf
           - is_shark
 
-  - name: cohort
+  - name: lead_cohort
     cubes:
       - join_path: lead_monthly_retention
         includes:
