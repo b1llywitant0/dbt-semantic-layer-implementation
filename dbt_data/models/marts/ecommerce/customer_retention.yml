@@ -6,22 +6,22 @@ models:
       Materialized retention analysis of users. 
       The cohort group was based on active users who made order(s) in the period.
     columns:
-      - name: month
+      - name: cohort
         description: The period.
         tests:
           - not_null
           - unique
-      - name: active_users
+      - name: month_0
         description: The total active users in the period.
-      - name: retention_month_1
+      - name: month_1
         description: The number of active purchase in the cohor period who made purchase again in month+1.
-      - name: retention_month_2
+      - name: month_2
         description: The number of active purchase in the cohor period who made purchase again in month+2.
-      - name: retention_month_3
+      - name: month_3
         description: The number of active purchase in the cohor period who made purchase again in month+3.
-      - name: retention_month_4
+      - name: month_4
         description: The number of active purchase in the cohor period who made purchase again in month+4.
-      - name: retention_month_5
+      - name: month_5
         description: The number of active purchase in the cohor period who made purchase again in month+5.
-      - name: retention_month_6
+      - name: month_6
         description: The number of active purchase in the cohor period who made purchase again in month+6.

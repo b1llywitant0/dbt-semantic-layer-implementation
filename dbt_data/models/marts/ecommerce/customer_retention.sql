@@ -61,17 +61,30 @@ WITH
         ) AS month_plus_6
         FROM joined
         WHERE order_month IS NOT NULL
+    ),
+
+    counted AS (
+        SELECT
+            date_month AS cohort,
+            COUNT(DISTINCT user_id) AS active_users,
+            COUNT(DISTINCT CASE WHEN month_plus_1 IS NOT NULL THEN user_id END) AS retention_month_1,
+            COUNT(DISTINCT CASE WHEN month_plus_2 IS NOT NULL THEN user_id END) AS retention_month_2,
+            COUNT(DISTINCT CASE WHEN month_plus_3 IS NOT NULL THEN user_id END) AS retention_month_3,
+            COUNT(DISTINCT CASE WHEN month_plus_4 IS NOT NULL THEN user_id END) AS retention_month_4,
+            COUNT(DISTINCT CASE WHEN month_plus_5 IS NOT NULL THEN user_id END) AS retention_month_5,
+            COUNT(DISTINCT CASE WHEN month_plus_6 IS NOT NULL THEN user_id END) AS retention_month_6
+        FROM windowed
+        GROUP BY date_month
+        ORDER BY date_month
     )
     
 SELECT
-    date_month AS month,
-    COUNT(DISTINCT user_id) AS active_users,
-    COUNT(DISTINCT CASE WHEN month_plus_1 IS NOT NULL THEN user_id END) AS retention_month_1,
-    COUNT(DISTINCT CASE WHEN month_plus_2 IS NOT NULL THEN user_id END) AS retention_month_2,
-    COUNT(DISTINCT CASE WHEN month_plus_3 IS NOT NULL THEN user_id END) AS retention_month_3,
-    COUNT(DISTINCT CASE WHEN month_plus_4 IS NOT NULL THEN user_id END) AS retention_month_4,
-    COUNT(DISTINCT CASE WHEN month_plus_5 IS NOT NULL THEN user_id END) AS retention_month_5,
-    COUNT(DISTINCT CASE WHEN month_plus_6 IS NOT NULL THEN user_id END) AS retention_month_6
-FROM windowed
-GROUP BY date_month
-ORDER BY date_month
+    cohort,
+    active_users / NULLIF(active_users, 0) AS month_0,
+    retention_month_1 / NULLIF(active_users, 0) AS month_1,
+    retention_month_2 / NULLIF(active_users, 0) AS month_2,
+    retention_month_3 / NULLIF(active_users, 0) AS month_3,
+    retention_month_4 / NULLIF(active_users, 0) AS month_4,
+    retention_month_5 / NULLIF(active_users, 0) AS month_5,
+    retention_month_6 / NULLIF(active_users, 0) AS month_6
+FROM counted
