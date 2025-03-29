@@ -3,6 +3,8 @@
 cubes:
   - {{ model.as_cube() }}
  
+    public: false
+
     dimensions:
       {% for column in model.columns %}
         {% if column.name in ['won_date','order_delivered_carrier_date'] %}

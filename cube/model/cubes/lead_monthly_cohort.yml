@@ -46,6 +46,8 @@ cubes:
       WHERE ms.month >= l.signup_month
       ORDER BY l.mql_id, ms.month
     
+    public: false
+    
     joins:
       - name: dim_leads
         sql: "{CUBE}.mql_id = {dim_leads.mql_id}"

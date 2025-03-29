@@ -2,6 +2,8 @@
  
 cubes:
   - {{ model.as_cube() }}
+
+    public: false
  
     dimensions:
       {% for column in model.columns %}

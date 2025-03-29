@@ -6,6 +6,8 @@ cubes:
       SELECT * FROM ecommerce_dw_mart_marketing.dim_leads
       WHERE is_current = 1 AND deleted = 0
  
+    public: false
+
     dimensions:
       {% for column in model.columns %}
         {% if column.name in ['valid_from', 'valid_to'] %}
