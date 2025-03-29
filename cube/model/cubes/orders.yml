@@ -5,7 +5,7 @@ cubes:
  
     dimensions:
       {% for column in model.columns %}
-        {% if column.name in ['order_creation_date','shipping_limit_date','estimated_delivery_date'] %}
+        {% if column.name in ['order_creation_date','shipping_limit_date','order_estimated_delivery_date'] %}
       - name: {{ column.name }}
         sql: {{ column.sql }}
         type: time
@@ -46,10 +46,26 @@ cubes:
       - name: count
         type: count
 
+      - name: active_user_count
+        sql: customer_id
+        type: count_distinct
+
       - name: order_count
         sql: order_id
         type: count_distinct
               
+      - name: completed_order_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status = 'delivered'"
+      
+      - name: canceled_order_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status = 'canceled'"
+
       - name: gmv
         sql: order_value
         type: sum
@@ -65,3 +81,31 @@ cubes:
       - name: avg_order_value
         sql: order_value
         type: avg
+
+      - name: monthly_active_users
+        type: count_distinct
+        sql: customer_id
+        rolling_window:
+          trailing: 30 day
+          offset: start
+ 
+      - name: weekly_active_users
+        type: count_distinct
+        sql: customer_id
+        rolling_window:
+          trailing: 7 day
+          offset: start
+ 
+      - name: daily_active_users
+        type: count_distinct
+        sql: customer_id
+        rolling_window:
+          trailing: 1 day
+          offset: start
+ 
+      - name: wau_to_mau
+        title: WAU to MAU
+        type: number
+        sql:
+          "{weekly_active_users} / NULLIF({monthly_active_users}, 0)"
+          
