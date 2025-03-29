@@ -1,5 +1,5 @@
 models:
-  - name: time_spine_daily
+  - name: dim_dates
     description: A time spine with one row per day, ranging from 20 years in the past to 30 days into the future.
     # time_spine:
     #   standard_granularity_column: date_day

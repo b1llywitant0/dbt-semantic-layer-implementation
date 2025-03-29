@@ -27,4 +27,4 @@ final AS (
 SELECT *
 FROM final
 WHERE date_day > dateadd(YEAR, -20, current_date())
-  AND date_day < dateadd(DAY, 30, current_date());
+  AND date_day < dateadd(DAY, 30, current_date())
