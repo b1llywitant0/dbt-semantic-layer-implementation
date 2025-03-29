@@ -10,8 +10,8 @@ order_customer AS (
         customer_id,
         order_id,
         order_purchase_timestamp,
-        toYear(order_purchase_timestamp) AS order_year,
-        toMonth(order_purchase_timestamp) AS order_month
+        toStartOfYear(order_purchase_timestamp) AS order_year,
+        toStartOfMonth(order_purchase_timestamp) AS order_month
     FROM {{ ref("stg_olist__orders") }}
     WHERE valid_to = '{{var("future_proof_date")}}'
 )
