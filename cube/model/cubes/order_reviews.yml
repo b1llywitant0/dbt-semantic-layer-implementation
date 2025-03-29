@@ -1,0 +1,59 @@
+{% set model = dbt_model('fct_order_reviews') %}
+ 
+cubes:
+  - {{ model.as_cube() }}
+
+    public: false
+ 
+    dimensions:
+      {% for column in model.columns %}
+        {% if column.name in ['review_creation_date','review_answer_timestamp'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: time
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['order_review_sk'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        primary_key: true
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['review_score'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: number
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% else %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        description: {{ column.description }}
+        meta:
+          source: dbt    
+        {% endif %}
+      {% endfor %}
+
+    joins:
+      - name: fct_orders
+        sql: "{CUBE}.order_id = {fct_orders.order_id}"
+        relationship: many_to_one
+      - name: fct_order_items
+        sql: "{CUBE}.order_id = {fct_order_items.order_id}"
+        relationship: has_many
+      - name: fct_order_payments
+        sql: "{CUBE}.order_id = {fct_order_payments.order_id}"
+        relationship: has_many
+
+    measures:
+      - name: count
+        type: count
+
+      - name: average_score
+        sql: review_score
+        type: avg
