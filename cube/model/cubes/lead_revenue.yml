@@ -43,6 +43,12 @@ cubes:
       - name: dim_leads
         sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
         relationship: many_to_one
+      - name: fct_orders
+        sql: "{CUBE}.order_id = {fct_orders.order_id}"
+        relationship: many_to_one
+      - name: dim_sellers
+        sql: "{CUBE}.seller_id = {dim_sellers.seller_id}"
+        relationship: many_to_one
 
     measures:
       - name: count
