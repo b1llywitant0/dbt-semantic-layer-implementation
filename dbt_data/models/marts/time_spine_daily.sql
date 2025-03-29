@@ -7,7 +7,7 @@
 WITH
 base_dates AS (
     {{
-        dbt.date_spine(
+        dbt_utils.date_spine(
             'day',
             "DATE('2000-01-01')",
             "DATE('2030-01-01')"
@@ -17,7 +17,10 @@ base_dates AS (
 
 final AS (
     SELECT
-        CAST(date_day AS DATE) AS date_day
+        CAST(date_day AS DATE) AS date_day,
+        toStartOfWeek(CAST(date_day AS DATE)) AS date_week,
+        toStartOfMonth(CAST(date_day AS DATE)) AS date_month,
+        toStartOfYear(CAST(date_day AS DATE)) AS date_year
     FROM base_dates
 )
 
