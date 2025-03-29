@@ -42,3 +42,7 @@ cubes:
       - name: n_of_customers
         sql: account_id
         type: count_distinct
+
+      - name: n_of_users
+        sql: user_id
+        type: count_distinct
