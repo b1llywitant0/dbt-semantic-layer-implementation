@@ -4,104 +4,81 @@ views:
       - join_path: dim_customers
         includes:
           - name: n_of_customers
-            alias: "Number of Accounts"
+            alias: number_of_accounts
           - name: n_of_users
-            alias: "Number of Users"
+            alias: number_of_users
 
-          - name: city
-            alias: "City"
-          - name: state
-            alias: "State"
-          - name: account_id
-            alias: "Account ID"
-          - name: user_id
-            alias: "User ID"
+          - city
+          - state
+          - account_id
+          - user_id
 
-      - join_path: dim_customers.fct_orders
+      - join_path: fct_orders
         includes:
-          - name: avg_order_value
-            alias: "Average Order Value"
-          - name: order_count
-            alias: "Count of Orders"
-          - name: completed_order_count
-            alias: "Count of Completed Orders"
-          - name: canceled_order_count
-            alias: "Count of Canceled Orders"
-          - name: max_order_value
-            alias: "Maximum Order Value"
-          - name: min_order_value
-            alias: "Minimum Order Value"
-          - name: first_order_date
-            alias: "First Order Date"
-          - name: latest_order_date
-            alias: "Latest Order Date"
+          - avg_order_value
+          - order_count
+          - completed_order_count
+          - canceled_order_count
+          - max_order_value
+          - min_order_value
+          - first_order_date
+          - latest_order_date
 
-      - join_path: dim_customers.fct_order_payments
+      - join_path: fct_order_payments
         includes:
           - name: sum_payment_value
-            alias: "Customer Lifetime Value"
+            alias: lifetime_value
       
-      - join_path: dim_customers.fct_order_reviews
+      - join_path: fct_order_reviews
         includes: 
           - name: average_review_score
-            alias: "Average Review Score"
+            alias: avg_review_score
           - name: count_reviews
-            alias: "Number of Reviews"
+            alias: review_count
 
-      - join_path: dim_customers.fct_order_items
+      - join_path: fct_order_items
         includes:
           - name: count_distinct_product
-            alias: "Number of Unique Products Bought"
+            alias: number_of_unique_products_bought
           - name: sum_product_quantity
-            alias: "Number of Products Bought"
+            alias: number_of_products_bought
 
   - name: seller_metrics
     cubes:
       - join_path: dim_sellers
         includes:
           - name: n_of_sellers
-            alias: "Number of Sellers"
+            alias: number_of_sellers
 
-          - name: city
-            alias: "City"
-          - name: state
-            alias: "State"
-          - name: seller_id
-            alias: "Seller ID"
+          - city
+          - state
+          - seller_id
       
-      - join_path: dim_sellers.fct_orders
+      - join_path: fct_orders
         includes:
-          - name: avg_order_value
-            alias: "Average Order Value"
-          - name: order_count
-            alias: "Count of Orders"
-          - name: completed_order_count
-            alias: "Count of Completed Orders"
-          - name: canceled_order_count
-            alias: "Count of Canceled Orders"
+          - avg_order_value
+          - order_count
+          - completed_order_count
+          - canceled_order_count
           - name: gmv
-            alias: "Gross Merchandise Value (GMV)"
-          - name: max_order_value
-            alias: "Maximum Order Value"
-          - name: min_order_value
-            alias: "Minimum Order Value"
-          - name: first_order_date
-            alias: "First Order Date"
-          - name: latest_order_date
-            alias: "Latest Order Date"
+            alias: gross_merchandise_value
+          - max_order_value
+          - min_order_value
+          - first_order_date
+          - latest_order_date
           - name: active_user_count
-            alias: "Number of Served Customers"
+            alias: number_of_served_customers
 
-      - join_path: dim_sellers.fct_order_reviews
+      - join_path: fct_order_reviews
         includes: 
           - name: average_review_score
-            alias: "Average Review Score"
+            alias: avg_review_score
           - name: count_reviews
-            alias: "Number of Reviews"
+            alias: review_count
 
       - join_path: fct_order_items
         includes:
           - name: count_distinct_product
-            alias: "Number of Sold Unique Products"
+            alias: number_of_unique_products_sold
           - name: sum_product_quantity   
-            alias: "Number of Sold Products"   
+            alias: number_of_sold_products   
