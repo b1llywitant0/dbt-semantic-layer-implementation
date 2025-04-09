@@ -45,9 +45,9 @@ cubes:
         relationship: many_to_one
 
     measures:
-      - name: count
+      - name: count_reviews
         type: count
 
-      - name: average_score
+      - name: average_review_score
         sql: review_score
         type: avg

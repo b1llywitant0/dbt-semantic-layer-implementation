@@ -1,0 +1,76 @@
+views:
+  - name: customer_metrics
+    cubes:
+      - join_path: dim_customers
+        includes:
+          - n_of_customers
+          - n_of_users
+
+          - city
+          - state
+          - account_id
+          - user_id
+
+      - join_path: fct_orders
+        includes:
+          - avg_order_value
+          - order_count
+          - completed_order_count
+          - canceled_order_count
+          - gmv
+          - max_order_value
+          - min_order_value
+          - first_order_date
+          - latest_order_date
+          - active_user_count
+
+      - join_path: fct_order_payments
+        includes:
+          - sum_payment_value
+
+          - paid_installments
+          - payment_method
+      
+      - join_path: fct_order_reviews
+        includes: 
+          - average_review_score
+          - count_reviews
+
+      - join_path: fct_order_items
+        includes:
+          - count_distinct_product
+          - sum_product_quantity
+
+  - name: seller_metrics
+    cubes:
+      - join_path: dim_sellers
+        includes:
+          - n_of_sellers
+
+          - city
+          - state
+          - seller_id
+
+      - join_path: fct_order_items
+        includes:
+          - count_distinct_product
+          - sum_product_quantity      
+      
+      - join_path: fct_order_items.fct_orders
+        includes:
+          - avg_order_value
+          - order_count
+          - completed_order_count
+          - canceled_order_count
+          - gmv
+          - max_order_value
+          - min_order_value
+          - first_order_date
+          - latest_order_date
+          - active_user_count
+
+      - join_path: fct_order_reviews
+        includes: 
+          - average_review_score
+          - count_reviews
+

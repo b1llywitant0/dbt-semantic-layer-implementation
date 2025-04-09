@@ -106,7 +106,7 @@ services:
               "plugin.name": "pgoutput",
               "publication.name": "dbz_publication",
               "publication.autocreate.mode": "filtered",
-              "table.include.list": "public.products,public.geolocations,public.customers,public.sellers,public.orders,public.order_payments,public.order_items,public.order_reviews,public.qualified_leads,public.closed_deals",
+              "table.include.list": "public.products,public.customers,public.sellers,public.orders,public.order_payments,public.order_items,public.order_reviews,public.qualified_leads,public.closed_deals",
               "slot.name": "debezium"
           }'
 

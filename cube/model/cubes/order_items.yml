@@ -54,6 +54,10 @@ cubes:
       - name: count
         type: count
 
+      - name: count_distinct_product
+        sql: product_id
+        type: count_distinct
+
       - name: sum_price
         sql: total_price
         type: sum
@@ -86,18 +90,18 @@ cubes:
         sql: total_freight_value
         type: min
 
-      - name: sum_quantity
+      - name: sum_product_quantity
         sql: quantity
         type: sum
 
-      - name: average_quantity
+      - name: average_product_quantity
         sql: quantity
         type: avg
 
-      - name: max_quantity
+      - name: max_product_quantity
         sql: quantity
         type: max
 
-      - name: min_quantity
+      - name: min_product_quantity
         sql: quantity
         type: min

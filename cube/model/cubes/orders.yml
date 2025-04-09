@@ -72,6 +72,14 @@ cubes:
         sql: order_value
         type: sum
 
+      - name: first_order_date
+        sql: "MIN({CUBE}.order_creation_date)"
+        type: time
+
+      - name: latest_order_date
+        sql: "MAX({CUBE}.order_creation_date)"
+        type: time
+
       - name: max_order_value
         sql: order_value
         type: max
