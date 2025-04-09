@@ -3,10 +3,14 @@ views:
     cubes:
       - join_path: fct_lead_conversions
         includes:
-          - n_of_leads
-          - n_of_leads_conversed
-          - conversion_rate
-          - avg_date_diff_closed_deals
+          - name: n_of_leads
+            alias: number_of_leads
+          - name: n_of_leads_conversed
+            alias: number_of_closed_deals
+          - name: conversion_rate
+            alias: lead_conversion_rate
+          - name: avg_date_diff_closed_deals
+            alias: avg_days_to_closing
 
           - landing_page_id
           - sdr_id
@@ -16,33 +20,42 @@ views:
       
       - join_path: fct_lead_conversions.dim_leads
         includes:
-          - status
-          - channel
+          - name: status
+            alias: lead_status
+          - name: channel
+            alias: lead_acquistion_channel
   
   - name: closed_deals_performance
     cubes:
       - join_path: fct_lead_revenue 
         includes: 
-          - gmv
-          - n_of_sellers
+          - name: gmv
+            alias: gross_merchandise_value
+          - name: n_of_sellers
+            alias: number_of_closed_deals_with_order
           - order_count
           - avg_order_value
           - max_order_value
           - min_order_value
           - latest_order
 
-          - order_delivered_carrier_date
+          - name: order_delivered_carrier_date
+            alias: order_delivery_to_carrier_date
           - won_date
 
       - join_path: fct_lead_conversions
         includes:
-          - conversion_rate
-          - n_of_leads
-          - n_of_leads_conversed
+          - name: conversion_rate
+            alias: lead_conversion_rate
+          - name: n_of_leads
+            alias: number_of_leads
+          - name: n_of_leads_conversed
+            alias: number_of_closed_deals
       
       - join_path: dim_leads
         includes:
-          - channel
+          - name: channel
+            alias: lead_acquisition_channel
           - lead_type
           - business_segment
           - business_type
