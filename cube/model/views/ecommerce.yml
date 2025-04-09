@@ -56,7 +56,7 @@ views:
           - count_distinct_product
           - sum_product_quantity      
       
-      - join_path: fct_order_items.fct_orders
+      - join_path: fct_orders
         includes:
           - avg_order_value
           - order_count

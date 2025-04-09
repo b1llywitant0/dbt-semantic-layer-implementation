@@ -43,6 +43,12 @@ cubes:
       - name: fct_orders
         sql: "{CUBE}.order_id = {fct_orders.order_id}"
         relationship: many_to_one
+      - name: dim_customers
+        sql: "{CUBE}.customer_id = {dim_customers.account_id}"
+        relationship: many_to_one
+      - name: review_order_items
+        sql: "{CUBE}.order_review_sk = {review_order_items.id} AND {CUBE}.review_id = {review_order_items.review_id}"
+        relationship: many_to_one
 
     measures:
       - name: count_reviews
@@ -51,3 +57,34 @@ cubes:
       - name: average_review_score
         sql: review_score
         type: avg
+
+  - name: review_order_items
+    sql: >
+      SELECT
+        order_review_sk,
+        review_id,
+        order_id,
+        MIN(review_answer_timestamp) AS review_answer_timestamp
+      FROM ecommerce_dw_mart_ecommerce.fct_order_reviews
+      GROUP BY 1, 2, 3
+    
+    joins:
+      - name: fct_order_items
+        relationship: many_to_one
+        sql: "{CUBE}.order_id = {fct_order_items}.order_id"
+
+    measures:
+      - name: count
+        type: count
+
+    dimensions:
+      - name: id
+        sql: order_review_sk
+        type: string
+        primary_key: true
+      - name: review_id
+        sql: review_id
+        type: string
+      - name: order_id
+        sql: order_id
+        type: string
