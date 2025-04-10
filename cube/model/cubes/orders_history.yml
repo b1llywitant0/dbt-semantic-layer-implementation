@@ -1,7 +1,10 @@
 {% set model = dbt_model('fct_orders_history') %}
  
 cubes:
-  - {{ model.as_cube() }}
+  - name: fct_orders_history
+    sql: >
+      SELECT * FROM ecommerce_dw_mart_ecommerce.fct_orders_history
+      WHERE is_current = 1
 
     public: false
  
@@ -22,6 +25,13 @@ cubes:
         description: {{ column.description }}
         meta:
           source: dbt
+        {% elif column.name in ['late_delivery'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: number
+        description: {{ column.description }}
+        meta:
+          source: dbt
         {% else %}
       - name: {{ column.name }}
         sql: {{ column.sql }}
@@ -35,8 +45,66 @@ cubes:
     joins:
       - name: fct_orders
         sql: "{CUBE}.order_id = {fct_orders.order_id}"
-        relationship: many_to_one
+        relationship: one_to_one
 
     measures:
       - name: count
         type: count
+
+      - name: order_count
+        sql: order_id
+        type: count_distinct
+
+      - name: unprocessed_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status = 'created'"
+
+      - name: processed_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status IN ('approved','invoiced','processing')"
+
+      - name: shipped_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status = 'shipped'"
+
+      - name: delivered_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status = 'delivered'"
+
+      - name: canceled_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.order_status = 'canceled'"
+
+      - name: late_delivery_count
+        sql: late_delivery
+        type: sum
+
+      - name: on_time_delivery_count
+        sql: late_delivery
+        type: count
+        filters:
+          - sql: >
+              {CUBE}.late_delivery = 0 AND
+              {CUBE}.order_status = 'delivered'
+
+      - name: order_to_shipped
+        sql: "(dateDiff('day', toDateTime64({CUBE}.order_purchase_timestamp, 0), toDateTime64({CUBE}.order_delivered_carrier_date, 0)))"
+        type: avg
+
+      - name: shipped_to_delivered
+        sql: "(dateDiff('day', toDateTime64({CUBE}.order_delivered_carrier_date, 0), toDateTime64({CUBE}.order_delivered_customer_date, 0)))"
+        type: avg
+
+      - name: order_to_delivery
+        sql: "(dateDiff('day', toDateTime64({CUBE}.order_purchase_timestamp, 0), toDateTime64({CUBE}.order_delivered_customer_date, 0)))"
+        type: avg

@@ -36,6 +36,13 @@ models:
         description: Timestamp of order delivered to customer.
       - name: order_estimated_delivery_date
         description: Estimated timestamp of order delivered to customer.
+      - name: late_delivery
+        description: 1 for late, 0 for not late/still on time.
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1
       - name: valid_from
         description: Timestamp indicating the start of period.
         tests:
