@@ -18,7 +18,7 @@ views:
           - first_contact_date
           - won_date
       
-      - join_path: fct_lead_conversions.dim_leads
+      - join_path: dim_leads
         includes:
           - name: status
             alias: lead_status
@@ -37,7 +37,6 @@ views:
           - avg_order_value
           - max_order_value
           - min_order_value
-          - latest_order
 
           - name: order_delivered_carrier_date
             alias: order_delivery_to_carrier_date

@@ -68,10 +68,18 @@ cubes:
       FROM ecommerce_dw_mart_ecommerce.fct_order_reviews
       GROUP BY 1, 2, 3
     
+    public: false
+
     joins:
       - name: fct_order_items
-        relationship: many_to_one
+        relationship: one_to_many
         sql: "{CUBE}.order_id = {fct_order_items}.order_id"
+      - name: fct_order_payments
+        relationship: one_to_many
+        sql: "{CUBE}.order_id = {fct_order_payments}.order_id"
+      - name: fct_orders
+        relationship: many_to_one
+        sql: "{CUBE}.order_id = {fct_orders}.order_id"
 
     measures:
       - name: count

@@ -1,3 +1,5 @@
+SET prefer_column_name_to_alias = 0;
+
 CREATE DATABASE IF NOT EXISTS raw;
 
 CREATE TABLE IF NOT EXISTS raw.product_categories (

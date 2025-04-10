@@ -79,11 +79,5 @@ cubes:
         type: avg
 
       - name: max_order_delivered_carrier_date
-        sql: order_delivered_carrier_date
-        type: max
-
-      - name: latest_order
-        sql: order_id
-        type: string
-        filters:
-          - sql: "{CUBE.order_delivered_carrier_date} = {max_order_delivered_carrier_date}"
+        sql: "MAX(order_delivered_carrier_date)"
+        type: time

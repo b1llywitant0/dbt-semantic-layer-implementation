@@ -98,20 +98,20 @@ cubes:
         sql: product_length_cm
         type: min
 
-      - name: total_weigth
-        sql: product_weigth_g
+      - name: total_weight
+        sql: product_weight_g
         type: sum
 
-      - name: avg_weigth
-        sql: product_weigth_g
+      - name: avg_weight
+        sql: product_weight_g
         type: avg
 
-      - name: max_weigth
-        sql: product_weigth_g
+      - name: max_weight
+        sql: product_weight_g
         type: max
       
-      - name: min_weigth
-        sql: product_weigth_g
+      - name: min_weight
+        sql: product_weight_g
         type: min
 
       - name: total_volume
