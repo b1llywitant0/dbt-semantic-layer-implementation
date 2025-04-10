@@ -54,6 +54,14 @@ cubes:
       - name: count
         type: count
 
+      - name: count_order
+        sql: order_id
+        type: count_distinct
+
+      - name: active_seller_count
+        sql: seller_id
+        type: count_distinct
+
       - name: count_distinct_product
         sql: product_id
         type: count_distinct

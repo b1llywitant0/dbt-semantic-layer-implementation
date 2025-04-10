@@ -97,3 +97,12 @@ cubes:
       - name: avg_order_value
         sql: order_value
         type: avg    
+
+      - name: order_value_per_seller
+        sql: "{gmv} / {fct_order_items.active_seller_count}"
+        type: number
+
+      - name: order_count_per_seller
+        sql: "{order_count} / {fct_order_items.active_seller_count}"
+        type: number
+        

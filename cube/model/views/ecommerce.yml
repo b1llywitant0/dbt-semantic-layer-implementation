@@ -82,3 +82,70 @@ views:
             alias: number_of_unique_products_sold
           - name: sum_product_quantity   
             alias: number_of_sold_products   
+
+  - name: app_metrics
+    cubes:
+      - join_path: dim_customers
+        includes:
+          - name: n_of_customers
+            alias: number_of_accounts
+          - name: n_of_users
+            alias: number_of_users
+          
+          - name: city
+            alias: city_customers
+          - name: state
+            alias: state_customers
+      
+      - join_path: dim_sellers
+        includes:
+          - name: n_of_sellers
+            alias: number_of_sellers
+
+          - name: city
+            alias: city_sellers
+          - name: state
+            alias: state_sellers
+      
+      - join_path: fct_orders
+        includes:
+          - active_user_count
+          - order_count
+          - name: gmv
+            alias: gross_merchandise_value
+          - avg_order_value
+          - order_value_per_seller
+          - order_count_per_seller
+
+      - join_path: fct_order_items
+        includes:
+          - active_seller_count
+          - count_distinct_product
+          - name: sum_price
+            alias: total_product_value
+          - name: average_price
+            alias: avg_product_value
+          - name: max_price
+            alias: max_product_value
+          - name: min_price
+            alias: min_product_value
+          - name: sum_freight_value
+            alias: total_freight_value
+          - name: average_freight_value
+            alias: avg_freight_value
+          - max_freight_value
+          - min_freight_value
+          - name: sum_product_quantity
+            alias: total_products_bought
+          - name: average_product_quantity
+            alias: avg_product_bought_per_order
+        
+      - join_path: fct_order_payments
+        includes:
+          - name: sum_payment_value
+            alias: paid_transaction_value
+
+      - join_path: fct_order_reviews
+        includes:
+          - count_reviews
+          - average_review_score
