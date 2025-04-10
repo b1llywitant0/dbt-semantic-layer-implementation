@@ -123,6 +123,10 @@ views:
           - order_value_per_seller
           - order_count_per_seller
 
+          - order_creation_date
+          - order_status
+          - order_value
+
       - join_path: fct_order_items
         includes:
           - active_seller_count
@@ -155,3 +159,42 @@ views:
         includes:
           - count_reviews
           - average_review_score
+
+          - review_score
+      
+      - join_path: fct_orders_activity
+        includes: 
+          - daily_active_users
+          - weekly_active_users
+          - monthly_active_users
+          - wau_to_mau
+
+      - join_path: fct_orders_history
+        includes:
+          - unprocessed_count
+          - processed_count
+          - shipped_count
+          - delivered_count
+          - canceled_count
+          - late_delivery_count
+          - on_time_delivery_count
+          - order_to_shipped
+          - shipped_to_delivered
+          - order_to_delivery
+
+      - join_path: dim_products
+        includes:
+          - product_category
+  
+  - name: user_cohort
+    cubes:
+      - join_path: customer_retention
+        includes:
+          - cohort
+          - month_0
+          - month_1
+          - month_2
+          - month_3
+          - month_4
+          - month_5
+          - month_6
