@@ -34,7 +34,11 @@ cubes:
           source: dbt    
         {% endif %}
       {% endfor %}
- 
+      - name: avg_order_value
+        sql: "{fct_orders.gmv} / {fct_orders.order_count}"
+        type: number
+        sub_query: true
+
     measures:
       - name: count
         type: count
@@ -46,3 +50,24 @@ cubes:
       - name: n_of_users
         sql: user_id
         type: count_distinct
+
+      - name: avg_order_value_per_account
+        sql: "{avg_order_value}"
+        type: avg
+
+  - name: user_aggregation
+    sql: >
+        SELECT
+            dim_customers.user_id AS user_id,
+            SUM(fct_orders.order_value) AS total_order_value,
+            COUNT(DISTINCT fct_orders.order_id) AS order_count,
+            SUM(fct_orders.order_value) / COUNT(DISTINCT fct_orders.order_id) AS average_order_value
+        FROM ecommerce_dw_mart_ecommerce.fct_orders
+        LEFT JOIN ecommerce_dw_mart_ecommerce.dim_customers
+        ON ecommerce_dw_mart_ecommerce.fct_orders.customer_id = ecommerce_dw_mart_ecommerce.dim_customers.account_id
+        GROUP BY user_id
+
+    measures:
+      - name: avg_order_value_per_user
+        sql: average_order_value
+        type: avg

@@ -7,11 +7,16 @@ views:
             alias: number_of_accounts
           - name: n_of_users
             alias: number_of_users
+          - avg_order_value_per_account
 
           - city
           - state
           - account_id
           - user_id
+      
+      - join_path: user_aggregation
+        includes:
+          - avg_order_value_per_user
 
       - join_path: fct_orders
         includes:
@@ -49,6 +54,7 @@ views:
         includes:
           - name: n_of_sellers
             alias: number_of_sellers
+          - avg_order_value_per_seller
 
           - city
           - state

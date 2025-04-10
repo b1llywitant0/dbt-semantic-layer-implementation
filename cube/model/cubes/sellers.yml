@@ -34,6 +34,10 @@ cubes:
           source: dbt    
         {% endif %}
       {% endfor %}
+      - name: avg_order_value
+        sql: "{fct_orders.gmv} / {fct_orders.order_count}"
+        type: number
+        sub_query: true
  
     measures:
       - name: count
@@ -42,3 +46,7 @@ cubes:
       - name: n_of_sellers
         sql: seller_id
         type: count_distinct
+
+      - name: avg_order_value_per_seller
+        sql: "{avg_order_value}"
+        type: avg
