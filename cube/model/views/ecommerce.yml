@@ -116,6 +116,7 @@ views:
             alias: city_customers
           - name: state
             alias: state_customers
+          - user_id
       
       - join_path: dim_sellers
         includes:
@@ -126,6 +127,7 @@ views:
             alias: city_sellers
           - name: state
             alias: state_sellers
+          - seller_id
       
       - join_path: fct_orders
         includes:
@@ -142,6 +144,7 @@ views:
           - order_creation_date
           - order_status
           - order_value
+          - order_id
 
       - join_path: fct_order_items
         includes:
