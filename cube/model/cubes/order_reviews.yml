@@ -57,6 +57,18 @@ cubes:
       - name: average_review_score
         sql: review_score
         type: avg
+      
+      - name: bad_review_count
+        sql: order_id
+        type: count_distinct
+        filters:
+          - sql: >
+              {CUBE}.review_score = 1 OR
+              {CUBE}.review_score = 2
+      
+      - name: bad_review_rate
+        sql: "{bad_review_count} / {fct_orders.order_count}"
+        type: number
 
   - name: review_order_items
     sql: >

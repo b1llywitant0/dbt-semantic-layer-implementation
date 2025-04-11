@@ -54,7 +54,15 @@ cubes:
       - name: count
         type: count
 
+      - name: active_seller_count
+        sql: "{dim_sellers.n_of_sellers}"
+        type: number
+
       - name: active_user_count
+        sql: "{dim_customers.n_of_users}"
+        type: number
+
+      - name: active_account_count
         sql: customer_id
         type: count_distinct
 
@@ -73,6 +81,10 @@ cubes:
         type: count_distinct
         filters:
           - sql: "{CUBE}.order_status = 'canceled'"
+
+      - name: cancel_rate
+        sql: "{canceled_order_count} / {order_count}"
+        type: number 
 
       - name: gmv
         sql: order_value

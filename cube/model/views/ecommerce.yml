@@ -17,6 +17,7 @@ views:
       - join_path: user_aggregation
         includes:
           - avg_order_value_per_user
+          - avg_order_count_per_user
 
       - join_path: fct_orders
         includes:
@@ -28,11 +29,17 @@ views:
           - min_order_value
           - first_order_date
           - latest_order_date
+          - active_user_count
+          - active_account_count
+
+          - order_creation_date
 
       - join_path: fct_order_payments
         includes:
           - name: sum_payment_value
             alias: lifetime_value
+
+          - payment_method
       
       - join_path: fct_order_reviews
         includes: 
@@ -55,6 +62,7 @@ views:
           - name: n_of_sellers
             alias: number_of_sellers
           - avg_order_value_per_seller
+          - avg_order_count_per_seller
 
           - city
           - state
@@ -74,6 +82,12 @@ views:
           - latest_order_date
           - name: active_user_count
             alias: number_of_served_customers
+          - active_account_count
+          - active_seller_count
+          # - order_value_per_seller
+          # - order_count_per_seller
+
+          - order_creation_date
 
       - join_path: fct_order_reviews
         includes: 
@@ -116,12 +130,14 @@ views:
       - join_path: fct_orders
         includes:
           - active_user_count
+          - active_account_count
           - order_count
           - name: gmv
             alias: gross_merchandise_value
           - avg_order_value
           - order_value_per_seller
           - order_count_per_seller
+          - cancel_rate
 
           - order_creation_date
           - order_status
@@ -154,11 +170,15 @@ views:
         includes:
           - name: sum_payment_value
             alias: paid_transaction_value
+          
+          - payment_method
 
       - join_path: fct_order_reviews
         includes:
           - count_reviews
           - average_review_score
+          - bad_review_count
+          - bad_review_rate
 
           - review_score
       

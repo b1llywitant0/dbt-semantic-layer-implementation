@@ -38,6 +38,10 @@ cubes:
         sql: "{fct_orders.gmv} / {fct_orders.order_count}"
         type: number
         sub_query: true
+      - name: order_count
+        sql: "{fct_orders.order_count}"
+        type: number
+        sub_query: true
  
     measures:
       - name: count
@@ -50,3 +54,8 @@ cubes:
       - name: avg_order_value_per_seller
         sql: "{avg_order_value}"
         type: avg
+
+      - name: avg_order_count_per_seller
+        sql: "{order_count}"
+        type: avg
+        

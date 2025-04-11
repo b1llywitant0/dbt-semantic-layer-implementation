@@ -4,10 +4,16 @@ cubes:
       SELECT
         row_number() OVER () AS surrogate_id,
         customer_id,
+        order_id,
         order_creation_date
       FROM ecommerce_dw_mart_ecommerce.fct_orders
 
     public: false
+    
+    joins:
+      - name: fct_orders
+        sql: "{CUBE}.order_id = {fct_orders.order_id}"
+        relationship: one_to_one
 
     dimensions:
       - name: surrogate_id

@@ -39,6 +39,11 @@ cubes:
         type: number
         sub_query: true
 
+    joins:
+      - name: fct_orders
+        sql: "{CUBE}.account_id = {fct_orders.customer_id}"
+        relationship: one_to_many
+
     measures:
       - name: count
         type: count
@@ -66,8 +71,22 @@ cubes:
         LEFT JOIN ecommerce_dw_mart_ecommerce.dim_customers
         ON ecommerce_dw_mart_ecommerce.fct_orders.customer_id = ecommerce_dw_mart_ecommerce.dim_customers.account_id
         GROUP BY user_id
+    
+    dimensions:
+      - name: user_id
+        sql: user_id
+        type: string
+        primary_key: true
+
+    joins:
+      - name: dim_customers
+        sql: "{CUBE}.user_id = {dim_customers.user_id}"
+        relationship: one_to_one
 
     measures:
       - name: avg_order_value_per_user
         sql: average_order_value
+        type: avg
+      - name: avg_order_count_per_user
+        sql: order_count
         type: avg
