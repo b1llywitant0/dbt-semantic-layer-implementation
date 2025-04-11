@@ -10,6 +10,7 @@ sellers AS (
 )
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['sellers.seller_id', 'sellers.dbt_valid_from']) }} AS seller_sk,
     sellers.seller_id AS seller_id,
     geolocations.geolocation_city AS city,
     geolocations.geolocation_state AS state,

@@ -1,0 +1,61 @@
+{% set model = dbt_model('dim_sellers') %}
+ 
+cubes:
+  - name: dim_sellers
+    sql: >
+      SELECT * FROM ecommerce_dw_mart_ecommerce.dim_sellers
+      WHERE is_current = 1 AND deleted = 0
+
+    public: false
+
+    dimensions:
+      {% for column in model.columns %}
+        {% if column.name in ['valid_from', 'valid_to'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: time
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['seller_sk'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        primary_key: true
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% else %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        description: {{ column.description }}
+        meta:
+          source: dbt    
+        {% endif %}
+      {% endfor %}
+      - name: avg_order_value
+        sql: "{fct_orders.gmv} / {fct_orders.order_count}"
+        type: number
+        sub_query: true
+      - name: order_count
+        sql: "{fct_orders.order_count}"
+        type: number
+        sub_query: true
+ 
+    measures:
+      - name: count
+        type: count
+
+      - name: n_of_sellers
+        sql: seller_id
+        type: count_distinct
+
+      - name: avg_order_value_per_seller
+        sql: "{avg_order_value}"
+        type: avg
+
+      - name: avg_order_count_per_seller
+        sql: "{order_count}"
+        type: avg
+        

@@ -1,0 +1,106 @@
+services:
+  finpro-cube-api:
+    container_name: finpro-cube-api
+    restart: always
+    image: finpro/cube
+    ports:
+      - 4000:4000
+      - 15432:15432
+    environment:
+      - CUBEJS_DB_TYPE=clickhouse
+      - CUBEJS_DB_HOST=${CLICKHOUSE_CONTAINER_NAME}
+      - CUBEJS_DB_PORT=${CLICKHOUSE_HTTP_PORT}
+      - CUBEJS_DB_NAME=${CLICKHOUSE_DW_DB}
+      - CUBEJS_DB_USER=${CLICKHOUSE_USER}
+      - CUBEJS_DB_PASS=${CLICKHOUSE_PASSWORD}
+      - CUBEJS_CUBESTORE_HOST=finpro-cubestore-router
+      - CUBEJS_API_SECRET=${CUBE_API_SECRET}
+      - CUBEJS_DEV_MODE=true
+      - CUBEJS_PG_SQL_PORT=15432                  
+      - CUBEJS_SQL_USER=${CUBE_API_USER}          
+      - CUBEJS_SQL_PASSWORD=${CUBE_API_PASSWORD}  
+    volumes:
+      - ../cube/model:/cube/conf/model
+      - ../cube/cube.py:/cube/conf/cube.py
+      - ../dbt_data/target/manifest.json:/dbt/manifest.json
+    depends_on:
+      - finpro-cube-refresh-worker
+      - finpro-cubestore-router
+      - finpro-cubestore-worker-1
+      - finpro-cubestore-worker-2
+    networks:
+      - finpro-network
+ 
+  finpro-cube-refresh-worker:
+    container_name: finpro-cube-refresh-worker
+    restart: always
+    image: cubejs/cube:latest
+    environment:
+      - CUBEJS_DB_TYPE=clickhouse
+      - CUBEJS_DB_HOST=${CLICKHOUSE_CONTAINER_NAME}
+      - CUBEJS_DB_PORT=${CLICKHOUSE_HTTP_PORT}
+      - CUBEJS_DB_NAME=${CLICKHOUSE_DW_DB}
+      - CUBEJS_DB_USER=${CLICKHOUSE_USER}
+      - CUBEJS_DB_PASS=${CLICKHOUSE_PASSWORD}
+      - CUBEJS_CUBESTORE_HOST=finpro-cubestore-router
+      - CUBEJS_API_SECRET=${CUBE_API_SECRET}
+      - CUBEJS_REFRESH_WORKER=true
+    volumes:
+      - ../cube/model:/cube/conf/model
+      - ../cube/cube.py:/cube/conf/cube.py
+      - ../dbt_data/target/manifest.json:/dbt/manifest.json
+    networks:
+    - finpro-network
+
+  finpro-cubestore-router:
+    container_name: finpro-cubestore-router
+    restart: always
+    image: cubejs/cubestore:latest
+    environment:
+      - CUBESTORE_WORKERS=finpro-cubestore-worker-1:10001,finpro-cubestore-worker-2:10002
+      - CUBESTORE_REMOTE_DIR=/cube/data
+      - CUBESTORE_META_PORT=9999
+      - CUBESTORE_SERVER_NAME=finpro-cubestore-router:9999
+    volumes:
+      - ../cube/data:/cube/data
+    networks:
+    - finpro-network
+ 
+  finpro-cubestore-worker-1:
+    container_name: finpro-cubestore-worker-1
+    restart: always
+    image: cubejs/cubestore:latest
+    environment:
+      - CUBESTORE_WORKERS=finpro-cubestore-worker-1:10001,finpro-cubestore-worker-2:10002
+      - CUBESTORE_SERVER_NAME=finpro-cubestore-worker-1:10001
+      - CUBESTORE_WORKER_PORT=10001
+      - CUBESTORE_REMOTE_DIR=/cube/data
+      - CUBESTORE_META_ADDR=finpro-cubestore-router:9999
+    volumes:
+      - ../cube/data:/cube/data
+    depends_on:
+      - finpro-cubestore-router
+    networks:
+    - finpro-network
+ 
+  finpro-cubestore-worker-2:
+    container_name: finpro-cubestore-worker-2
+    restart: always
+    image: cubejs/cubestore:latest
+    environment:
+      - CUBESTORE_WORKERS=finpro-cubestore-worker-1:10001,finpro-cubestore-worker-2:10002
+      - CUBESTORE_SERVER_NAME=finpro-cubestore-worker-2:10002
+      - CUBESTORE_WORKER_PORT=10002
+      - CUBESTORE_REMOTE_DIR=/cube/data
+      - CUBESTORE_META_ADDR=finpro-cubestore-router:9999
+    volumes:
+      - ../cube/data:/cube/data
+    depends_on:
+      - finpro-cubestore-router
+    networks:
+    - finpro-network
+
+networks:
+  finpro-network:
+    driver: bridge
+    external: true

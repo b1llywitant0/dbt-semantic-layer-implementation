@@ -1,0 +1,223 @@
+views:
+  - name: customer_metrics
+    cubes:
+      - join_path: dim_customers
+        includes:
+          - name: n_of_customers
+            alias: number_of_accounts
+          - name: n_of_users
+            alias: number_of_users
+          - avg_order_value_per_account
+
+          - city
+          - state
+          - account_id
+          - user_id
+      
+      - join_path: user_aggregation
+        includes:
+          - avg_order_value_per_user
+          - avg_order_count_per_user
+
+      - join_path: fct_orders
+        includes:
+          - avg_order_value
+          - order_count
+          - completed_order_count
+          - canceled_order_count
+          - max_order_value
+          - min_order_value
+          - first_order_date
+          - latest_order_date
+          - active_user_count
+          - active_account_count
+
+          - order_creation_date
+
+      - join_path: fct_order_payments
+        includes:
+          - name: sum_payment_value
+            alias: lifetime_value
+
+          - payment_method
+      
+      - join_path: fct_order_reviews
+        includes: 
+          - name: average_review_score
+            alias: avg_review_score
+          - name: count_reviews
+            alias: review_count
+
+      - join_path: fct_order_items
+        includes:
+          - name: count_distinct_product
+            alias: number_of_unique_products_bought
+          - name: sum_product_quantity
+            alias: number_of_products_bought
+
+  - name: seller_metrics
+    cubes:
+      - join_path: dim_sellers
+        includes:
+          - name: n_of_sellers
+            alias: number_of_sellers
+          - avg_order_value_per_seller
+          - avg_order_count_per_seller
+
+          - city
+          - state
+          - seller_id
+      
+      - join_path: fct_orders
+        includes:
+          - avg_order_value
+          - order_count
+          - completed_order_count
+          - canceled_order_count
+          - name: gmv
+            alias: gross_merchandise_value
+          - max_order_value
+          - min_order_value
+          - first_order_date
+          - latest_order_date
+          - name: active_user_count
+            alias: number_of_served_customers
+          - active_account_count
+          - active_seller_count
+          # - order_value_per_seller
+          # - order_count_per_seller
+
+          - order_creation_date
+
+      - join_path: fct_order_reviews
+        includes: 
+          - name: average_review_score
+            alias: avg_review_score
+          - name: count_reviews
+            alias: review_count
+
+      - join_path: fct_order_items
+        includes:
+          - name: count_distinct_product
+            alias: number_of_unique_products_sold
+          - name: sum_product_quantity   
+            alias: number_of_sold_products   
+
+  - name: app_metrics
+    cubes:
+      - join_path: dim_customers
+        includes:
+          - name: n_of_customers
+            alias: number_of_accounts
+          - name: n_of_users
+            alias: number_of_users
+          
+          - name: city
+            alias: city_customers
+          - name: state
+            alias: state_customers
+          - user_id
+      
+      - join_path: dim_sellers
+        includes:
+          - name: n_of_sellers
+            alias: number_of_sellers
+
+          - name: city
+            alias: city_sellers
+          - name: state
+            alias: state_sellers
+          - seller_id
+      
+      - join_path: fct_orders
+        includes:
+          - active_user_count
+          - active_account_count
+          - order_count
+          - name: gmv
+            alias: gross_merchandise_value
+          - avg_order_value
+          - order_value_per_seller
+          - order_count_per_seller
+          - cancel_rate
+
+          - order_creation_date
+          - order_status
+          - order_value
+          - order_id
+
+      - join_path: fct_order_items
+        includes:
+          - active_seller_count
+          - count_distinct_product
+          - name: sum_price
+            alias: total_product_value
+          - name: average_price
+            alias: avg_product_value
+          - name: max_price
+            alias: max_product_value
+          - name: min_price
+            alias: min_product_value
+          - name: sum_freight_value
+            alias: total_freight_value
+          - name: average_freight_value
+            alias: avg_freight_value
+          - max_freight_value
+          - min_freight_value
+          - name: sum_product_quantity
+            alias: total_products_bought
+          - name: average_product_quantity
+            alias: avg_product_bought_per_order
+        
+      - join_path: fct_order_payments
+        includes:
+          - name: sum_payment_value
+            alias: paid_transaction_value
+          
+          - payment_method
+
+      - join_path: fct_order_reviews
+        includes:
+          - count_reviews
+          - average_review_score
+          - bad_review_count
+          - bad_review_rate
+
+          - review_score
+      
+      - join_path: fct_orders_activity
+        includes: 
+          - daily_active_users
+          - weekly_active_users
+          - monthly_active_users
+          - wau_to_mau
+
+      - join_path: fct_orders_history
+        includes:
+          - unprocessed_count
+          - processed_count
+          - shipped_count
+          - delivered_count
+          - canceled_count
+          - late_delivery_count
+          - on_time_delivery_count
+          - order_to_shipped
+          - shipped_to_delivered
+          - order_to_delivery
+
+      - join_path: dim_products
+        includes:
+          - product_category
+  
+  - name: user_cohort
+    cubes:
+      - join_path: customer_retention
+        includes:
+          - cohort
+          - month_0
+          - month_1
+          - month_2
+          - month_3
+          - month_4
+          - month_5
+          - month_6

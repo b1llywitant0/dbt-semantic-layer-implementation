@@ -1,0 +1,115 @@
+{% set model = dbt_model('fct_order_items') %}
+ 
+cubes:
+  - {{ model.as_cube() }}
+
+    public: false
+ 
+    dimensions:
+      {% for column in model.columns %}
+        {% if column.name in ['order_creation_date','shipping_limit_date'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: time
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['order_id'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        primary_key: true
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['total_price','total_freight_value','quantity'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: number
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% else %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        description: {{ column.description }}
+        meta:
+          source: dbt    
+        {% endif %}
+      {% endfor %}
+
+    joins:
+      - name: dim_products
+        sql: "{CUBE}.product_id = {dim_products.product_id}"
+        relationship: many_to_one
+      - name: dim_sellers
+        sql: "{CUBE}.seller_id = {dim_sellers.seller_id}"
+        relationship: many_to_one
+      - name: fct_orders
+        sql: "{CUBE}.order_id = {fct_orders.order_id}"
+        relationship: many_to_one
+
+    measures:
+      - name: count
+        type: count
+
+      - name: count_order
+        sql: order_id
+        type: count_distinct
+
+      - name: active_seller_count
+        sql: seller_id
+        type: count_distinct
+
+      - name: count_distinct_product
+        sql: product_id
+        type: count_distinct
+
+      - name: sum_price
+        sql: total_price
+        type: sum
+
+      - name: average_price
+        sql: total_price
+        type: avg
+
+      - name: max_price
+        sql: total_price
+        type: max
+
+      - name: min_price
+        sql: total_price
+        type: min
+
+      - name: sum_freight_value
+        sql: total_freight_value
+        type: sum
+
+      - name: average_freight_value
+        sql: total_freight_value
+        type: avg
+
+      - name: max_freight_value
+        sql: total_freight_value
+        type: max
+
+      - name: min_freight_value
+        sql: total_freight_value
+        type: min
+
+      - name: sum_product_quantity
+        sql: quantity
+        type: sum
+
+      - name: average_product_quantity
+        sql: quantity
+        type: avg
+
+      - name: max_product_quantity
+        sql: quantity
+        type: max
+
+      - name: min_product_quantity
+        sql: quantity
+        type: min

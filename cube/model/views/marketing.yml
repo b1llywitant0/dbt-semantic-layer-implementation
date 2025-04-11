@@ -1,0 +1,86 @@
+views:
+  - name: lead_acquisition_performance
+    cubes:
+      - join_path: fct_lead_conversions
+        includes:
+          - name: n_of_leads
+            alias: number_of_leads
+          - name: n_of_leads_conversed
+            alias: number_of_closed_deals
+          - name: conversion_rate
+            alias: lead_conversion_rate
+          - name: avg_date_diff_closed_deals
+            alias: avg_days_to_closing
+
+          - landing_page_id
+          - sdr_id
+          - sr_id
+          - first_contact_date
+          - won_date
+      
+      - join_path: dim_leads
+        includes:
+          - name: status
+            alias: lead_status
+          - name: channel
+            alias: lead_acquistion_channel
+  
+  - name: closed_deals_performance
+    cubes:
+      - join_path: fct_lead_revenue 
+        includes: 
+          - name: gmv
+            alias: gross_merchandise_value
+          - name: n_of_sellers
+            alias: number_of_closed_deals_with_order
+          - order_count
+          - avg_order_value
+          - max_order_value
+          - min_order_value
+
+          - name: order_delivered_carrier_date
+            alias: order_delivery_to_carrier_date
+          - won_date
+
+      - join_path: fct_lead_conversions
+        includes:
+          - name: conversion_rate
+            alias: lead_conversion_rate
+          - name: n_of_leads
+            alias: number_of_leads
+          - name: n_of_leads_conversed
+            alias: number_of_closed_deals
+      
+      - join_path: dim_leads
+        includes:
+          - name: channel
+            alias: lead_acquisition_channel
+          - lead_type
+          - business_segment
+          - business_type
+          - is_cat
+          - is_eagle
+          - is_wolf
+          - is_shark
+
+  - name: lead_cohort
+    cubes:
+      - join_path: lead_monthly_retention
+        includes:
+          - total_count
+          - total_active_count
+          - percentage_of_active
+
+          - months_since_signup    
+          - signup_date
+
+      - join_path: lead_monthly_retention.dim_leads
+        includes:
+          - channel
+          - lead_type
+          - business_segment
+          - business_type
+          - is_cat
+          - is_eagle
+          - is_wolf
+          - is_shark

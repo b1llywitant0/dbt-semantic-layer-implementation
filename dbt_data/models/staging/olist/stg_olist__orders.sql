@@ -10,6 +10,7 @@ orders AS (
 )
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['orders.order_id', 'orders.dbt_valid_from']) }} AS order_sk,
     orders.order_id,
     orders.customer_id,
     order_status.order_status_name AS order_status,

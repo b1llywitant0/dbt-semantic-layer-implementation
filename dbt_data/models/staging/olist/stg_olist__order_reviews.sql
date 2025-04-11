@@ -5,6 +5,7 @@ order_reviews AS (
 )
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['order_reviews.review_id', 'order_reviews.order_id', 'order_reviews.dbt_valid_from']) }} AS order_review_sk,
     order_reviews.review_id,
     order_reviews.order_id,
     order_reviews.review_score,

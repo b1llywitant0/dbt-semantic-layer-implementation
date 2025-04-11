@@ -1,0 +1,83 @@
+cubes:
+  - name: lead_monthly_retention
+    sql: >
+      WITH 
+          start_date AS (
+              SELECT toStartOfMonth(min(order_delivered_carrier_date)) 
+              FROM ecommerce_dw_mart_marketing.fct_lead_revenue
+          ),
+          end_date AS (
+              SELECT toStartOfMonth(max(order_delivered_carrier_date)) 
+              FROM ecommerce_dw_mart_marketing.fct_lead_revenue
+          ),
+          
+          month_series AS (
+              SELECT toStartOfMonth(addMonths((SELECT * FROM start_date), number)) AS month
+              FROM system.numbers
+              WHERE number <= dateDiff('month', (SELECT * FROM start_date), (SELECT * FROM end_date))
+          ),
+
+          leads AS (
+              SELECT DISTINCT 
+                  mql_id, 
+                  toStartOfMonth(won_date) AS signup_month
+              FROM ecommerce_dw_mart_marketing.fct_lead_revenue
+          ),
+
+          order_count AS (
+              SELECT
+                  mql_id,
+                  toStartOfMonth(order_delivered_carrier_date) AS activity_month,
+                  COUNT(DISTINCT order_id) AS order_count
+              FROM ecommerce_dw_mart_marketing.fct_lead_revenue
+              GROUP BY 1, 2
+          )
+
+      SELECT 
+          l.mql_id AS mql_id,
+          l.signup_month,
+          ms.month AS activity_month,
+          COALESCE(oc.order_count, 0) AS order_count
+      FROM leads l
+      CROSS JOIN month_series ms
+      LEFT JOIN order_count oc 
+          ON oc.mql_id = l.mql_id 
+          AND oc.activity_month = ms.month
+      WHERE ms.month >= l.signup_month
+      ORDER BY l.mql_id, ms.month
+    
+    public: false
+    
+    joins:
+      - name: dim_leads
+        sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
+        relationship: many_to_one
+
+    measures:
+      - name: total_count
+        sql: mql_id
+        type: count_distinct
+ 
+      - name: total_active_count
+        sql: mql_id
+        type: count_distinct
+        filters:
+          - sql: order_count > 0
+ 
+      - name: percentage_of_active
+        sql: "{total_active_count} / NULLIF({total_count}, 0)"
+        type: number
+
+    dimensions:
+      - name: months_since_signup
+        sql: "DATEDIFF('month', signup_month, activity_month)"
+        type: number
+ 
+      - name: signup_date
+        sql: signup_month
+        type: time
+
+      - name: id
+        sql: "CONCAT(mql_id, '-', activity_month)"
+        type: string
+        primary_key: true

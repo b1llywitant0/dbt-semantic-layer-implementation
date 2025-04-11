@@ -5,6 +5,7 @@
 }}
 
 SELECT
+    order_sk,
     order_id,
     order_status,
     order_purchase_timestamp,
@@ -12,6 +13,23 @@ SELECT
     order_delivered_carrier_date,
     order_delivered_customer_date,
     order_estimated_delivery_date,
+    CASE
+        WHEN 
+            dateDiff('day',
+                toDateTime64(order_estimated_delivery_date, 0),
+                toDateTime64(
+                    GREATEST(
+                        order_delivered_customer_date,
+                        order_delivered_carrier_date,
+                        order_approved_at
+                    ),0)
+            ) > 0 THEN 1
+        ELSE 0
+    END AS late_delivery,
     valid_from,
-    valid_to
+    valid_to,
+    CASE
+        WHEN valid_to = '{{var("future_proof_date")}}' THEN 1
+        ELSE 0
+    END AS is_current
 FROM {{ ref('stg_olist__orders') }}

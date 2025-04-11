@@ -1,0 +1,63 @@
+{% set model = dbt_model('fct_lead_conversions') %}
+ 
+cubes:
+  - {{ model.as_cube() }}
+    
+    public: false
+
+    dimensions:
+      {% for column in model.columns %}
+        {% if column.name in ['first_contact_date', 'won_date'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: time
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% elif column.name in ['mql_id'] %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        primary_key: true
+        description: {{ column.description }}
+        meta:
+          source: dbt
+        {% else %}
+      - name: {{ column.name }}
+        sql: {{ column.sql }}
+        type: {{ column.type }}
+        description: {{ column.description }}
+        meta:
+          source: dbt    
+        {% endif %}
+      {% endfor %}
+
+    joins:
+      - name: dim_leads
+        sql: "{CUBE}.mql_id = {dim_leads.mql_id}"
+        relationship: one_to_one
+      - name: fct_lead_revenue
+        sql: "{CUBE}.mql_id = {fct_lead_revenue.mql_id}"
+        relationship: one_to_many
+
+    measures:
+      - name: count
+        type: count
+
+      - name: n_of_leads
+        sql: mql_id
+        type: count_distinct
+      
+      - name: n_of_leads_conversed
+        sql: mql_id
+        type: count_distinct
+        filters:
+          - sql: "{CUBE}.won_date IS NOT NULL"
+
+      - name: conversion_rate
+        sql: "{n_of_leads_conversed} / NULLIF({n_of_leads},0)"
+        type: number
+
+      - name: avg_date_diff_closed_deals
+        sql: "(dateDiff('day', toDateTime64({CUBE}.first_contact_date, 0), toDateTime64({CUBE}.won_date, 0)))"
+        type: avg

@@ -14,6 +14,11 @@ models:
             - valid_from
             - valid_to
     columns:
+      - name: lead_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: mql_id
         description: Indicating unique qualified lead. Primary key of the table.
         tests:
@@ -52,3 +57,10 @@ models:
         description: Timestamp of data validity period - end.
         tests:
           - not_null
+      - name: is_current
+        description: Indicating the latest data.
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1

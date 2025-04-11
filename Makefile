@@ -1,4 +1,4 @@
-.PHONY: airflow clickhouse
+.PHONY: airflow clickhouse cube metabase
 include .env
 
 docker-build: 
@@ -8,6 +8,8 @@ docker-build:
 	@docker build -t finpro/airflow -f ./docker/Dockerfile.airflow .
 	@echo '__________________________________________________________'
 	@docker build -t finpro/clickhouse -f ./docker/Dockerfile.clickhouse .
+	@echo '__________________________________________________________'
+	@docker build -t finpro/cube -f ./docker/Dockerfile.cube .
 	@echo '==========================================================='
 
 postgres-create:
@@ -64,6 +66,20 @@ cdc:
 	@echo 'Creating Kafka+Debezium Instance ...'
 	@echo '__________________________________________________________'
 	@docker compose -f ./docker/docker-compose-cdc.yml --env-file .env up -d
+	@echo '==========================================================='	
+
+cube:
+	@echo '__________________________________________________________'
+	@echo 'Creating Cube Semantic Layer ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-cube.yml --env-file .env up -d
+	@echo '==========================================================='	
+
+metabase:
+	@echo '__________________________________________________________'
+	@echo 'Creating Metabase ...'
+	@echo '__________________________________________________________'
+	@docker compose -f ./docker/docker-compose-metabase.yml --env-file .env up -d
 	@echo '==========================================================='	
 
 airflow-bash:

@@ -1,0 +1,18 @@
+models:
+  - name: dim_dates
+    description: A time spine with one row per day, ranging from 20 years in the past to 30 days into the future.
+    # time_spine:
+    #   standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        description: The base date column for daily granularity
+        # granularity: day
+      - name: date_week
+        description: The base date column for weekly granularity
+        # granularity: week
+      - name: date_month
+        description: The base date column for monthly granularity
+        # granularity: month
+      - name: date_year
+        description: The base date column for yearly granularity
+        # granularity: year

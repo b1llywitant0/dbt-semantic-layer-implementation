@@ -10,6 +10,7 @@ products AS (
 )
 
 SELECT
+    {{ dbt_utils.generate_surrogate_key(['products.product_id', 'products.dbt_valid_from']) }} AS product_sk,
     products.product_id,
     product_categories.product_category_name_english AS product_category,
     products.product_weight_g,

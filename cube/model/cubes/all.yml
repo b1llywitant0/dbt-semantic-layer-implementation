@@ -1,0 +1,11 @@
+{# cubes:
+  {% for model in dbt_models() %}
+  - {{ model.as_cube() }}
+    
+    dimensions:
+      {{ model.as_dimensions(skip=['sensitive_column']) }}
+
+    measures:
+      - name: count
+        type: count
+  {% endfor %} #}

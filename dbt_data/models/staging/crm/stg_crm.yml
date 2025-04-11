@@ -9,6 +9,11 @@ models:
             - mql_id
             - valid_from
     columns:
+      - name: qualified_lead_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: mql_id
         description: Indicating unique qualified lead.
         tests:

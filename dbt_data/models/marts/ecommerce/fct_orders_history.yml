@@ -11,6 +11,11 @@ models:
             - order_id
             - valid_from
     columns:
+      - name: order_sk
+        description: Surrogate key for SCD2 table.
+        tests:
+          - unique
+          - not_null
       - name: order_id
         description: Unique identifier of the order.
         tests:
@@ -31,6 +36,13 @@ models:
         description: Timestamp of order delivered to customer.
       - name: order_estimated_delivery_date
         description: Estimated timestamp of order delivered to customer.
+      - name: late_delivery
+        description: 1 for late, 0 for not late/still on time.
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1
       - name: valid_from
         description: Timestamp indicating the start of period.
         tests:
@@ -39,3 +51,10 @@ models:
         description: Timestamp indicating the end of period.
         tests:
           - not_null
+      - name: is_current
+        description: Indicating the latest data.
+        tests:
+          - accepted_values:
+              values:
+                - 0
+                - 1
