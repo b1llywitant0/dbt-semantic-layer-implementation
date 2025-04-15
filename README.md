@@ -1,10 +1,10 @@
 # Semantic Layer Implementation using DBT
 
-The current project demonstrates the end-to-end implementation of semantic layer feature of dbt, from ingesting data in OLTP to visualizing the data in Dashboard.
+This project demonstrates the end-to-end implementation of ELT data pipeline using dbt and semantic layer using Cube. Moreover, this project separated OLTP as data source and OLAP as data warehouse to simulate the real-world data pipeline.
 
 The tech stack includes:
 - [PostgreSQL](https://www.postgresql.org/) for OLTP database, 
-- [Adminer](https://www.adminer.org/) for PostgreSQL UI,
+- [Adminer](https://www.adminer.org/) for PostgreSQL UI (You can also use [Dbeaver](https://dbeaver.io/) if you like),
 - [ClickHouse](https://clickhouse.com/) for OLAP database,
 - [Tabix](https://tabix.io/) for ClickHouse UI,
 - [Zookeeper](https://zookeeper.apache.org/) + [Kafka](https://kafka.apache.org/) + [Debezium](https://debezium.io/) for real-time data streaming using CDC,
@@ -15,14 +15,11 @@ The tech stack includes:
 
 All of the components used are containerized in [Docker](https://www.docker.com/) for ease of setup.
 
-![ELT Architecture](etc/img/ELT%20Project%20Architecture.png)
+The datasets used are [Olist e-commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) and [marketing](https://www.kaggle.com/datasets/olistbr/marketing-funnel-olist) datasets obtained from Kaggle.
 
 ## Design
 
-1. Ingesting data to OLTP manually.
-2. Extract and load phases from OLTP to OLAP, using Kafka+Debezium for stream jobs (for important tables, i.e. orders, customers, etc.) and using Airflow for batch job (mostly for reference tables, i.e. product categories, order status, etc.).
-3. Running dbt manually or by using Airflow to transform data inside OLAP. The transformed data will be given to data marts.
-4. Visualizing data in the dashboard, including metrics (the implementation of semantic layer).
+![ELT Architecture](etc/img/ELT%20Project%20Architecture.png)
 
 ## Prerequisites
 
@@ -67,23 +64,31 @@ make cdc
 make airflow
 ```
 
-## Simulation
+## Data Load & Transformation
 
-<strong>Important:</strong> Do this sequentially.
+### Crosschecking
 
-### Loading Reference Tables to ClickHouse Using Airflow Batch Job
+Before we begin, it is important to check whether the data exists or not inside the ClickHouse.
 
-1. Open [Airflow](http://localhost:8081/home) and run `reference_tables_postgres_to_clickhouse` DAG to load data from PostgreSQL to ClickHouse. The DAG had been scheduled to run daily at midnight (00:00:00 WIB / UTC+7).
-2. Open [Tabix](http://localhost:8082/#!/login) and login using:
+1. Open [Kowl](http://localhost:8088/topics) to see whether the streaming data from PostgreSQL are successfully received by Kafka. Topics should appear, i.e. cdc_closed_deals, cdc_customers, etc. In consumer groups, connect-clickhouse-sinker should appear as well.
+> When creating cdc container for the first time, please wait all of the data consumed (lag=0 in connect-clickhouse-sinker) before proceeding to the next step. 
+2. Open [Airflow](http://localhost:8081/home) and run `reference_tables_postgres_to_clickhouse` DAG manually to load data from PostgreSQL to ClickHouse. 
+> This DAG had been set to run with dbt transformation using `TriggerDagRunOperator`, this step only to crosscheck the DAG and the data.
+> Moreover, the first time you run this DAG, it will be triggered twice and resulting in duplicate data inside datawarehouse (full refresh group). Please run again once after that to remove duplicates.
+3. Open [Tabix](http://localhost:8082/#!/login) and login using:
     - Name: <anything_you_like>
     - http://host:port: http://localhost:8123
     - Login: clickhouse
     - Password: root
-3. Check the presence of data in ClickHouse inside 'raw' schema/database using SELECT statement.
+4. Check the presence of data in ClickHouse inside 'raw' schema/database using SELECT statement.
 
 ### Running dbt
 
-<strong>Note:</strong> dbt is installed inside Airflow. To run the dbt project manually:
+<strong>Note:</strong> dbt is installed inside Airflow.
+
+1. Open [Airflow](http://localhost:8081/home) and run `dbt_transformation` DAG. 
+
+### Generating Data Catalog
 
 1. Accessing the Airflow container:
 ```
@@ -93,14 +98,39 @@ make airflow-bash
 ```
 cd dbt
 ```
-3. Installing dependencies of dbt:
+3. Generating dbt docs:
 ```
-dbt deps
+dbt docs generate
 ```
-4. Building the models:
+4. Serving dbt docs:
 ```
-dbt build
+dbt docs serve --port 8001 --host 0.0.0.0
 ```
+> You can see data lineage by clicking button on bottom right of the screen.
+> The preview:
+> ![dbt Lineage](./etc/img/dbt%20Lineage%20Peek.png)
+
+## Semantic Layer and Data Visualization
+
+### Setup
+
+1. Creating Cube container. Please run:
+```
+make cube
+```
+2. Creating metabase container. Please run:
+```
+make metabase
+```
+
+### Accessing Cube
+
+1. Open [Cube Playground](http://localhost:4000/#/build?query={%22timezone%22:%22Asia/Jakarta%22}) and see Cubes/Views created.
+> When querying, since we are using ClickHouse, there's still integration issue (at least, when I finished this project), such as: [Cube Issue #9383](https://github.com/cube-js/cube/issues/9383)
+
+### Accessing Metabase
+
+1. Open [Metabase](http://localhost:3000/auth/login) and login using email in .env. To access admin, please use `billywitanto@gmail.com`. To see the access control created for dashboards, you can either use `marketing@example.com` or `ecommerce@example.com`.
 
 ## Other References
 
@@ -120,6 +150,13 @@ dbt build
 - [Snapshot Model for Generating SCD2 Tables](https://docs.getdbt.com/docs/build/snapshots)
 - [Incremental Model](https://docs.getdbt.com/docs/build/incremental-models-overview)
 - [dbt utils Package](https://github.com/dbt-labs/dbt-utils)
+
+### About Cube
+- [Using Cube with dbt](https://cube.dev/docs/guides/dbt)
+- [Cohort Analysis](https://cube.dev/docs/guides/recipes/analytics/cohort-retention)
+- [Many-to-many joins](https://cube.dev/docs/product/data-modeling/concepts/working-with-joins#many-to-many-joins)
+- [Using Cube with Metabase](https://cube.dev/docs/product/configuration/visualization-tools/metabase)
+- [Preaggregation for data caching (Not used in this project, but interesting to read)](https://cube.dev/docs/reference/data-model/pre-aggregations)
 
 ### About Strategies
 
