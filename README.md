@@ -131,6 +131,7 @@ make metabase
 ### Accessing Metabase
 
 1. Open [Metabase](http://localhost:3000/auth/login) and login using email in .env. To access admin, please use `billywitanto@gmail.com`. To see the access control created for dashboards, you can either use `marketing@example.com` or `ecommerce@example.com`.
+> To edit, you need Admin privilege. When accessing Cube in Metabase, there may be error to display the data. But, we still can query most of the needed data in that state. So, just go create or edit the questions and see whether the query works or not. I assume that the problem lies with the ClickHouse integration, such as issue stated above.
 
 ## Other References
 
