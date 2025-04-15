@@ -1,6 +1,10 @@
 .PHONY: airflow clickhouse cube metabase
 include .env
 
+setup: docker-build postgres clickhouse cdc airflow
+
+visualize: cube metabase
+
 docker-build: 
 	@docker network inspect ${NETWORK_NAME} >/dev/null 2>&1 || docker network create ${NETWORK_NAME}
 	@chmod +x ./airflow/scripts/entrypoint.sh
