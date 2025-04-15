@@ -32,7 +32,7 @@ INCREMENTAL_LOAD_TABLES = [
 # DAG settings
 @dag(
      dag_id='reference_tables_postgres_to_clickhouse',
-     schedule_interval='0 0 * * *',
+     schedule_interval=None,
      start_date=datetime.datetime(2025, 3, 6, tzinfo=pytz.timezone("Asia/Jakarta")),
      catchup=False
      )    
