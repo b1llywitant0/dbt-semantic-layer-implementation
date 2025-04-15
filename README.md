@@ -9,9 +9,13 @@ The tech stack includes:
 - [Tabix](https://tabix.io/) for ClickHouse UI,
 - [Zookeeper](https://zookeeper.apache.org/) + [Kafka](https://kafka.apache.org/) + [Debezium](https://debezium.io/) for real-time data streaming using CDC,
 - [Kowl](https://github.com/theurichde/kowl) for Kafka UI,
-- [Airflow](https://airflow.apache.org/) + [dbt](https://www.getdbt.com/) to transform data inside OLAP database.
+- [Airflow](https://airflow.apache.org/) + [dbt](https://www.getdbt.com/) to transform data inside OLAP database,
+- [Cube](https://cube.dev/) as semantic layer,
+- [Metabase](https://www.metabase.com/) as BI visualization tool.
 
 All of the components used are containerized in [Docker](https://www.docker.com/) for ease of setup.
+
+![ELT Architecture](etc/img/ELT%20Project%20Architecture.png)
 
 ## Design
 
