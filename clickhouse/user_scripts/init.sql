@@ -637,7 +637,6 @@ SELECT
     if(op = 'd', `before.declared_monthly_revenue`, `after.declared_monthly_revenue`) AS declared_monthly_revenue,
     if(op = 'd', `before.created_at`, `after.created_at`) AS created_at,
     if(op = 'd', `before.updated_at`, `after.updated_at`) AS updated_at,
-    if(op = 'd', `before.deleted_at`, `after.deleted_at`) AS deleted_at,
     if(op = 'd', source.lsn, source.lsn) AS version,
     if(op = 'd' OR after.deleted_at IS NOT NULL, 1, 0) AS deleted
 FROM raw.cdc_closed_deals
