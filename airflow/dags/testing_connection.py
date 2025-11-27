@@ -12,7 +12,7 @@ with DAG(
         database='ecommerce_dw',
         sql=(
             '''
-                SELECT after.customer_unique_id FROM cdc_customers LIMIT 5
+                SELECT after.customer_unique_id FROM raw.cdc_customers LIMIT 5
             ''',
             # result of the last query is pushed to XCom
         ),
