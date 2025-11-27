@@ -10,8 +10,10 @@ RUN apt update && apt-get install -y \
     ant \
     procps \
     python3-venv \
-    python3-pip && \
-    apt-get clean
+    python3-pip \
+    # build-essential \
+    # libre2-dev \
+    && apt-get clean
 
 # Set JAVA_HOME for Spark
 ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
@@ -34,6 +36,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV DBT_PROFILES_DIR=/opt/airflow/dbt/config
 
 # Install additional Python dependencies for Airflow
+RUN pip install --no-cache-dir google-re2==1.1.20240702
 RUN pip install --no-cache-dir --verbose \
     apache-airflow-providers-postgres \
     lxml \

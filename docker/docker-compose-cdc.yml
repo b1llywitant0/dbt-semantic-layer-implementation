@@ -1,6 +1,6 @@
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.1
+    image: confluentinc/cp-zookeeper:7.6.0
     hostname: ${ZOOKEEPER_CONTAINER_NAME}
     container_name: ${ZOOKEEPER_CONTAINER_NAME}
     ports:
@@ -12,7 +12,7 @@ services:
       - finpro-network
 
   kafka:
-    image: confluentinc/cp-kafka:7.6.1
+    image: confluentinc/cp-kafka:7.6.0
     hostname: ${KAFKA_CONTAINER_NAME}
     container_name: ${KAFKA_CONTAINER_NAME}
     depends_on:
@@ -31,7 +31,7 @@ services:
       - finpro-network
 
   kafka-connect:
-    image: confluentinc/cp-kafka-connect:7.6.1
+    image: confluentinc/cp-kafka-connect:7.6.0
     hostname: ${DEBEZIUM_CONTAINER_NAME}
     container_name: ${DEBEZIUM_CONTAINER_NAME}
     depends_on:
