@@ -1,6 +1,6 @@
 services:
   metabase:
-    image: metabase/metabase:latest
+    image: metabase/metabase:v0.53.x
     container_name: finpro-metabase
     hostname: metabase
     ports:
