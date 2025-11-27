@@ -1,5 +1,5 @@
 #!/bin/bash
-airflow db init
+airflow db migrate
 echo "AUTH_ROLE_PUBLIC = 'Admin'" >> webserver_config.py
 airflow connections add 'postgres_main' \
 --conn-type 'postgres' \

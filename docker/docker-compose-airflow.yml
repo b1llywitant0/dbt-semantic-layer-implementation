@@ -22,6 +22,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_HTTP_PORT}
       - TZ=${TIMEZONE}
       - AIRFLOW__CORE__TEST_CONNECTION=Enabled
+      - AIRFLOW__CORE__FERNET_KEY=ZAfDaU34N0_5BhVsBThF3SCDpMh3_NqauBKlSSoEqiM=
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
@@ -52,6 +53,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_HTTP_PORT}
       - TZ=${TIMEZONE}
       - AIRFLOW__CORE__TEST_CONNECTION=Enabled
+      - AIRFLOW__CORE__FERNET_KEY=ZAfDaU34N0_5BhVsBThF3SCDpMh3_NqauBKlSSoEqiM=
     volumes:
       - ../airflow/dags:/opt/airflow/dags
       - ../airflow/logs:/opt/airflow/logs
